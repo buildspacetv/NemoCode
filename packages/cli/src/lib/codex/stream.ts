@@ -25,6 +25,7 @@ import {
   toResponsesUsage,
 } from "./translate-response.js";
 import { fetchNebiusChat } from "./nebius-call.js";
+import { trackServedResponse } from "../nebius-client.js";
 import { recordUsage } from "./usage.js";
 import type {
   ChatMessage,
@@ -227,28 +228,26 @@ async function streamNebiusTurn(
   const turnTimeoutMs = codexStreamTurnTimeoutMs();
   let streamAttempt = 0;
 
-  for await (const eventData of readNebiusSseWithRetry(
-    upstream,
-    async () => {
-      const retried = await fetchNebiusChat(payload, options, modelDefinition, signal);
-      return retried.ok
-        ? retried.response
-        : new Response(retried.text, {
-            status: retried.status,
-            headers: { "content-type": "application/json" },
-          });
-    },
-    {
-      isOutputStarted: () => streamOutputStarted(outputState),
-      onRetry: ({ attempt, maxRetries, timeoutMs }) =>
-        debugLog(options, "retrying nebius stream after idle timeout", {
-          attempt,
-          maxRetries,
-          model: payload.model,
-          timeoutMs,
-        }),
-    },
-  )) {
+  const served = trackServedResponse(upstream, async () => {
+    const retried = await fetchNebiusChat(payload, options, modelDefinition, signal);
+    return retried.ok
+      ? retried.response
+      : new Response(retried.text, {
+          status: retried.status,
+          headers: { "content-type": "application/json" },
+        });
+  });
+
+  for await (const eventData of readNebiusSseWithRetry(upstream, served.retry, {
+    isOutputStarted: () => streamOutputStarted(outputState),
+    onRetry: ({ attempt, maxRetries, timeoutMs }) =>
+      debugLog(options, "retrying nebius stream after idle timeout", {
+        attempt,
+        maxRetries,
+        model: payload.model,
+        timeoutMs,
+      }),
+  })) {
     if (eventData.attempt !== streamAttempt) {
       streamAttempt = eventData.attempt;
       toolCalls.clear();
@@ -344,6 +343,14 @@ async function streamNebiusTurn(
   if (!finishReason) {
     return { ok: false, status: 502, error: "Nebius stream ended without a finish reason." };
   }
+
+  // Bill here, where a turn's usage originates, rather than in
+  // completeStreamResponse. This is the single point every streamed turn
+  // passes through exactly once, so each turn is charged to the model that
+  // actually served it - including mid-loop failovers, where the native-tool
+  // loop merges usage across turns and could otherwise only name one model
+  // for all of them.
+  recordUsage(usage, options, served.servedModel(modelDefinition));
 
   return { ok: true, toolCalls: [...toolCalls.values()], usage, reasoningText, text, finishReason };
 }
@@ -669,9 +676,8 @@ function completeStreamResponse(
     outputIndex += 1;
   }
 
-  if (usage) {
-    recordUsage(usage, options, modelDefinition);
-  }
+  // Usage is billed per turn in streamNebiusTurn, against that turn's served
+  // model; `usage` reaches here only to be reported back to Codex.
   // When the model hit max_tokens (finish_reason "length"), the response is
   // truncated - emit status "incomplete" with incomplete_details so Codex
   // knows the turn was cut short instead of silently treating it as a

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { type ModelDefinition } from "@kimirelay/models";
 import { runNativeWebSearchCall } from "../native-web-search.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
-import { postChatCompletion } from "../nebius-client.js";
+import { postChatCompletion, servedModelDefinition } from "../nebius-client.js";
 import { parseJsonOrEmpty } from "./content-format.js";
 import { codexNativeToolMaxUses, runCodexWebSearch } from "./translate-request.js";
 import type {
@@ -28,7 +28,13 @@ async function callNebius(
   if (!result.ok) {
     throw new Error(`Nebius API returned ${result.status}: ${result.text.slice(0, 1000)}`);
   }
-  return (await result.response.json()) as ChatResponse;
+  const json = (await result.response.json()) as ChatResponse;
+  // Record who actually served this, before the Response goes out of scope.
+  // The shared client may have failed over to the fallback model, and the
+  // parsed body alone carries no trace of that - so cost accounting would
+  // otherwise bill the model we asked for rather than the one that ran.
+  json.servedModel = servedModelDefinition(result.response, modelDefinition);
+  return json;
 }
 
 export async function callNebiusWithNativeTools(

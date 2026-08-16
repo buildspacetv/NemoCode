@@ -6,7 +6,11 @@ import { runNativeWebSearchCall } from "../native-web-search.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
 import { type ProxyPerfTracer } from "../proxy-perf.js";
 import { writeSse } from "../sse.js";
-import { postChatCompletionStream, NebiusResponseHeaderTimeoutError } from "../nebius-client.js";
+import {
+  postChatCompletionStream,
+  trackServedResponse,
+  NebiusResponseHeaderTimeoutError,
+} from "../nebius-client.js";
 import {
   readNebiusSseWithRetry,
   NebiusSseIdleTimeoutError,
@@ -244,21 +248,21 @@ export async function streamAnthropicFromNebius(
   let cachedTokens = 0;
   let streamAttempt = 0;
 
+  const served = trackServedResponse(response, () =>
+    postNebiusStream(payload, options, signal, perf, "upstream_fetch_retry"),
+  );
+
   try {
-    for await (const eventData of readNebiusSseWithRetry(
-      response,
-      () => postNebiusStream(payload, options, signal, perf, "upstream_fetch_retry"),
-      {
-        isOutputStarted: () => blockManager.hasOutput(),
-        onRetry: ({ attempt, maxRetries, timeoutMs }) =>
-          debugLog(options, "retrying nebius stream after idle timeout", {
-            attempt,
-            maxRetries,
-            model: payload.model,
-            timeoutMs,
-          }),
-      },
-    )) {
+    for await (const eventData of readNebiusSseWithRetry(response, served.retry, {
+      isOutputStarted: () => blockManager.hasOutput(),
+      onRetry: ({ attempt, maxRetries, timeoutMs }) =>
+        debugLog(options, "retrying nebius stream after idle timeout", {
+          attempt,
+          maxRetries,
+          model: payload.model,
+          timeoutMs,
+        }),
+    })) {
       if (eventData.attempt !== streamAttempt) {
         streamAttempt = eventData.attempt;
         upstreamFinishReason = null;
@@ -348,7 +352,12 @@ export async function streamAnthropicFromNebius(
   }
   blockManager.close();
   if (inputTokens > 0 || outputTokens > 0) {
-    options.costTracker?.addUsage(inputTokens, cachedTokens, outputTokens, targetModel.definition);
+    options.costTracker?.addUsage(
+      inputTokens,
+      cachedTokens,
+      outputTokens,
+      served.servedModel(targetModel.definition),
+    );
   }
   debugLog(options, "nebius stream done", {
     stopReason,
@@ -417,17 +426,32 @@ async function streamAnthropicNativeToolLoop({
   let nativeWebSearchCount = 0;
 
   for (let turn = 0; turn < 5; turn += 1) {
+    const served = trackServedResponse(response, () =>
+      postNebiusStream(currentPayload, options, signal),
+    );
     const collected = await collectNebiusStreamTurn(
       response,
       options,
       initialPayload.max_tokens as number | undefined,
-      () => postNebiusStream(currentPayload, options, signal),
+      served.retry,
       () => blockManager.hasOutput(),
     );
     inputTokens += collected.inputTokens;
     outputTokens += collected.outputTokens;
     cachedTokens += collected.cachedTokens;
     stopReason = collected.stopReason;
+    // Bill each turn as it completes, against the model that served THAT turn.
+    // A single lump sum at the end could only name one model, which is wrong
+    // as soon as a mid-loop failover happens: the first turn runs on the
+    // target, later turns on the fallback once the circuit opens.
+    if (collected.inputTokens > 0 || collected.outputTokens > 0) {
+      options.costTracker?.addUsage(
+        collected.inputTokens,
+        collected.cachedTokens,
+        collected.outputTokens,
+        served.servedModel(targetModel),
+      );
+    }
 
     const nativeToolCalls = collected.toolCalls.filter((toolCall) =>
       nativeToolNames.has(toolCall.function.name ?? ""),
@@ -546,9 +570,8 @@ async function streamAnthropicNativeToolLoop({
   }
 
   blockManager.close();
-  if (inputTokens > 0 || outputTokens > 0) {
-    options.costTracker?.addUsage(inputTokens, cachedTokens, outputTokens, targetModel);
-  }
+  // Usage was already billed per turn above (each against its own served
+  // model); the running totals here exist only for the message_delta report.
   debugLog(options, "nebius native stream done", {
     model,
     stopReason,

@@ -1,5 +1,6 @@
 import os from "node:os";
 import path from "node:path";
+import { kimirelayHome } from "./paths.js";
 import {
   readJsonIfExists,
   writeJsonAtomic,
@@ -14,9 +15,10 @@ export type GlobalConfig = {
   sandboxProject: string;
 };
 
-export function kimirelayHome(home = os.homedir()): string {
-  return path.join(home, ".kimirelay");
-}
+// Re-exported rather than redefined: this module used to carry its own copy
+// that ignored KIMIRELAY_HOME, which silently split custom-home installs (see
+// the note in paths.ts). Existing importers keep their import path.
+export { kimirelayHome };
 
 function globalConfigPath(home = os.homedir()): string {
   return path.join(kimirelayHome(home), "config.json");

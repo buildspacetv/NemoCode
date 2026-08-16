@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
@@ -23,13 +23,39 @@ export type TestDaemon = {
   url: string;
   /** The daemon's isolated KIMIRELAY_HOME. */
   home: string;
+  /**
+   * The local-proxy token this daemon will accept on `/internal/*`. Seeded
+   * into the daemon's home before spawn so tests hold the same credential the
+   * real launcher would (the daemon otherwise mints it lazily on first use).
+   */
+  internalToken: string;
+  /** `fetch` with the internal-control-plane credential attached. */
+  internalFetch: (url: string, init?: RequestInit) => Promise<Response>;
   stderr: () => string;
   stop: () => Promise<void>;
 };
 
+/** Must match INTERNAL_AUTH_HEADER in cli/src/lib/daemon/local-auth.ts. */
+const INTERNAL_AUTH_HEADER = "x-kimirelay-internal";
+
 export async function startTestDaemon(context: TestContext): Promise<TestDaemon> {
   const port = await findOpenPort();
   const home = await mkdtemp(path.join(context.tmpDir, "daemon-home-"));
+  // Seed the shared local-proxy token so the test holds the same credential
+  // the daemon will check /internal/* against.
+  const internalToken = `kimirelay-local-test-${port}`;
+  await writeFile(path.join(home, "local-proxy-token"), `${internalToken}\n`, {
+    encoding: "utf8",
+    mode: 0o600,
+  });
+  const internalFetch = (url: string, init?: RequestInit): Promise<Response> =>
+    fetch(url, {
+      ...(init ?? {}),
+      headers: {
+        [INTERNAL_AUTH_HEADER]: internalToken,
+        ...((init?.headers as Record<string, string>) ?? {}),
+      },
+    });
   let stderr = "";
   const child = spawn(process.execPath, [context.cliBin, "--daemon"], {
     cwd: context.repoRoot,
@@ -56,6 +82,8 @@ export async function startTestDaemon(context: TestContext): Promise<TestDaemon>
         return {
           url,
           home,
+          internalToken,
+          internalFetch,
           stderr: () => stderr,
           stop: async () => {
             child.kill("SIGTERM");

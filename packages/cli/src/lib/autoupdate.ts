@@ -8,9 +8,25 @@
  * The running process keeps the old inode, so the *next* invocation is the new
  * version - we never hot-swap mid-execution. Every failure path is swallowed:
  * an update problem must never block or crash the user's actual command.
+ *
+ * Integrity is the load-bearing part. The downloaded bundle is executed by
+ * every subsequent `klaude`/`kodex`/… invocation, so a manifest that could
+ * name an arbitrary URL, or a bundle nobody checksums, turns any compromise
+ * of the release site (or of whatever `KIMIRELAY_MANIFEST_URL` points at)
+ * into code execution on the user's machine. Two gates close that:
+ *
+ *  1. The download URL must live on the SAME origin as the manifest it came
+ *     from. A manifest can redirect the download within its own origin, but
+ *     never off it.
+ *  2. The manifest must carry a `sha256` of the bundle, and the bytes must
+ *     hash to it before anything is renamed into place. No digest, no update.
+ *
+ * `KIMIRELAY_MANIFEST_URL` therefore stays useful for local mirrors while no
+ * longer being a one-variable path to running someone else's code.
  */
 
-import { readFile, writeFile, rename, stat } from "node:fs/promises";
+import { readFile, writeFile, rename, stat, unlink } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import os from "node:os";
 import { VERSION } from "./version.js";
@@ -27,7 +43,7 @@ const THROTTLE_MS = 60 * 60 * 1000; // re-check at most once per hour
 const OVERALL_TIMEOUT_MS = 10_000;
 const FETCH_TIMEOUT_MS = 5_000;
 
-type Manifest = { version: string; url?: string };
+type Manifest = { version: string; url?: string; sha256?: string };
 
 /**
  * Where the install lives. `KIMIRELAY_HOME` (when set) is the `.kimirelay`
@@ -149,7 +165,39 @@ async function fetchManifest(): Promise<Manifest> {
   return data;
 }
 
-async function downloadTo(url: string, dest: string): Promise<void> {
+/** Lowercase hex sha256 of the bytes we are about to install. */
+export function sha256Hex(bytes: Uint8Array): string {
+  return createHash("sha256").update(bytes).digest("hex");
+}
+
+/**
+ * Resolve the bundle URL a manifest asks for, refusing anything that leaves
+ * the manifest's own origin. `manifestUrl` is the URL we actually fetched the
+ * manifest from - not the hardcoded default - so a local mirror can serve a
+ * self-consistent manifest+bundle pair while a compromised release site still
+ * cannot point the download at an unrelated host.
+ */
+export function resolveBundleUrl(manifest: Manifest, manifestUrl: string): string {
+  const origin = new URL(manifestUrl);
+  if (manifest.url === undefined) {
+    return new URL("/kimirelay.js", origin).toString();
+  }
+  const candidate = new URL(manifest.url, origin);
+  if (candidate.origin !== origin.origin) {
+    throw new Error(
+      `manifest url origin ${candidate.origin} does not match manifest origin ${origin.origin}`,
+    );
+  }
+  return candidate.toString();
+}
+
+/**
+ * Fetch the bundle, verify it against the manifest's digest, and only then
+ * put it in place. The write is atomic (tmp + rename) and the tmp file is
+ * removed on any failure, so a rejected download can never be left behind
+ * where a later run might mistake it for a real bundle.
+ */
+async function downloadTo(url: string, dest: string, expectedSha256: string): Promise<void> {
   const res = await withTimeout(
     fetch(url, {
       headers: { "User-Agent": `kimirelay/${VERSION}` },
@@ -164,9 +212,29 @@ async function downloadTo(url: string, dest: string): Promise<void> {
   if (buf.byteLength === 0) {
     throw new Error("empty download");
   }
+  const actual = sha256Hex(buf);
+  if (actual !== expectedSha256) {
+    throw new Error(
+      `sha256 mismatch: manifest says ${expectedSha256}, download hashes to ${actual}`,
+    );
+  }
   const tmp = `${dest}.new-${process.pid}`;
-  await writeFile(tmp, buf, { mode: 0o644 });
-  await rename(tmp, dest);
+  try {
+    await writeFile(tmp, buf, { mode: 0o644 });
+    await rename(tmp, dest);
+  } catch (err) {
+    await unlink(tmp).catch(() => undefined);
+    throw err;
+  }
+}
+
+/** A manifest digest must be a full lowercase-hex sha256 to be usable. */
+function normalizedSha256(value: string | undefined): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim().toLowerCase();
+  return /^[0-9a-f]{64}$/.test(trimmed) ? trimmed : undefined;
 }
 
 /**
@@ -201,13 +269,24 @@ export async function maybeSelfUpdate(): Promise<void> {
   }
 
   try {
+    const manifestUrl = resolveManifestUrl();
     const manifest = await withTimeout(fetchManifest(), OVERALL_TIMEOUT_MS);
     if (!isNewer(manifest.version, VERSION)) {
       return;
     }
-    const dest = installedBundlePath();
-    const url = manifest.url ?? `${UPDATE_ORIGIN}/kimirelay.js`;
-    await downloadTo(url, dest);
+    // Fail closed on a missing/!malformed digest. An unsigned bundle is exactly
+    // the thing this gate exists to refuse, so an old manifest that predates
+    // the `sha256` field simply does not auto-update - it does not silently
+    // fall back to the unverified path.
+    const expected = normalizedSha256(manifest.sha256);
+    if (expected === undefined) {
+      process.stderr.write(
+        `kimirelay: update to v${manifest.version} skipped - manifest has no valid sha256 digest.\n`,
+      );
+      return;
+    }
+    const url = resolveBundleUrl(manifest, manifestUrl);
+    await downloadTo(url, installedBundlePath(), expected);
     process.stderr.write(`kimirelay: updated to v${manifest.version} (next run uses it)\n`);
   } catch {
     // Swallowed: update failure never breaks the user's command.
