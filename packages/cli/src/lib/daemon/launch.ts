@@ -13,6 +13,9 @@ import {
   daemonPidPath,
   type DaemonHealth,
 } from "./server.js";
+import { INTERNAL_AUTH_HEADER, localProxyAuthToken } from "./local-auth.js";
+
+export { INTERNAL_AUTH_HEADER, localProxyAuthToken };
 import type { RegisterSessionRequest } from "./state.js";
 import { kimirelayHome, isProcessAlive } from "../paths.js";
 
@@ -22,7 +25,6 @@ const HEALTH_POLL_TIMEOUT_MS = 5000;
 /** Timeout for the launcher's internal daemon calls (register/cost/deregister). */
 const DAEMON_CALL_TIMEOUT_MS = 3000;
 const SESSION_KEEPALIVE_INTERVAL_MS = 500;
-const LOCAL_PROXY_TOKEN_FILE = "local-proxy-token";
 
 /**
  * Ensure the shared proxy daemon is running on the fixed port and return its
@@ -235,8 +237,21 @@ function sleep(ms: number): Promise<void> {
 export async function daemonFetch(url: string, init?: RequestInit): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), DAEMON_CALL_TIMEOUT_MS);
+  // Every caller of daemonFetch is hitting an /internal/* route, so attach the
+  // credential here rather than at each of the five call sites.
+  let authHeader: Record<string, string> = {};
   try {
-    return await fetch(url, { ...(init ?? {}), signal: controller.signal });
+    authHeader = { [INTERNAL_AUTH_HEADER]: await localProxyAuthToken() };
+  } catch {
+    // No token available: send the request unauthenticated and let the daemon
+    // decide. Keeps `kimirelay daemon status` working on a broken home.
+  }
+  try {
+    return await fetch(url, {
+      ...(init ?? {}),
+      headers: { ...authHeader, ...((init?.headers as Record<string, string>) ?? {}) },
+      signal: controller.signal,
+    });
   } finally {
     clearTimeout(timer);
   }
@@ -269,22 +284,6 @@ export async function updateDaemonSessionPid(
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ pid }),
   });
-}
-
-export async function localProxyAuthToken(): Promise<string> {
-  const file = path.join(kimirelayHome(), LOCAL_PROXY_TOKEN_FILE);
-  try {
-    const token = (await readFile(file, "utf8")).trim();
-    if (token) {
-      return token;
-    }
-  } catch {
-    // Create below.
-  }
-  const token = `kimirelay-local-${randomBytes(32).toString("base64url")}`;
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, `${token}\n`, { encoding: "utf8", mode: 0o600 });
-  return token;
 }
 
 export function daemonSessionUrl(proxyUrl: string, sessionId: string): string {

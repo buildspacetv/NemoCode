@@ -51,14 +51,56 @@ else
 fi
 
 # --- 2. Download the latest bundle + manifest --------------------------------
+# The bundle is executed by every later klaude/kodex/… run, so it is verified
+# against the sha256 published in latest.json before it is moved into place.
+# Download to a temp path, hash, compare, and only then install - a bundle we
+# cannot verify is discarded rather than run.
 mkdir -p "$BIN_DIR"
 info "Downloading kimirelay from $ORIGIN …"
 
-if ! curl -fsSL "$ORIGIN/kimirelay.js" -o "$BIN_DIR/kimirelay.js"; then
+TMP_BUNDLE="$BIN_DIR/kimirelay.js.download.$$"
+TMP_MANIFEST="$BIN_DIR/latest.json.download.$$"
+cleanup_tmp() { rm -f "$TMP_BUNDLE" "$TMP_MANIFEST"; }
+trap cleanup_tmp EXIT INT TERM
+
+if ! curl -fsSL "$ORIGIN/kimirelay.js" -o "$TMP_BUNDLE"; then
   err "Failed to download $ORIGIN/kimirelay.js"
   exit 1
 fi
-ok "Bundle saved → $BIN_DIR/kimirelay.js"
+
+if ! curl -fsSL "$ORIGIN/latest.json" -o "$TMP_MANIFEST"; then
+  err "Failed to download $ORIGIN/latest.json (needed to verify the bundle)"
+  exit 1
+fi
+
+# Pull the digest out without assuming jq is installed.
+EXPECTED_SHA="$(sed -n 's/.*"sha256"[[:space:]]*:[[:space:]]*"\([0-9a-fA-F]\{64\}\)".*/\1/p' "$TMP_MANIFEST" | head -n 1 | tr 'A-F' 'a-f')"
+if [ -z "$EXPECTED_SHA" ]; then
+  err "No sha256 digest in $ORIGIN/latest.json - refusing to install an unverifiable bundle."
+  exit 1
+fi
+
+# sha256sum on Linux, shasum on macOS/BSD.
+if command -v sha256sum >/dev/null 2>&1; then
+  ACTUAL_SHA="$(sha256sum "$TMP_BUNDLE" | cut -d' ' -f1)"
+elif command -v shasum >/dev/null 2>&1; then
+  ACTUAL_SHA="$(shasum -a 256 "$TMP_BUNDLE" | cut -d' ' -f1)"
+else
+  err "Need sha256sum or shasum to verify the download. Please install one and re-run."
+  exit 1
+fi
+
+if [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
+  err "Bundle checksum mismatch - refusing to install."
+  err "  expected: $EXPECTED_SHA"
+  err "  actual:   $ACTUAL_SHA"
+  exit 1
+fi
+
+mv "$TMP_BUNDLE" "$BIN_DIR/kimirelay.js"
+trap - EXIT INT TERM
+cleanup_tmp
+ok "Bundle saved → $BIN_DIR/kimirelay.js (sha256 verified)"
 
 # --- 3. Write the launcher wrappers that run the bundle with bun -------------
 # The wrappers locate bun themselves (PATH first, then ~/.bun/bin) so they

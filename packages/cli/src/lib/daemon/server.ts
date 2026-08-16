@@ -6,7 +6,16 @@ import path from "node:path";
 import os from "node:os";
 import { VERSION } from "../version.js";
 import { CLAUDE_LOCAL_PROXY_HOST } from "../claude/defaults.js";
-import { extractToken, readJsonBody, requestPath, writeJson } from "../http-util.js";
+import {
+  RequestBodyTooLargeError,
+  constantTimeEqual,
+  extractToken,
+  isAuthorized,
+  readJsonBody,
+  requestPath,
+  writeJson,
+} from "../http-util.js";
+import { INTERNAL_AUTH_HEADER, localProxyAuthToken } from "./local-auth.js";
 import { handleProxyRequest } from "../claude/proxy.js";
 import { writeAnthropicError, isNebiusApiError } from "../claude/nebius-call.js";
 import { handleCodexProxyRequest, writeOpenAIError } from "../codex/proxy.js";
@@ -129,12 +138,23 @@ export function renderDaemonError(
   err: unknown,
   agent: string | undefined,
 ): void {
+  // An oversized body is the caller's fault, not an upstream failure - report
+  // it as 413 in the client's own wire format rather than a generic 500.
+  const tooLarge = err instanceof RequestBodyTooLargeError;
   if (agent === "codex" || agent === "codex-app") {
+    if (tooLarge) {
+      writeOpenAIError(res, 413, "invalid_request_error", err.message);
+      return;
+    }
     if (isNebiusApiError(err)) {
       writeOpenAIError(res, err.anthropicStatus, err.anthropicType, err.message);
       return;
     }
     writeOpenAIError(res, 500, "api_error", err instanceof Error ? err.message : String(err));
+    return;
+  }
+  if (tooLarge) {
+    writeAnthropicError(res, 413, "invalid_request_error", err.message);
     return;
   }
   if (isNebiusApiError(err)) {
@@ -157,11 +177,18 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   activeSessions = options.sessions ?? defaultSessions;
   const restored = await activeSessions.restorePersisted();
 
-  // Per-request agent context: handleDaemonRequest sets this so the catch-all
-  // renders errors in the wire format the client actually speaks. Without it,
-  // Codex (Responses API) errors were being mis-rendered as Anthropic errors.
-  let requestAgent: string | undefined;
   const server = http.createServer((req, res) => {
+    // Per-request agent context: handleDaemonRequest sets this so the catch-all
+    // renders errors in the wire format the client actually speaks. Without it,
+    // Codex (Responses API) errors were being mis-rendered as Anthropic errors.
+    //
+    // This binding MUST stay inside the connection callback. One daemon serves
+    // every session concurrently, so a single `let` hoisted to runDaemon's
+    // scope is shared mutable state: a Codex request landing between a Claude
+    // request's dispatch and its throw would flip the variable and render that
+    // Claude error in the OpenAI shape - reintroducing the exact cross-seam
+    // leak renderDaemonError exists to fix. One closure per request, no race.
+    let requestAgent: string | undefined;
     handleDaemonRequest(req, res, {
       debug,
       setAgent: (a) => {
@@ -280,9 +307,20 @@ async function handleDaemonRequest(
     return;
   }
 
-  // Internal session-management endpoints. Loopback binding is the boundary
-  // (same trust model as today's single-session proxy, which has no internal
-  // secret either). Used only by `kimirelay` itself.
+  // Internal session-management endpoints. Loopback binding alone is not the
+  // boundary: every process on the machine can reach loopback, and an
+  // unauthenticated POST /internal/sessions let any of them register no-pid
+  // sessions until the MAX_NO_PID_SESSIONS cap evicted the persistent
+  // codex-app session (see enforceNoPidSessionLimit in state.ts). Gate the
+  // whole prefix on the shared local-proxy token, which lives in a 0600 file
+  // only the install's owner can read.
+  if (path_.startsWith("/internal/")) {
+    if (!(await isInternalCallerAuthorized(req))) {
+      writeAnthropicError(res, 401, "authentication_error", "Unauthorized internal request.");
+      return;
+    }
+  }
+
   if (path_ === "/internal/sessions") {
     if (req.method === "POST") {
       await registerSession(req, res);
@@ -433,6 +471,35 @@ async function handleDaemonRequest(
   } finally {
     sessionRoute?.restore();
   }
+}
+
+/**
+ * Whether a caller may use the `/internal/*` control plane.
+ *
+ * The credential is the same local-proxy token the launcher already mints in
+ * a 0600 file under the kimirelay home, so "authorized" means "can read that
+ * file" - the install's owner. Compared in constant time via `isAuthorized`,
+ * which also accepts it as a Bearer/x-api-key value.
+ *
+ * Fails CLOSED when the token file cannot be read: if the daemon has no
+ * credential to check against, it has no way to tell the owner apart from any
+ * other local process, and the safe answer is to refuse.
+ */
+async function isInternalCallerAuthorized(req: IncomingMessage): Promise<boolean> {
+  let expected: string;
+  try {
+    expected = await localProxyAuthToken();
+  } catch {
+    return false;
+  }
+  if (!expected) {
+    return false;
+  }
+  const presented = req.headers[INTERNAL_AUTH_HEADER];
+  if (typeof presented === "string" && constantTimeEqual(presented, expected)) {
+    return true;
+  }
+  return isAuthorized(req, expected);
 }
 
 /**

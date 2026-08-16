@@ -1,6 +1,6 @@
 {
   "name": "kimirelay",
-  "version": "0.15.6",
+  "version": "0.15.7",
   "private": true,
   "description": "Use Nebius Token Factory models in Claude Code, OpenCode, Codex, and Pi Code",
   "license": "MIT",
@@ -16,8 +16,8 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "hooks:install": "lefthook install",
-    "test": "pnpm -F @kimirelay/tests test",
-    "test:offline": "pnpm -F @kimirelay/tests test:offline",
+    "test": "turbo run test --filter @kimirelay/tests",
+    "test:offline": "turbo run test:offline --filter @kimirelay/tests",
     "bench:proxy": "pnpm -F @kimirelay/tests bench:proxy",
     "capture:proxy-fixtures": "pnpm -F @kimirelay/tests capture:proxy-fixtures",
     "watch": "pnpm dev",

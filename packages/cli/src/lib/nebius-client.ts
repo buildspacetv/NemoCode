@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { ModelDefinition } from "@kimirelay/models";
+import { findModelById, type ModelDefinition } from "@kimirelay/models";
 import { resolveNebiusBaseUrl } from "./nebius-core.js";
 import { backoffMs, parseRetryAfter, sleep } from "./nebius-retry.js";
 import { persistRequestDiagnostic } from "./request-diagnostics.js";
@@ -154,6 +154,14 @@ function withModelFallback(
 export type NebiusResponseDiagnostics = {
   clientRequestId: string;
   upstreamRequestId?: string | undefined;
+  /**
+   * The model id actually sent upstream for this response. Usually the model
+   * the caller asked for, but `withModelFallback` rewrites the body's `model`
+   * when the target is down or in cooldown - and the caller never learns that
+   * from the payload it built. Recording it here is what lets cost accounting
+   * bill the model that really served the tokens (see servedModelDefinition).
+   */
+  servedModel?: string | undefined;
 };
 
 const responseDiagnostics = new WeakMap<Response, NebiusResponseDiagnostics>();
@@ -175,6 +183,64 @@ export function getNebiusResponseDiagnostics(
   response: Response,
 ): NebiusResponseDiagnostics | undefined {
   return responseDiagnostics.get(response);
+}
+
+/**
+ * The model definition that should be billed for a response's tokens.
+ *
+ * Callers build their payload around a requested model and naturally reach for
+ * that definition at accounting time - but `withModelFallback` may have served
+ * the request on a different model entirely (target down, or circuit open
+ * after a header timeout). Billing the requested model then charges the wrong
+ * rates AND files the usage under a model that produced none of it, which is
+ * exactly the per-model breakdown users read to understand a bill.
+ *
+ * Falls back to the requested definition when the served model is unknown to
+ * the catalog, so a brand-new Nebius model still bills at *some* sane rate
+ * rather than silently costing zero.
+ */
+export function servedModelDefinition(
+  response: Response,
+  requested: ModelDefinition,
+): ModelDefinition {
+  const served = responseDiagnostics.get(response)?.servedModel;
+  if (!served || served === requested.id) {
+    return requested;
+  }
+  return findModelById(served) ?? requested;
+}
+
+export type ServedResponseTracker = {
+  /** Drop-in replacement for the caller's retry callback. */
+  retry: () => Promise<Response>;
+  /** The model behind the most recent response, for billing. */
+  servedModel: (requested: ModelDefinition) => ModelDefinition;
+};
+
+/**
+ * Follows which `Response` actually produced the events a streaming turn
+ * consumed, so cost can be billed against the model that really served them.
+ *
+ * Two things move underneath a streaming turn. `readNebiusSseWithRetry` may
+ * replace the response mid-turn on an idle timeout, and this client may fail
+ * over to the fallback model on any of those attempts - rewriting the body's
+ * `model` without the payload the harness built ever changing. So neither the
+ * payload nor the first response answers "what am I paying for?"; only the
+ * most recent response does. Wrap the retry callback with this and read
+ * `servedModel` when the turn ends.
+ */
+export function trackServedResponse(
+  initial: Response,
+  retry: () => Promise<Response>,
+): ServedResponseTracker {
+  let latest = initial;
+  return {
+    retry: async () => {
+      latest = await retry();
+      return latest;
+    },
+    servedModel: (requested) => servedModelDefinition(latest, requested),
+  };
 }
 
 export type NebiusClientOptions = {
@@ -332,6 +398,17 @@ async function fetchNebiusResponse(
   const timeoutMs = responseHeaderTimeoutMs();
   const controller = new AbortController();
   let timeoutError: NebiusResponseHeaderTimeoutError | undefined;
+  // This listener deliberately OUTLIVES the fetch. Response headers arriving
+  // is not the end of the request: for a streamed completion the body is still
+  // being read afterwards, and the caller's signal is how a client disconnect
+  // cancels that live SSE stream. Detaching it on the success path (as a
+  // tidy-up for the listener that `{ once: true }` leaves attached when the
+  // event never fires) silently severs mid-stream cancellation - see the
+  // "keeps caller cancellation connected after response headers arrive" test.
+  //
+  // The retained listeners are bounded by one inbound request: `signal` comes
+  // from a per-request AbortController in the proxy handler, so the whole
+  // controller - listeners included - becomes garbage when that request ends.
   const abortFromCaller = () => controller.abort(signal?.reason);
   if (signal?.aborted) {
     abortFromCaller();
@@ -356,12 +433,16 @@ async function fetchNebiusResponse(
       signal: controller.signal,
     });
     const responseRequestId = upstreamRequestId(response);
+    const servedModel = modelFromSerializedBody(body);
     responseDiagnostics.set(response, {
       clientRequestId,
       ...(responseRequestId ? { upstreamRequestId: responseRequestId } : {}),
+      ...(servedModel ? { servedModel } : {}),
     });
     return response;
   } catch (err) {
+    // Only on failure: there is no stream left to cancel, so the listener can
+    // go. On success it must stay (see the note where it is attached).
     signal?.removeEventListener("abort", abortFromCaller);
     const reason = timeoutError ? "timeout" : signal?.aborted ? "caller_abort" : "network_error";
     const surfaced = timeoutError ?? err;

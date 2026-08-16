@@ -3,7 +3,7 @@ import { type ModelDefinition } from "@kimirelay/models";
 import { writeJson } from "../http-util.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
 import { parseRetryAfter } from "../nebius-retry.js";
-import { postChatCompletion } from "../nebius-client.js";
+import { postChatCompletion, servedModelDefinition } from "../nebius-client.js";
 import type { OpenAIChatResponse, NebiusApiError, NebiusFetchResult } from "./wire-types.js";
 
 type NebiusCallOptions = {
@@ -45,7 +45,13 @@ export async function fetchNebius(
     debug: options.debug,
   });
   if (response.ok) {
-    return { ok: true, json: (await response.json()) as OpenAIChatResponse };
+    return {
+      ok: true,
+      json: (await response.json()) as OpenAIChatResponse,
+      // Not necessarily `modelDefinition`: the client may have failed over to
+      // the fallback model without the caller's payload ever changing.
+      servedModel: servedModelDefinition(response, modelDefinition),
+    };
   }
   const error = await mapNebiusError(response);
   debugLog(options, "nebius error", {

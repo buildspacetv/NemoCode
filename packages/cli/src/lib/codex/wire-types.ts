@@ -100,6 +100,14 @@ export type ChatResponse = {
       reasoning_tokens?: number;
     };
   };
+  /**
+   * Relay-internal annotation (never sent upstream or back to Codex): the
+   * model that actually served this response. Set by the Nebius call layer,
+   * which is the only place that can still see whether the shared client
+   * failed over to the fallback model. Cost accounting reads it so a failover
+   * bills the model that ran, not the one that was asked for.
+   */
+  servedModel?: ModelDefinition;
 };
 
 export type ChatStreamChunk = {

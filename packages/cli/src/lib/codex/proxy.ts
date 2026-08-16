@@ -162,7 +162,9 @@ export async function handleCodexProxyRequest(
       ),
     { nativeToolCount },
   );
-  recordUsage(chatResponse.usage, options, requestModel.definition);
+  // servedModel falls back to the requested definition when no failover
+  // happened, so this is the requested model on the overwhelmingly common path.
+  recordUsage(chatResponse.usage, options, chatResponse.servedModel ?? requestModel.definition);
   const responseBody = perf.spanSync("response_map", () =>
     toResponsesResponse(chatResponse, body, options, toolTranslation),
   );

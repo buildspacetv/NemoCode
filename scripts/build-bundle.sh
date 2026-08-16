@@ -42,16 +42,25 @@ cp "$PUBLIC_DIR/kimirelay.js" "$TRACKED_DIR/kimirelay.js"
 echo "✓ bundle → site/public/kimirelay.js and site/kimirelay.js ($(wc -c < "$PUBLIC_DIR/kimirelay.js") bytes)"
 
 # Refresh the manifest the auto-updater and install script read.
+#
+# `sha256` is not optional metadata: both the installer and the self-updater
+# refuse to install a bundle they cannot verify against it (see the integrity
+# note in packages/cli/src/lib/autoupdate.ts). It must therefore be computed
+# from the exact bytes written above, in the same step that publishes them.
 node -e "
 const fs = require('node:fs');
+const crypto = require('node:crypto');
 const version = '${VERSION}';
+const bundle = fs.readFileSync('$PUBLIC_DIR/kimirelay.js');
+const sha256 = crypto.createHash('sha256').update(bundle).digest('hex');
 const manifest = {
   version,
   url: 'https://kimirelay.com/kimirelay.js',
+  sha256,
   publishedAt: new Date().toISOString(),
 };
 const json = JSON.stringify(manifest, null, 2) + '\n';
 fs.writeFileSync('$PUBLIC_DIR/latest.json', json);
 fs.writeFileSync('$TRACKED_DIR/latest.json', json);
-console.log('✓ manifest → site/public/latest.json and site/latest.json (v' + version + ')');
+console.log('✓ manifest → site/public/latest.json and site/latest.json (v' + version + ', sha256 ' + sha256.slice(0, 12) + '…)');
 "

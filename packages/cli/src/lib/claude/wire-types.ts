@@ -125,8 +125,18 @@ export type NebiusApiError = {
 };
 
 export type NebiusFetchResult =
-  | { ok: true; json: OpenAIChatResponse; error?: undefined }
-  | { ok: false; error: NebiusApiError; json?: undefined };
+  | {
+      ok: true;
+      json: OpenAIChatResponse;
+      error?: undefined;
+      /**
+       * The model that actually served this response. Differs from the
+       * requested model when the client failed over (target down / circuit
+       * open), and is what cost accounting must bill.
+       */
+      servedModel: ModelDefinition;
+    }
+  | { ok: false; error: NebiusApiError; json?: undefined; servedModel?: undefined };
 
 export type StreamProxyResult =
   | { ok: true; status?: number }
