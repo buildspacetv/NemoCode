@@ -56,7 +56,7 @@ describe("harness invocation parsing", () => {
   test("keeps nemocode flags before the harness", () => {
     const parsed = parseArgs([
       "--main",
-      "nebius-nemotron-nano-9b",
+      "nebius-nemotron-3-nano",
       "claude",
       "--resume",
       "session-id",
@@ -64,7 +64,7 @@ describe("harness invocation parsing", () => {
     const invocation = resolveHarnessInvocation(parsed.positional, parsed.flags);
 
     expect(invocation.command).toBe("claude");
-    expect(invocation.flags.main).toBe("nebius-nemotron-nano-9b");
+    expect(invocation.flags.main).toBe("nebius-nemotron-3-nano");
     expect(invocation.flags.passthrough).toEqual(["--resume", "session-id"]);
   });
 
@@ -81,12 +81,12 @@ describe("harness invocation parsing", () => {
     const parsed = parseArgs([
       "codex-app",
       "--model",
-      "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
+      "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
       "--restore",
     ]);
 
     expect(parsed.positional).toEqual(["codex-app"]);
-    expect(parsed.flags.main).toBe("nvidia/NVIDIA-Nemotron-Nano-9B-v2");
+    expect(parsed.flags.main).toBe("nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B");
     expect(parsed.flags.restore).toBe(true);
   });
 });

@@ -128,7 +128,7 @@ export function buildOpencodeConfigJson({
       : {}),
     // Slash form: provider/model. The selected model is the primary; sub-agents
     // without an explicit model inherit it automatically. The `vision` subagent
-    // explicitly pins a vision-capable Nebius model (Cosmos-Reason1-7B) so a
+    // explicitly pins a vision-capable Nebius model (Cosmos3-Super-Reasoner) so a
     // text-only primary can still describe pasted images. To add more
     // sub-agents later, add entries under `agent`.
     model: `${OPENCODE_PROVIDER_ID}/${modelId}`,

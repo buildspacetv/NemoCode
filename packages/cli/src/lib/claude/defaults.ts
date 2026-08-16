@@ -1,6 +1,6 @@
 import {
   DEFAULT_ANTHROPIC_CAPABILITIES,
-  NEMOTRON_NANO_9B,
+  NEMOTRON_3_NANO,
   getDefaultModel,
   getSelectableModels,
   resolveModelByKeys,
@@ -15,7 +15,7 @@ export type ClaudeModelSelection = {
   definition: ModelDefinition;
 };
 
-export const CLAUDE_HAIKU_MODEL = NEMOTRON_NANO_9B;
+export const CLAUDE_HAIKU_MODEL = NEMOTRON_3_NANO;
 export const CLAUDE_HAIKU_MODEL_SELECTION: ClaudeModelSelection = {
   alias: CLAUDE_HAIKU_MODEL.anthropicAlias ?? CLAUDE_HAIKU_MODEL.id,
   definition: CLAUDE_HAIKU_MODEL,

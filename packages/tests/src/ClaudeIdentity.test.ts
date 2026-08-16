@@ -3,8 +3,8 @@ import { toOpenAIMessages } from "../../cli/src/lib/claude/translate-request.js"
 import type { ModelDefinition } from "@nemocode/models";
 
 const NEMOTRON = {
-  id: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
-  name: "Nemotron Ultra 253B",
+  id: "nvidia/Nemotron-3-Ultra-550b-a55b",
+  name: "Nemotron 3 Ultra 550B",
 } as ModelDefinition;
 
 function systemContent(messages: ReturnType<typeof toOpenAIMessages>): string {
@@ -20,10 +20,8 @@ describe("claude model-identity prompt", () => {
     const content = systemContent(
       toOpenAIMessages({ messages: [{ role: "user", content: "what model are you?" }] }, NEMOTRON),
     );
-    expect(content).toContain(
-      "you are Nemotron Ultra 253B (nvidia/Llama-3_1-Nemotron-Ultra-253B-v1)",
-    );
-    expect(content).toContain('answer "Nemotron Ultra 253B"');
+    expect(content).toContain("you are Nemotron 3 Ultra 550B (nvidia/Nemotron-3-Ultra-550b-a55b)");
+    expect(content).toContain('answer "Nemotron 3 Ultra 550B"');
     expect(content).toContain("never claim to be another vendor's model");
   });
 

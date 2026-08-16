@@ -86,7 +86,7 @@ Pick a backend for one launch:
 
 ```bash
 pnpm -F @nemocode/cli exec nemocode --main nebius-glm-5-2 claude
-pnpm -F @nemocode/cli exec nemocode --main nebius-nemotron-nano-9b claude
+pnpm -F @nemocode/cli exec nemocode --main nebius-nemotron-3-nano claude
 pnpm -F @nemocode/cli exec nemocode --main Qwen/Qwen3.5-397B-A17B claude
 ```
 
@@ -117,7 +117,7 @@ Codex App support is an alpha feature. Unlike `nemocode codex`, it persistently 
 export NEBIUS_API_KEY="..."
 
 pnpm -F @nemocode/cli exec nemocode codex-app
-pnpm -F @nemocode/cli exec nemocode codex-app --model nvidia/NVIDIA-Nemotron-Nano-9B-v2
+pnpm -F @nemocode/cli exec nemocode codex-app --model nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
 ```
 
 Restore the previous Codex config:

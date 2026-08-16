@@ -139,7 +139,7 @@ function HeroAgentLabel({ agent }: Readonly<{ agent: HeroAgent }>) {
   );
 }
 
-const nemotronModelCardUrl = "https://huggingface.co/nvidia/Llama-3_1-Nemotron-Ultra-253B-v1";
+const nemotronModelCardUrl = "https://huggingface.co/nvidia";
 const artificialAnalysisUrl = "https://artificialanalysis.ai/models";
 
 // Capability statements only - no benchmark scores. The previous copy carried
@@ -159,9 +159,8 @@ const nemotronHighlights = [
   },
   {
     icon: "👁️",
-    label: "Cosmos for vision",
-    detail:
-      "Cosmos Reason handles screenshots, diagrams, and spatial layouts for text-only models.",
+    label: "Cosmos 3 for vision",
+    detail: "Cosmos 3 handles screenshots, diagrams, and spatial layouts for text-only models.",
   },
   {
     icon: "🇪🇺",
@@ -489,7 +488,7 @@ function Home() {
                 citations.
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
-                {["Nemotron Ultra", "Cosmos Reason", "Qwen 3.5", "DeepSeek V4", "MiniMax M3"].map(
+                {["Nemotron 3 Ultra", "Cosmos 3", "Qwen 3.5", "DeepSeek V4", "MiniMax M3"].map(
                   (m) => (
                     <span
                       key={m}

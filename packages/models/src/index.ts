@@ -132,30 +132,33 @@ const CURATED_OVERRIDES: Record<string, ModelOverride> = {
     minContext: 262_144, // API reports a placeholder 8000
     order: 5, // was the default; Nebius removed it from the live catalog (2026-07-27)
   },
-  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1": {
-    name: "Nemotron Ultra 253B · default",
-    anthropicAlias: "nebius-nemotron-ultra-253b",
+  "nvidia/Nemotron-3-Ultra-550b-a55b": {
+    name: "Nemotron 3 Ultra 550B · default",
+    anthropicAlias: "nebius-nemotron-3-ultra",
     outputLimit: 131_072,
+    minContext: 262_144, // API reports a placeholder 8000
     order: 0, // the default model
   },
-  "nvidia/Cosmos-Reason1-7B": {
-    name: "Cosmos Reason1 7B · vision",
-    anthropicAlias: "nebius-cosmos-reason1-7b",
+  "nvidia/Cosmos3-Super-Reasoner": {
+    name: "Cosmos 3 Super Reasoner · vision",
+    anthropicAlias: "nebius-cosmos-3-super-reasoner",
     outputLimit: 32_768,
+    minContext: 131_072, // API reports a placeholder 8000
     order: 10,
     visionRank: 0, // vision flagship: primary for image description
   },
-  "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5": {
-    name: "Nemotron Super 49B",
-    anthropicAlias: "nebius-nemotron-super-49b",
+  "nvidia/nemotron-3-super-120b-a12b": {
+    name: "Nemotron 3 Super 120B",
+    anthropicAlias: "nebius-nemotron-3-super",
     outputLimit: 65_536,
+    minContext: 262_144, // API reports a placeholder 8000
     order: 20,
   },
-  "nvidia/NVIDIA-Nemotron-Nano-9B-v2": {
-    name: "Nemotron Nano 9B · fast",
-    anthropicAlias: "nebius-nemotron-nano-9b",
+  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+    name: "Nemotron 3 Nano 30B · fast",
+    anthropicAlias: "nebius-nemotron-3-nano",
     outputLimit: 32_768,
-    order: 25,
+    order: 25, // API honestly reports 262144 here, so no minContext floor
   },
   "MiniMaxAI/MiniMax-M3": {
     name: "MiniMax M3",
@@ -184,10 +187,10 @@ const CURATED_OVERRIDES: Record<string, ModelOverride> = {
 
 /**
  * The pinned default model id. Kept stable so both harnesses agree. The
- * Nemotron Ultra flagship since 2026-08-16, when the Moonshot Kimi models were
+ * Nemotron 3 Ultra since 2026-08-16, when the Moonshot Kimi models were
  * dropped in favour of NVIDIA's Nemotron (text) and Cosmos (vision) families.
  */
-export const DEFAULT_MODEL_ID = "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1";
+export const DEFAULT_MODEL_ID = "nvidia/Nemotron-3-Ultra-550b-a55b";
 
 /**
  * Nebius model ids verified to accept the OpenAI `reasoning_effort` parameter.
@@ -198,13 +201,13 @@ export const DEFAULT_MODEL_ID = "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1";
  */
 export const REASONING_EFFORT_MODEL_IDS: ReadonlySet<string> = new Set([
   "zai-org/GLM-5.2",
-  // UNVERIFIED: the Nemotron reasoners are listed here on the assumption they
-  // accept `reasoning_effort` like the flagships they replace. Confirm against
-  // a live Nebius call before release - a model that rejects the parameter
-  // fails the whole request. Nemotron Nano is deliberately absent: it backs the
-  // Haiku tier, where the pre-existing behaviour was to send no effort at all.
-  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
-  "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5",
+  // UNVERIFIED: the ids below exist on Nebius (catalog read 2026-08-16), but
+  // whether they accept `reasoning_effort` has not been confirmed with a live
+  // call - a model that rejects the parameter fails the whole request. Nemotron
+  // Nano is deliberately absent: it backs the Haiku tier, where the pre-existing
+  // behaviour was to send no effort at all.
+  "nvidia/Nemotron-3-Ultra-550b-a55b",
+  "nvidia/nemotron-3-super-120b-a12b",
 ]);
 
 /** Whether a model accepts the `reasoning_effort` parameter. */
@@ -219,7 +222,7 @@ const DEFAULT_CONTEXT = 131_072;
 /**
  * Capabilities string Claude Code reads from
  * ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES. Mirrors what the
- * default model (Nemotron Ultra) supports on Nebius: adjustable reasoning
+ * default model (Nemotron 3 Ultra) supports on Nebius: adjustable reasoning
  * effort (incl. xhigh/max), thinking, adaptive thinking, and interleaved
  * thinking.
  */
@@ -398,14 +401,14 @@ function fromSnapshot(id: string): ModelDefinition {
  * catalog uses the getters below instead.
  */
 export const GLM_5_2: ModelDefinition = fromSnapshot("zai-org/GLM-5.2");
-export const NEMOTRON_ULTRA_253B: ModelDefinition = fromSnapshot(
-  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
+export const NEMOTRON_3_ULTRA: ModelDefinition = fromSnapshot("nvidia/Nemotron-3-Ultra-550b-a55b");
+export const NEMOTRON_3_SUPER: ModelDefinition = fromSnapshot("nvidia/nemotron-3-super-120b-a12b");
+export const NEMOTRON_3_NANO: ModelDefinition = fromSnapshot(
+  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
 );
-export const NEMOTRON_SUPER_49B: ModelDefinition = fromSnapshot(
-  "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5",
+export const COSMOS_3_SUPER_REASONER: ModelDefinition = fromSnapshot(
+  "nvidia/Cosmos3-Super-Reasoner",
 );
-export const NEMOTRON_NANO_9B: ModelDefinition = fromSnapshot("nvidia/NVIDIA-Nemotron-Nano-9B-v2");
-export const COSMOS_REASON1_7B: ModelDefinition = fromSnapshot("nvidia/Cosmos-Reason1-7B");
 export const MINIMAX_M3: ModelDefinition = fromSnapshot("MiniMaxAI/MiniMax-M3");
 export const QWEN_3_5_397B: ModelDefinition = fromSnapshot("Qwen/Qwen3.5-397B-A17B");
 export const DEEPSEEK_V4_PRO: ModelDefinition = fromSnapshot("deepseek-ai/DeepSeek-V4-Pro");

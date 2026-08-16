@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
   GLM_5_2,
   MINIMAX_M3,
-  NEMOTRON_ULTRA_253B,
+  NEMOTRON_3_ULTRA,
   QWEN_2_5_VL_72B,
   QWEN_3_5_397B,
 } from "@nemocode/models";
@@ -567,8 +567,8 @@ describe("Codex Responses proxy tool compatibility", () => {
     const catalog = await getModels();
     const first = catalog.models?.[0] as Record<string, unknown> | undefined;
 
-    expect(first?.slug).toBe("nvidia/Llama-3_1-Nemotron-Ultra-253B-v1");
-    expect(first?.display_name).toBe("Nemotron Ultra 253B · default");
+    expect(first?.slug).toBe("nvidia/Nemotron-3-Ultra-550b-a55b");
+    expect(first?.display_name).toBe("Nemotron 3 Ultra 550B · default");
     expect(first?.default_reasoning_level).toBe("minimal");
     expect(first?.default_reasoning_summary).toBe("auto");
     expect(first?.model_messages).toEqual(
@@ -580,7 +580,7 @@ describe("Codex Responses proxy tool compatibility", () => {
     expect(first?.web_search_tool_type).toBe("text_and_image");
     // Derived from the default model (the catalog's first row), not a literal, so
     // swapping the default model does not silently invalidate this assertion.
-    const expectedLimit = Math.floor(NEMOTRON_ULTRA_253B.limit.context / 1.8);
+    const expectedLimit = Math.floor(NEMOTRON_3_ULTRA.limit.context / 1.8);
     expect(first?.truncation_policy).toEqual({
       mode: "tokens",
       limit: expectedLimit,
@@ -1816,7 +1816,7 @@ describe("Codex Responses proxy tool compatibility", () => {
     });
 
     // Nebius silently caps omitted max_tokens at 2048, which truncates
-    // long-reasoning models (Nemotron Ultra/Super) mid-turn; the proxy must always
+    // long-reasoning models (Nemotron 3 Ultra/Super) mid-turn; the proxy must always
     // send an explicit budget. A tiny input leaves the full output limit free.
     expect(requests[0]?.max_tokens).toBe(GLM_5_2.limit.output);
 

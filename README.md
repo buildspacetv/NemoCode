@@ -2,7 +2,7 @@
 
 **Run NVIDIA Nemotron in Claude Code, Codex, and OpenCode on [Nebius Token Factory](https://tokenfactory.nebius.com/) (EU hosting).**
 
-One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Nemotron Ultra, Cosmos Reason, Qwen 3.5, DeepSeek V4, MiniMax M3) served from the EU instead of their default backends.
+One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Nemotron 3 Ultra, Cosmos 3, Qwen 3.5, DeepSeek V4, MiniMax M3) served from the EU instead of their default backends.
 
 ```bash
 curl -fsSL https://nemocode.com/install.sh | sh
@@ -79,22 +79,22 @@ ncodex exec "add a test for the parser"
 
 ## Models
 
-The model list is **fetched live** from Nebius (`GET /v1/models?verbose=true`) at startup, so every model Nebius serves is available and each model's vision support comes straight from the API's modality field, never a hand-maintained list. Results are cached in `~/.nemocode/` and fall back to a bundled snapshot when offline. The default coding model is **Nemotron Ultra 253B**; switch inside your agent or with `--model`.
+The model list is **fetched live** from Nebius (`GET /v1/models?verbose=true`) at startup, so every model Nebius serves is available and each model's vision support comes straight from the API's modality field, never a hand-maintained list. Results are cached in `~/.nemocode/` and fall back to a bundled snapshot when offline. The default coding model is **Nemotron 3 Ultra 550B**; switch inside your agent or with `--model`.
 
 Featured flagships:
 
-| Model                               | Best for                  | Context | Vision |
-| ----------------------------------- | ------------------------- | ------- | ------ |
-| **Nemotron Ultra 253B** _(default)_ | General coding + agentic  | 128K    | No     |
-| Cosmos Reason1 7B                   | Vision flagship           | 128K    | Yes    |
-| Nemotron Super 49B                  | Reasoning + tool use      | 128K    | No     |
-| Nemotron Nano 9B                    | Fast, cheap background    | 128K    | No     |
-| MiniMax M3                          | Fast, cheap               | 196K    | No     |
-| Qwen 3.5 397B                       | General / coding flagship | 262K    | No     |
-| DeepSeek V4 Pro                     | Long-context reasoning    | 1M      | No     |
-| Qwen2.5-VL 72B                      | Vision fallback           | 32K     | Yes    |
+| Model                                 | Best for                  | Context | Vision |
+| ------------------------------------- | ------------------------- | ------- | ------ |
+| **Nemotron 3 Ultra 550B** _(default)_ | General coding + agentic  | 256K    | No     |
+| Cosmos 3 Super Reasoner               | Vision flagship           | 128K    | Yes    |
+| Nemotron 3 Super 120B                 | Reasoning + tool use      | 256K    | No     |
+| Nemotron 3 Nano 30B                   | Fast, cheap background    | 256K    | No     |
+| MiniMax M3                            | Fast, cheap               | 196K    | No     |
+| Qwen 3.5 397B                         | General / coding flagship | 262K    | No     |
+| DeepSeek V4 Pro                       | Long-context reasoning    | 1M      | No     |
+| Qwen2.5-VL 72B                        | Vision fallback           | 32K     | Yes    |
 
-Claude Code and Codex are text-native; image blocks are auto-routed to a vision-capable model (Cosmos Reason1 7B, then Qwen2.5-VL). OpenCode uses a dedicated `@vision` subagent pinned to the vision flagship. Run `scripts/list-nebius-models.mjs` (with `NEBIUS_API_KEY` set) to print the raw catalog Nebius serves.
+Claude Code and Codex are text-native; image blocks are auto-routed to a vision-capable model (Cosmos 3 Super Reasoner, then Qwen2.5-VL). OpenCode uses a dedicated `@vision` subagent pinned to the vision flagship. Run `scripts/list-nebius-models.mjs` (with `NEBIUS_API_KEY` set) to print the raw catalog Nebius serves.
 
 ## Web search
 
@@ -104,18 +104,18 @@ With a Tavily key configured, `nclaude`, `ncodex`, and `nopencode` also get [Tav
 
 ## Configuration & env vars
 
-| Variable                        | Effect                                                                                                                                                               |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NEBIUS_API_KEY`                | Nebius Token Factory key (or set via `configure`).                                                                                                                   |
-| `TAVILY_API_KEY`                | Enables web search (or set via `configure`).                                                                                                                         |
-| `NEBIUS_BASE_URL`               | Override the API base (default `https://api.tokenfactory.nebius.com/v1`).                                                                                            |
-| `NEMOCODE_REASONING_EFFORT`     | `none`\|`low`\|`medium`\|`high`\|`max`. Default `none` for speed; raise for harder tasks.                                                                            |
-| `NEMOCODE_FALLBACK_MODEL`       | Model to fail over to when the target model returns no response headers (down/overloaded). Default `nvidia/Llama-3_3-Nemotron-Super-49B-v1_5`; set `off` to disable. |
-| `NEBIUS_PROJECT`                | Nebius project id for Token Factory Sandboxes calls (or `--project`, or store once: `nemocode sandbox project <id>`).                                                |
-| `TENKI_API_KEY`                 | tenki.cloud credential (`tk_…`) for the default (tenki) sandbox provider.                                                                                            |
-| `NEMOCODE_DISABLE_TAVILY_MCP=1` | Skip the Tavily MCP server auto-inject (nclaude, ncodex, nopencode).                                                                                                 |
-| `NEMOCODE_DISABLE_AUTOUPDATE=1` | Stop the installed binary from self-updating.                                                                                                                        |
-| `NEMOCODE_TELEMETRY_URL`        | Opt in to telemetry by pointing at your own collector. Off by default.                                                                                               |
+| Variable                        | Effect                                                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEBIUS_API_KEY`                | Nebius Token Factory key (or set via `configure`).                                                                                                            |
+| `TAVILY_API_KEY`                | Enables web search (or set via `configure`).                                                                                                                  |
+| `NEBIUS_BASE_URL`               | Override the API base (default `https://api.tokenfactory.nebius.com/v1`).                                                                                     |
+| `NEMOCODE_REASONING_EFFORT`     | `none`\|`low`\|`medium`\|`high`\|`max`. Default `none` for speed; raise for harder tasks.                                                                     |
+| `NEMOCODE_FALLBACK_MODEL`       | Model to fail over to when the target model returns no response headers (down/overloaded). Default `nvidia/nemotron-3-super-120b-a12b`; set `off` to disable. |
+| `NEBIUS_PROJECT`                | Nebius project id for Token Factory Sandboxes calls (or `--project`, or store once: `nemocode sandbox project <id>`).                                         |
+| `TENKI_API_KEY`                 | tenki.cloud credential (`tk_…`) for the default (tenki) sandbox provider.                                                                                     |
+| `NEMOCODE_DISABLE_TAVILY_MCP=1` | Skip the Tavily MCP server auto-inject (nclaude, ncodex, nopencode).                                                                                          |
+| `NEMOCODE_DISABLE_AUTOUPDATE=1` | Stop the installed binary from self-updating.                                                                                                                 |
+| `NEMOCODE_TELEMETRY_URL`        | Opt in to telemetry by pointing at your own collector. Off by default.                                                                                        |
 
 The installed binary keeps itself up to date from `nemocode.com`, throttled to once an hour, and swallows every failure. On the same cadence it refreshes the launcher wrappers (`nemocode`, `nclaude`, …) next to the bundle, so wrapper fixes reach existing installs too. Dev/source runs never self-update.
 

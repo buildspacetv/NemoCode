@@ -7,18 +7,18 @@ prompt is one unified instruction that lets the model self-select by its own
 runtime capabilities, so it stays correct even if the user switches models
 mid-session:
 
-- Vision-capable primary models (Cosmos Reason1 7B, Qwen2.5-VL 72B, MiniMax M3,
+- Vision-capable primary models (Cosmos 3 Super Reasoner, Qwen2.5-VL 72B, MiniMax M3,
   Qwen 3.7 Max): OpenCode sends the image directly to the model. This is the working path
   for images.
-- Text-only primary models (Nemotron Ultra/Super/Nano, GLM-5.2, DeepSeek V4
+- Text-only primary models (Nemotron 3 Ultra/Super/Nano, GLM-5.2, DeepSeek V4
   Pro): OpenCode strips the image
   bytes before they reach the model. The model tells the user plainly that it
   cannot see images, and that they should switch to a vision-capable model via
-  `/models` (Cosmos Reason1 7B, MiniMax M3, or Qwen 3.7 Max) and re-send the image.
+  `/models` (Cosmos 3 Super Reasoner, MiniMax M3, or Qwen 3.7 Max) and re-send the image.
 
 ### The `@vision` subagent and clipboard images
 
-A `@vision` subagent is still registered and pinned to Cosmos-Reason1-7B, but it
+A `@vision` subagent is still registered and pinned to Cosmos3-Super-Reasoner, but it
 does not work for clipboard-pasted images today: OpenCode has an open bug
 ([#25553][oc-25553]) where an image attached with `@vision` is not forwarded to
 the subagent. The subagent only errors with `"this model does not support image
@@ -60,16 +60,16 @@ field. The provider label stays the full `Nebius Token Factory`, and the model n
 kept short so the per-line provider suffix OpenCode appends does not push them
 past the picker's truncation width.
 
-| Model id                                   | Vision | Use case                                     |
-| ------------------------------------------ | ------ | -------------------------------------------- |
-| `zai-org/GLM-5.2`                          | No     | agentic coding (text-only)                   |
-| `nvidia/Llama-3_1-Nemotron-Ultra-253B-v1`  | No     | default, agentic coding (text-only)          |
-| `nvidia/Cosmos-Reason1-7B`                 | Yes    | vision primary; the `@vision` subagent model |
-| `nvidia/Llama-3_3-Nemotron-Super-49B-v1_5` | No     | mid-tier reasoning + tool use                |
-| `nvidia/NVIDIA-Nemotron-Nano-9B-v2`        | No     | fast/cheap background turns                  |
-| `MiniMaxAI/MiniMax-M3`                     | Yes    | cheapest vision, 512K context                |
-| `Qwen/Qwen3.5-397B-A17B`                   | Yes    | strongest Qwen flagship                      |
-| `deepseek-ai/DeepSeek-V4-Pro`              | No     | long-context reasoning (512K)                |
+| Model id                                | Vision | Use case                                     |
+| --------------------------------------- | ------ | -------------------------------------------- |
+| `zai-org/GLM-5.2`                       | No     | agentic coding (text-only)                   |
+| `nvidia/Nemotron-3-Ultra-550b-a55b`     | No     | default, agentic coding (text-only)          |
+| `nvidia/Cosmos3-Super-Reasoner`         | Yes    | vision primary; the `@vision` subagent model |
+| `nvidia/nemotron-3-super-120b-a12b`     | No     | mid-tier reasoning + tool use                |
+| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | No     | fast/cheap background turns                  |
+| `MiniMaxAI/MiniMax-M3`                  | Yes    | cheapest vision, 512K context                |
+| `Qwen/Qwen3.5-397B-A17B`                | Yes    | strongest Qwen flagship                      |
+| `deepseek-ai/DeepSeek-V4-Pro`           | No     | long-context reasoning (512K)                |
 
 That's all users see in `/models`. The curated set lives in
 [`@nemocode/models`](../../../../models/src/index.ts) (`SELECTABLE_MODELS`).

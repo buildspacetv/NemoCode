@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { NEMOTRON_ULTRA_253B } from "@nemocode/models";
+import { NEMOTRON_3_ULTRA } from "@nemocode/models";
 import { buildCodexAppConfig, codexAppModelCatalogJson } from "../../cli/src/lib/codex-app.js";
 
 describe("Codex App alpha config", () => {
@@ -54,7 +54,7 @@ describe("Codex App alpha config", () => {
       catalogPath: "/tmp/old.json",
     });
     const second = buildCodexAppConfig(first, {
-      modelId: "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
+      modelId: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
       providerId: "nemocode_codex_app",
       providerName: "NemoCode",
       baseUrl: "http://127.0.0.1:7878/session/new/v1",
@@ -65,7 +65,7 @@ describe("Codex App alpha config", () => {
     expect(second.match(/>>> nemocode codex-app alpha >>>/g)).toHaveLength(1);
     expect(second).not.toContain("/tmp/old.json");
     expect(second).not.toContain("/session/old/v1");
-    expect(second).toContain('model = "nvidia/NVIDIA-Nemotron-Nano-9B-v2"');
+    expect(second).toContain('model = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"');
     expect(second).toContain('model_provider = "nemocode_codex_app"');
     expect(second.match(/approval_policy = "on-request"/g)).toHaveLength(1);
     expect(second.match(/sandbox_mode = "workspace-write"/g)).toHaveLength(1);
@@ -134,7 +134,7 @@ describe("Codex App alpha config", () => {
     const first = catalog.models[0];
 
     expect(first).toBeDefined();
-    expect(first?.display_name).toBe("Nemotron Ultra 253B · default");
+    expect(first?.display_name).toBe("Nemotron 3 Ultra 550B · default");
     expect(first?.shell_type).toBe("shell_command");
     // Reasoning models expose effort levels; non-reasoning models use "none".
     // Default to "minimal" (proxy maps it to no reasoning) so trivial turns stay
@@ -164,7 +164,7 @@ describe("Codex App alpha config", () => {
     // server-side tokenizer rejects. See codex/catalog.ts.
     expect(first?.truncation_policy).toEqual({
       mode: "tokens",
-      limit: Math.floor(NEMOTRON_ULTRA_253B.limit.context / 1.8),
+      limit: Math.floor(NEMOTRON_3_ULTRA.limit.context / 1.8),
     });
     expect(first?.comp_hash).toBeNull();
     // model_messages MUST be an object (not null) so Codex Desktop can resolve
@@ -183,11 +183,11 @@ describe("Codex App alpha config", () => {
     // Per-model capability flags must be derived from the model definition,
     // not hardcoded off, so vision/tool-calling models are advertised correctly.
     expect(first?.supports_parallel_tool_calls).toBe(true);
-    expect(first?.supports_image_detail_original).toBe(false); // Nemotron Ultra is text-only
+    expect(first?.supports_image_detail_original).toBe(false); // Nemotron 3 Ultra is text-only
     expect(first?.input_modalities).toEqual(["text"]);
 
     // A vision-capable model in the catalog must advertise image input.
-    const vision = catalog.models.find((m) => m.slug === "nvidia/Cosmos-Reason1-7B");
+    const vision = catalog.models.find((m) => m.slug === "nvidia/Cosmos3-Super-Reasoner");
     expect(vision?.supports_image_detail_original).toBe(true);
     expect(vision?.input_modalities).toEqual(["text", "image"]);
   });

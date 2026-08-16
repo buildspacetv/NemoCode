@@ -53,7 +53,7 @@ function toOpencodeModelEntry(model: ModelDefinition): OpencodeModelEntry {
  * only place a hint can live. Declaring them inline lets OpenCode enforce real
  * context/output limits, gate image attachments client-side, and compute
  * accurate cost locally from the per-token rates. The `@vision` subagent is
- * pinned to the primary vision model (Cosmos-Reason1-7B), which is also in
+ * pinned to the primary vision model (Cosmos3-Super-Reasoner), which is also in
  * this list.
  */
 export function opencodeModelEntries(): Record<string, OpencodeModelEntry> {
@@ -120,7 +120,7 @@ this about yourself at runtime:
   NOT invoke the \`@vision\` subagent - it won't receive the image and will only
   error. Instead, tell the user plainly that you (the current model) can't see
   images, and that to work with an image they should switch to a vision-capable
-  model via the \`/models\` command (e.g. Cosmos Reason1 7B or Qwen2.5-VL 72B)
+  model via the \`/models\` command (e.g. Cosmos 3 Super Reasoner or Qwen2.5-VL 72B)
   and re-send the image. Do not retry the subagent.
 
 Under no circumstances guess at or fabricate the contents of an image you did not

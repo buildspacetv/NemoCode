@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   GLM_5_2,
-  NEMOTRON_NANO_9B,
+  NEMOTRON_3_NANO,
   SELECTABLE_MODELS,
   resolveModelByKeys,
   type ModelDefinition,
@@ -34,8 +34,8 @@ describe("resolveModelByKeys", () => {
 
   it("matches by id", () => {
     expect(
-      resolveModelByKeys(SELECTABLE_MODELS, NEMOTRON_NANO_9B.id, aliasAndId, GLM_5_2.id)?.id,
-    ).toBe(NEMOTRON_NANO_9B.id);
+      resolveModelByKeys(SELECTABLE_MODELS, NEMOTRON_3_NANO.id, aliasAndId, GLM_5_2.id)?.id,
+    ).toBe(NEMOTRON_3_NANO.id);
   });
 
   it("matches by alias", () => {

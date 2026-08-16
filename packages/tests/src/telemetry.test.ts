@@ -104,7 +104,7 @@ describe("context trim alarm (telemetry + stderr)", () => {
 
     emitContextTrimAlarm({
       path: "retry",
-      model: "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
+      model: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
       trimmedChars: 9001,
       inputTokens:
         parseNebiusContextLengthInputTokens(
@@ -116,7 +116,7 @@ describe("context trim alarm (telemetry + stderr)", () => {
     // The stderr warning is always-on (not debug-gated) and single-line.
     const written = stderrWrite.mock.calls.map((c: unknown[]) => String(c[0])).join("");
     expect(written).toContain("nemocode: trimmed 9001 chars");
-    expect(written).toContain("nvidia/NVIDIA-Nemotron-Nano-9B-v2");
+    expect(written).toContain("nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B");
     expect(written).toContain("(retry path)");
     expect(written).toContain("if you see this often, report it");
 
@@ -126,7 +126,7 @@ describe("context trim alarm (telemetry + stderr)", () => {
     expect(body.event).toBe("context_trim");
     expect(body.contextTrim).toEqual({
       path: "retry",
-      model: "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
+      model: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
       trimmedChars: 9001,
       inputTokens: 258001,
       contextWindow: 262144,
