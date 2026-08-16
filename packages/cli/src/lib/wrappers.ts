@@ -14,22 +14,22 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 export const LAUNCHERS: ReadonlyArray<{ name: string; subcommand: string }> = [
-  { name: "kimirelay", subcommand: "" },
-  { name: "klaude", subcommand: "claude" },
-  { name: "openkode", subcommand: "opencode" },
-  { name: "kodex", subcommand: "codex" },
-  { name: "kpi", subcommand: "pi" },
+  { name: "nemocode", subcommand: "" },
+  { name: "nclaude", subcommand: "claude" },
+  { name: "nopencode", subcommand: "opencode" },
+  { name: "ncodex", subcommand: "codex" },
+  { name: "npi", subcommand: "pi" },
 ];
 
 export function launcherScript(binDir: string, subcommand: string): string {
-  const bundle = path.join(binDir, "kimirelay.js");
+  const bundle = path.join(binDir, "nemocode.js");
   const args = subcommand ? ` ${subcommand}` : "";
   return `#!/usr/bin/env sh
-# kimirelay launcher - runs the installed Bun-target JS bundle.
+# nemocode launcher - runs the installed Bun-target JS bundle.
 BUN_BIN="$(command -v bun 2>/dev/null || true)"
 [ -n "$BUN_BIN" ] || BUN_BIN="$HOME/.bun/bin/bun"
 if [ ! -x "$BUN_BIN" ]; then
-  echo "kimirelay: the bun runtime was not found (looked on PATH and in ~/.bun/bin)." >&2
+  echo "nemocode: the bun runtime was not found (looked on PATH and in ~/.bun/bin)." >&2
   echo "Install it with: curl -fsSL https://bun.sh/install | bash" >&2
   exit 127
 fi

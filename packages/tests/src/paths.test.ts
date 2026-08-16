@@ -1,26 +1,26 @@
 import { describe, expect, test } from "vitest";
-import { kimirelayHome, isProcessAlive } from "@kimirelay/cli/dist/lib/paths.js";
+import { nemocodeHome, isProcessAlive } from "@nemocode/cli/dist/lib/paths.js";
 
 describe("paths.ts - single source of truth for home + liveness (#7)", () => {
-  test("kimirelayHome honors KIMIRELAY_HOME env", () => {
-    const original = process.env.KIMIRELAY_HOME;
-    process.env.KIMIRELAY_HOME = "/tmp/kimirelay-test-home-xyz";
+  test("nemocodeHome honors NEMOCODE_HOME env", () => {
+    const original = process.env.NEMOCODE_HOME;
+    process.env.NEMOCODE_HOME = "/tmp/nemocode-test-home-xyz";
     try {
-      expect(kimirelayHome()).toBe("/tmp/kimirelay-test-home-xyz");
+      expect(nemocodeHome()).toBe("/tmp/nemocode-test-home-xyz");
     } finally {
-      if (original === undefined) delete process.env.KIMIRELAY_HOME;
-      else process.env.KIMIRELAY_HOME = original;
+      if (original === undefined) delete process.env.NEMOCODE_HOME;
+      else process.env.NEMOCODE_HOME = original;
     }
   });
 
-  test("kimirelayHome falls back to ~/.kimirelay when env unset", () => {
-    const original = process.env.KIMIRELAY_HOME;
-    delete process.env.KIMIRELAY_HOME;
+  test("nemocodeHome falls back to ~/.nemocode when env unset", () => {
+    const original = process.env.NEMOCODE_HOME;
+    delete process.env.NEMOCODE_HOME;
     try {
-      const home = kimirelayHome();
-      expect(home.endsWith("/.kimirelay")).toBe(true);
+      const home = nemocodeHome();
+      expect(home.endsWith("/.nemocode")).toBe(true);
     } finally {
-      if (original !== undefined) process.env.KIMIRELAY_HOME = original;
+      if (original !== undefined) process.env.NEMOCODE_HOME = original;
     }
   });
 

@@ -12,7 +12,7 @@ describe("Codex generic user config", () => {
   let tmpDir: string;
 
   beforeEach(async () => {
-    tmpDir = await mkdtemp(path.join(os.tmpdir(), "kimirelay-codex-user-config-"));
+    tmpDir = await mkdtemp(path.join(os.tmpdir(), "nemocode-codex-user-config-"));
   });
 
   afterEach(async () => {

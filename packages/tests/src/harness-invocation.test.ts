@@ -53,7 +53,7 @@ describe("harness invocation parsing", () => {
     expect(invocation.flags.passthroughSeparator).toBeUndefined();
   });
 
-  test("keeps kimirelay flags before the harness", () => {
+  test("keeps nemocode flags before the harness", () => {
     const parsed = parseArgs([
       "--main",
       "nebius-nemotron-nano-9b",
@@ -68,7 +68,7 @@ describe("harness invocation parsing", () => {
     expect(invocation.flags.passthrough).toEqual(["--resume", "session-id"]);
   });
 
-  test("passes known kimirelay flags through after the harness", () => {
+  test("passes known nemocode flags through after the harness", () => {
     const parsed = parseArgs(["claude", "--main", "real-claude-value"]);
     const invocation = resolveHarnessInvocation(parsed.positional, parsed.flags);
 

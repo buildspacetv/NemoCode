@@ -25,7 +25,7 @@ export type TestContext = {
   cliBin: string;
   artifactsDir: string;
   tmpDir: string;
-  kimirelayHome?: string;
+  nemocodeHome?: string;
   daemonPort?: number;
   results: TestResult[];
 };

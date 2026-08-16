@@ -16,7 +16,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 const EXPECTED_HAIKU_MODEL_ID = CLAUDE_HAIKU_MODEL.anthropicAlias ?? CLAUDE_HAIKU_MODEL.id;
 
 describe("Claude proxy compatibility API", () => {
-  test("disables Claude attribution for kimirelay sessions", () => {
+  test("disables Claude attribution for nemocode sessions", () => {
     const args = buildClaudeLaunchArgs(["--print", "do work"]);
     const settingsIndex = args.indexOf("--settings");
 
@@ -163,9 +163,9 @@ describe("Claude proxy compatibility API", () => {
   });
 
   test("retries a streamed Claude turn when Nebius never returns response headers", async () => {
-    vi.stubEnv("KIMIRELAY_RESPONSE_HEADER_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
-    vi.stubEnv("KIMIRELAY_REQUEST_DIAGNOSTICS", "0");
+    vi.stubEnv("NEMOCODE_RESPONSE_HEADER_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMOCODE_REQUEST_DIAGNOSTICS", "0");
     let upstreamCalls = 0;
     vi.stubGlobal(
       "fetch",
@@ -208,9 +208,9 @@ describe("Claude proxy compatibility API", () => {
   }, 2_500);
 
   test("retries a streamed Claude turn when Nebius returns headers but emits no SSE", async () => {
-    vi.stubEnv("KIMIRELAY_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
-    vi.stubEnv("KIMIRELAY_REQUEST_DIAGNOSTICS", "0");
+    vi.stubEnv("NEMOCODE_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMOCODE_REQUEST_DIAGNOSTICS", "0");
     const upstreamBodies: Array<Record<string, unknown>> = [];
     vi.stubGlobal(
       "fetch",
@@ -495,7 +495,7 @@ describe("Claude proxy compatibility API", () => {
     if (typeof upstreamContent !== "string") {
       throw new Error("expected upstream user content to be a string");
     }
-    expect(upstreamContent).toContain("[kimirelay trimmed older context to fit the model window]");
+    expect(upstreamContent).toContain("[nemocode trimmed older context to fit the model window]");
     expect(upstreamContent.length).toBeLessThan(nearFullContext.length);
     expect(upstreamBodies[0]?.max_tokens).toBeLessThanOrEqual(28_000);
     expect(upstreamBodies[0]?.max_tokens).toBeGreaterThanOrEqual(16_000);
@@ -606,7 +606,7 @@ describe("Claude proxy compatibility API", () => {
     expect(upstreamBodies).toHaveLength(1);
     expect(upstreamBodies[0]?.max_tokens).toBe(32_000);
     const upstreamContent = String(firstUserContent(upstreamBodies[0]));
-    expect(upstreamContent).toContain("Kimi Relay bounded compaction request");
+    expect(upstreamContent).toContain("NemoCode bounded compaction request");
     expect(upstreamContent).not.toContain("include full code snippets");
     expect(upstreamContent).not.toContain("List ALL user messages");
   });
@@ -767,7 +767,7 @@ describe("Claude proxy compatibility API", () => {
     const content = response.body.content as Array<Record<string, unknown>>;
     expect(content[0]?.type).toBe("thinking");
     expect(content[0]?.thinking).toBe(longReasoning);
-    expect(String(content[0]?.signature)).toMatch(/^kimirelay:[a-f0-9]{16}$/);
+    expect(String(content[0]?.signature)).toMatch(/^nemocode:[a-f0-9]{16}$/);
     expect(String(content[0]?.signature).length).toBeLessThan(40);
   });
 
@@ -805,7 +805,7 @@ describe("Claude proxy compatibility API", () => {
               {
                 type: "thinking",
                 thinking: "Remember marker BLUE-CHAIR-8273.",
-                signature: "kimirelay:test",
+                signature: "nemocode:test",
               },
               { type: "text", text: "READY" },
             ],
@@ -893,7 +893,7 @@ describe("Claude proxy compatibility API", () => {
       throw new Error("expected upstream user content to be strings");
     }
     expect(secondContent.length).toBeLessThan(firstContent.length);
-    expect(secondContent).toContain("[kimirelay trimmed older context to fit the model window]");
+    expect(secondContent).toContain("[nemocode trimmed older context to fit the model window]");
   });
 
   test("routes Claude Code Haiku-tier model requests without proxy subagent inference", async () => {

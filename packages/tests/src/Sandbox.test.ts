@@ -125,11 +125,11 @@ describe("harness bootstrap", () => {
       branch: "main",
       apiKey: "secret-key",
     });
-    expect(script).toContain("curl -fsSL https://kimirelay.com/install.sh | sh");
+    expect(script).toContain("curl -fsSL https://nemocode.com/install.sh | sh");
     expect(script).toContain(
       "git clone --depth 1 -b 'main' 'https://github.com/example/repo.git' /work",
     );
-    expect(script).toContain(`klaude '-p' 'fix the "auth" bug; don'\\''t break tests'`);
+    expect(script).toContain(`nclaude '-p' 'fix the "auth" bug; don'\\''t break tests'`);
     expect(script).not.toContain("secret-key");
   });
 
@@ -141,7 +141,7 @@ describe("harness bootstrap", () => {
       apiKey: "k",
     });
     expect(script).toContain("npm install -g @openai/codex");
-    expect(script).toContain("kodex 'exec' 'task'");
+    expect(script).toContain("ncodex 'exec' 'task'");
   });
 });
 
@@ -153,12 +153,12 @@ describe("shellQuote", () => {
 
 describe("writeAdvisoryBlock", () => {
   test("appends once and is idempotent", async () => {
-    const dir = await mkdtemp(path.join(os.tmpdir(), "kimirelay-advisory-"));
+    const dir = await mkdtemp(path.join(os.tmpdir(), "nemocode-advisory-"));
     const target = path.join(dir, "nested", "CLAUDE.md");
     expect(await writeAdvisoryBlock(target)).toBe("written");
     expect(await writeAdvisoryBlock(target)).toBe("already-present");
     const content = await readFile(target, "utf8");
-    expect(content.match(/kimirelay:sandbox-advisory/g)).toHaveLength(1);
+    expect(content.match(/nemocode:sandbox-advisory/g)).toHaveLength(1);
     expect(content).toContain("Sandboxed execution");
   });
 });
@@ -274,10 +274,10 @@ describe("round 2: artifacts, whoami, prebake", () => {
         return jsonResponse({ ok: true });
       },
     });
-    await client.tagImage("img-123", "kimirelay:prebaked");
+    await client.tagImage("img-123", "nemocode:prebaked");
     expect(seen.url).toBe("https://api.tokenfactory.nebius.com/sandboxes/v1/images/img-123/tag");
     expect(seen.method).toBe("PATCH");
-    expect(JSON.parse(seen.body ?? "{}")).toEqual({ tag: "kimirelay:prebaked" });
+    expect(JSON.parse(seen.body ?? "{}")).toEqual({ tag: "nemocode:prebaked" });
   });
 
   test("normalizeOperation surfaces result_image_uuid", () => {
@@ -297,7 +297,7 @@ describe("round 2: artifacts, whoami, prebake", () => {
       repoUrl: "https://github.com/o/r.git",
       apiKey: "secret-key",
     });
-    expect(script).toContain("command -v kimirelay >/dev/null 2>&1 || curl -fsSL");
+    expect(script).toContain("command -v nemocode >/dev/null 2>&1 || curl -fsSL");
     expect(script).toContain(
       "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code",
     );
@@ -308,14 +308,14 @@ describe("round 2: artifacts, whoami, prebake", () => {
     const script = buildPrebakeBootstrap();
     expect(script).toContain("npm install -g @anthropic-ai/claude-code");
     expect(script).toContain("npm install -g @openai/codex");
-    expect(script).toContain("kimirelay-prebake-complete");
+    expect(script).toContain("nemocode-prebake-complete");
     expect(script).not.toContain("git clone");
   });
 });
 
 describe("resolveSandboxProject", () => {
   test("flag beats NEBIUS_PROJECT beats the stored config", async () => {
-    const home = await mkdtemp(path.join(os.tmpdir(), "kimirelay-project-"));
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-project-"));
     await setGlobalSandboxProject(home, "stored-proj");
     expect(
       await resolveSandboxProject(
@@ -337,7 +337,7 @@ describe("resolveSandboxProject", () => {
   });
 
   test("undefined when nothing is configured anywhere", async () => {
-    const home = await mkdtemp(path.join(os.tmpdir(), "kimirelay-project-"));
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-project-"));
     expect(await resolveSandboxProject(undefined, {} as NodeJS.ProcessEnv, home)).toBeUndefined();
   });
 });

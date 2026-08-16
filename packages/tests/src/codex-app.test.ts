@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { NEMOTRON_ULTRA_253B } from "@kimirelay/models";
+import { NEMOTRON_ULTRA_253B } from "@nemocode/models";
 import { buildCodexAppConfig, codexAppModelCatalogJson } from "../../cli/src/lib/codex-app.js";
 
 describe("Codex App alpha config", () => {
@@ -17,8 +17,8 @@ describe("Codex App alpha config", () => {
       ].join("\n"),
       {
         modelId: "zai-org/GLM-5.2",
-        providerId: "kimirelay_codex_app",
-        providerName: "Kimi Relay",
+        providerId: "nemocode_codex_app",
+        providerName: "NemoCode",
         baseUrl: "http://127.0.0.1:7878/session/local-secret/v1",
         bearerToken: "local-secret",
         catalogPath: "/tmp/models.json",
@@ -26,7 +26,7 @@ describe("Codex App alpha config", () => {
     );
 
     expect(config).toContain('model = "zai-org/GLM-5.2"');
-    expect(config).toContain('model_provider = "kimirelay_codex_app"');
+    expect(config).toContain('model_provider = "nemocode_codex_app"');
     expect(config).toContain('model_catalog_json = "/tmp/models.json"');
     expect(config).not.toContain("approval_policy");
     expect(config).not.toContain("model_context_window");
@@ -34,39 +34,39 @@ describe("Codex App alpha config", () => {
     expect(config).not.toContain("model_reasoning_effort");
     expect(config).not.toContain("openai_base_url");
     expect(config).toContain('[projects."/repo"]');
-    expect(config).toContain("[model_providers.kimirelay_codex_app]");
-    expect(config).toContain('name = "Kimi Relay"');
+    expect(config).toContain("[model_providers.nemocode_codex_app]");
+    expect(config).toContain('name = "NemoCode"');
     expect(config).toContain('base_url = "http://127.0.0.1:7878/session/local-secret/v1"');
     expect(config).toContain('wire_api = "responses"');
     // Codex Desktop currently gates the model picker on provider auth state.
     // This keeps the picker visible for custom providers; actual model
-    // requests still go to Kimi Relay's local base_url.
+    // requests still go to NemoCode's local base_url.
     expect(config).toContain("requires_openai_auth = true");
   });
 
   test("replaces an existing managed block instead of appending duplicates", () => {
     const first = buildCodexAppConfig("", {
       modelId: "zai-org/GLM-5.2",
-      providerId: "kimirelay_codex_app",
-      providerName: "Kimi Relay",
+      providerId: "nemocode_codex_app",
+      providerName: "NemoCode",
       baseUrl: "http://127.0.0.1:7878/session/old/v1",
       bearerToken: "old",
       catalogPath: "/tmp/old.json",
     });
     const second = buildCodexAppConfig(first, {
       modelId: "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
-      providerId: "kimirelay_codex_app",
-      providerName: "Kimi Relay",
+      providerId: "nemocode_codex_app",
+      providerName: "NemoCode",
       baseUrl: "http://127.0.0.1:7878/session/new/v1",
       bearerToken: "new",
       catalogPath: "/tmp/new.json",
     });
 
-    expect(second.match(/>>> kimirelay codex-app alpha >>>/g)).toHaveLength(1);
+    expect(second.match(/>>> nemocode codex-app alpha >>>/g)).toHaveLength(1);
     expect(second).not.toContain("/tmp/old.json");
     expect(second).not.toContain("/session/old/v1");
     expect(second).toContain('model = "nvidia/NVIDIA-Nemotron-Nano-9B-v2"');
-    expect(second).toContain('model_provider = "kimirelay_codex_app"');
+    expect(second).toContain('model_provider = "nemocode_codex_app"');
     expect(second.match(/approval_policy = "on-request"/g)).toHaveLength(1);
     expect(second.match(/sandbox_mode = "workspace-write"/g)).toHaveLength(1);
     expect(second.match(/approvals_reviewer = "auto_review"/g)).toHaveLength(1);
@@ -78,12 +78,12 @@ describe("Codex App alpha config", () => {
   test("removes legacy app profile and provider tables", () => {
     const config = buildCodexAppConfig(
       [
-        'profile = "kimirelay_codex_app"',
+        'profile = "nemocode_codex_app"',
         "",
-        "[profiles.kimirelay_codex_app]",
+        "[profiles.nemocode_codex_app]",
         'model = "stale"',
         "",
-        "[model_providers.kimirelay_codex_app]",
+        "[model_providers.nemocode_codex_app]",
         'base_url = "http://old.invalid/v1"',
         "",
         '[projects."/repo"]',
@@ -92,17 +92,17 @@ describe("Codex App alpha config", () => {
       ].join("\n"),
       {
         modelId: "zai-org/GLM-5.2",
-        providerId: "kimirelay_codex_app",
-        providerName: "Kimi Relay",
+        providerId: "nemocode_codex_app",
+        providerName: "NemoCode",
         baseUrl: "http://127.0.0.1:7878/session/local-secret/v1",
         bearerToken: "local-secret",
         catalogPath: "/tmp/models.json",
       },
     );
 
-    expect(config).not.toContain('profile = "kimirelay_codex_app"');
-    expect(config.match(/\[profiles\.kimirelay_codex_app\]/g)).toBeNull();
-    expect(config.match(/\[model_providers\.kimirelay_codex_app\]/g)).toHaveLength(1);
+    expect(config).not.toContain('profile = "nemocode_codex_app"');
+    expect(config.match(/\[profiles\.nemocode_codex_app\]/g)).toBeNull();
+    expect(config.match(/\[model_providers\.nemocode_codex_app\]/g)).toHaveLength(1);
     expect(config).not.toContain("http://old.invalid/v1");
     expect(config).toContain('[projects."/repo"]');
   });
@@ -114,8 +114,8 @@ describe("Codex App alpha config", () => {
       ),
       {
         modelId: "zai-org/GLM-5.2",
-        providerId: "kimirelay_codex_app",
-        providerName: "Kimi Relay",
+        providerId: "nemocode_codex_app",
+        providerName: "NemoCode",
         baseUrl: "http://127.0.0.1:7878/session/local-secret/v1",
         bearerToken: "local-secret",
         catalogPath: "/tmp/models.json",

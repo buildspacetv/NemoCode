@@ -1,4 +1,4 @@
-# kimirelay roadmap
+# nemocode roadmap
 
 Status: **for review** — updated 2026-08-02. The previous revision of this file
 was the pre-launch planning document; its decision history is preserved at the
@@ -12,21 +12,21 @@ bottom. This revision reflects what has shipped and proposes what comes next.
   modality-aware routing, context trimming, retries/fallback, and
   Tavily-backed `web_search` emulation streaming real Anthropic citation
   blocks.
-- **Four harnesses, all stable**: `klaude` (Claude Code), `kodex` (Codex CLI),
-  `openkode` (OpenCode), `kpi` (Pi Code) - beta flags dropped 2026-08-02 after
+- **Four harnesses, all stable**: `nclaude` (Claude Code), `ncodex` (Codex CLI),
+  `nopencode` (OpenCode), `npi` (Pi Code) - beta flags dropped 2026-08-02 after
   the full live gauntlet went green in CI (all five suites, real Nebius
   inference). Cursor is out of
   scope (dropped 2026-08-02): `cursor-agent` has no endpoint override to
   inject and agent inference runs on Cursor's backend; revisit if that
   changes.
-- **Remote sessions on Token Factory Sandboxes** (first pass): `kimirelay
-sandbox status|run|advisory` plus headless `klaude --sandbox` /
-  `kodex --sandbox` against pushed git state (`docs/SANDBOXES.md`).
+- **Remote sessions on Token Factory Sandboxes** (first pass): `nemocode
+sandbox status|run|advisory` plus headless `nclaude --sandbox` /
+  `ncodex --sandbox` against pushed git state (`docs/SANDBOXES.md`).
   Interactive TTY, artifact download, and prebaked images remain open; live
   verification is blocked on beta access.
-- **Distribution**: `curl -fsSL https://kimirelay.com/install.sh | sh`
-  (POSIX-sh safe, self-updating, v0.10.1), serving from kimirelay.com and
-  kimi.guide via Vercel git deploys. Launcher wrappers are self-locating
+- **Distribution**: `curl -fsSL https://nemocode.com/install.sh | sh`
+  (POSIX-sh safe, self-updating, v0.10.1), serving from nemocode.com and
+  nemo.guide via Vercel git deploys. Launcher wrappers are self-locating
   (bun found via PATH or `~/.bun/bin`) and self-heal: the installed bundle
   rewrites stale wrappers on its hourly update check.
 - **The site**: dark landing page ("Nemotron for ⟨agent⟩" with the robot
@@ -37,19 +37,19 @@ sandbox status|run|advisory` plus headless `klaude --sandbox` /
 
 ## Now
 
-### 1. Tavily MCP auto-inject for `klaude`
+### 1. Tavily MCP auto-inject for `nclaude`
 
-**Status (2026-08-02): shipped in v0.11.0; extended to `kodex` and `openkode` in v0.12.0 (`kpi` excluded - pi rejects MCP by design).**
+**Status (2026-08-02): shipped in v0.11.0; extended to `ncodex` and `nopencode` in v0.12.0 (`npi` excluded - pi rejects MCP by design).**
 
 The relay already emulates Claude Code's native `web_search` via Tavily. When
-a Tavily key is configured, `klaude` additionally injects Tavily's remote MCP
+a Tavily key is configured, `nclaude` additionally injects Tavily's remote MCP
 server per run (generated `--mcp-config`, ephemeral like everything else),
 giving Nemotron the explicit `tavily_search` / `tavily_extract` toolset
 alongside the emulated native search. Opt out with
-`KIMIRELAY_DISABLE_TAVILY_MCP=1`; never injected when the session passes
+`NEMOCODE_DISABLE_TAVILY_MCP=1`; never injected when the session passes
 `--strict-mcp-config`. ~Small; no relay changes needed.
 
-### 2. Beta → stable for `klaude` and `kodex`
+### 2. Beta → stable for `nclaude` and `ncodex`
 
 **Status (2026-08-02): shipped.** The live gauntlet runs in CI against real
 Nebius inference (secrets in the repo's `production` environment; dispatch
@@ -72,7 +72,7 @@ TTY is documented as unsupported by API design (no PTY/attach surface;
 line-mode exec over stdin+SSE remains an option). Beta access is confirmed
 live; the API key still needs Sandboxes permissions (`spawn`,
 `set_image_tag`) granted for the project in the Token Factory console -
-`kimirelay sandbox status` shows the exact grants. Because of that double
+`nemocode sandbox status` shows the exact grants. Because of that double
 gate, tenki.cloud ships as a second, open-signup provider (M1 in
 `docs/TENKI-SANDBOXES-PRD.md`; interactive SSH sessions and snapshots are
 its M2).
@@ -123,7 +123,7 @@ the "curl | sh" trust objection and gives macOS users upgrades via
 
 ### 2026-07-29 (condensed from the original plan)
 
-- **Fork nebius-tf-relay** as `opencolin/kimi-relay` (full-history port)
+- **Fork nebius-tf-relay** as `opencolin/nemocode` (full-history port)
   rather than extending the Python proxy's installer; the relay engine and
   `curl | sh` distribution come from upstream (MIT, credited in README and on
   the site).

@@ -14,12 +14,12 @@ export type GlobalConfig = {
   sandboxProject: string;
 };
 
-export function kimirelayHome(home = os.homedir()): string {
-  return path.join(home, ".kimirelay");
+export function nemocodeHome(home = os.homedir()): string {
+  return path.join(home, ".nemocode");
 }
 
 function globalConfigPath(home = os.homedir()): string {
-  return path.join(kimirelayHome(home), "config.json");
+  return path.join(nemocodeHome(home), "config.json");
 }
 
 export async function readGlobalConfig(home = os.homedir()): Promise<GlobalConfig> {

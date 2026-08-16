@@ -21,7 +21,7 @@ const GLM_5_2 = {
 
 export type TestDaemon = {
   url: string;
-  /** The daemon's isolated KIMIRELAY_HOME. */
+  /** The daemon's isolated NEMOCODE_HOME. */
   home: string;
   stderr: () => string;
   stop: () => Promise<void>;
@@ -35,9 +35,9 @@ export async function startTestDaemon(context: TestContext): Promise<TestDaemon>
     cwd: context.repoRoot,
     env: {
       ...process.env,
-      KIMIRELAY_DEBUG: "1",
-      KIMIRELAY_HOME: home,
-      KIMIRELAY_PORT: String(port),
+      NEMOCODE_DEBUG: "1",
+      NEMOCODE_HOME: home,
+      NEMOCODE_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

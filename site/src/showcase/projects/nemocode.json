@@ -1,0 +1,8 @@
+{
+  "name": "nemocode",
+  "description": "This site's own CLI: run NVIDIA Nemotron inside Claude Code, Codex, OpenCode, and Pi Code via a local translating relay. One install, four harnesses, zero config edits.",
+  "url": "https://github.com/opencolin/nemocode",
+  "author": "opencolin",
+  "emoji": "🔀",
+  "tags": ["cli", "relay", "agents"]
+}

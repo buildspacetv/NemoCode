@@ -196,8 +196,8 @@ async function persistStreamDiagnostic(
 
 function streamIdleTimeoutMs(): number {
   const raw =
-    process.env.KIMIRELAY_STREAM_IDLE_TIMEOUT_MS ??
-    process.env.KIMIRELAY_CODEX_STREAM_IDLE_TIMEOUT_MS;
+    process.env.NEMOCODE_STREAM_IDLE_TIMEOUT_MS ??
+    process.env.NEMOCODE_CODEX_STREAM_IDLE_TIMEOUT_MS;
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0
     ? Math.max(100, parsed)
@@ -205,8 +205,7 @@ function streamIdleTimeoutMs(): number {
 }
 
 function streamRetries(): number {
-  const raw =
-    process.env.KIMIRELAY_STREAM_RETRIES ?? process.env.KIMIRELAY_CODEX_STREAM_IDLE_RETRIES;
+  const raw = process.env.NEMOCODE_STREAM_RETRIES ?? process.env.NEMOCODE_CODEX_STREAM_IDLE_RETRIES;
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 0 ? Math.floor(parsed) : DEFAULT_STREAM_RETRIES;
 }

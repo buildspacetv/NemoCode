@@ -6,10 +6,10 @@ import {
   upsertTopLevelTomlKeys,
   removeTopLevelTomlKeys,
   tomlString,
-} from "@kimirelay/cli/dist/lib/codex-app/toml.js";
+} from "@nemocode/cli/dist/lib/codex-app/toml.js";
 
-const START = "# >>> kimirelay codex-app alpha >>>";
-const END = "# <<< kimirelay codex-app alpha <<<";
+const START = "# >>> nemocode codex-app alpha >>>";
+const END = "# <<< nemocode codex-app alpha <<<";
 
 describe("codex-app/toml.ts - pure TOML preamble manipulation (#4)", () => {
   test("removeManagedBlock strips a marked block cleanly", () => {
@@ -46,10 +46,10 @@ describe("codex-app/toml.ts - pure TOML preamble manipulation (#4)", () => {
     const preamble = 'model = "old"\nother = "keep"';
     const out = upsertTopLevelTomlKeys(preamble, {
       model: '"new"',
-      model_provider: '"kimirelay"',
+      model_provider: '"nemocode"',
     });
     expect(out).toContain('model = "new"');
-    expect(out).toContain('model_provider = "kimirelay"');
+    expect(out).toContain('model_provider = "nemocode"');
     expect(out).toContain('other = "keep"');
   });
 
@@ -62,7 +62,7 @@ describe("codex-app/toml.ts - pure TOML preamble manipulation (#4)", () => {
   });
 
   test("tomlString quotes a string value", () => {
-    expect(tomlString("kimirelay")).toBe('"kimirelay"');
+    expect(tomlString("nemocode")).toBe('"nemocode"');
     expect(tomlString('with "quotes"')).toBe('"with \\"quotes\\""');
   });
 

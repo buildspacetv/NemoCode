@@ -20,7 +20,7 @@ type OpencodeConfig = {
   /**
    * Provider ids OpenCode won't auto-load. We disable "opencode" - the Zen
    * gateway provider (its models are registered under the `opencode/*`
-   * namespace, not `zen/*`, per opencode issue #6979). kimirelay routes
+   * namespace, not `zen/*`, per opencode issue #6979). nemocode routes
    * everything to Nebius, so Zen's auto-loaded models are pure clutter in
    * the picker; this keeps /models to only the Nebius flagships we curate.
    * (disabled_providers takes priority over enabled_providers, per the docs.)
@@ -108,7 +108,7 @@ export function buildOpencodeConfigJson({
     provider: {
       [OPENCODE_PROVIDER_ID]: provider,
     },
-    // Tavily MCP auto-inject, mirroring klaude/kodex. OpenCode is a spawned
+    // Tavily MCP auto-inject, mirroring nclaude/ncodex. OpenCode is a spawned
     // harness that talks straight to Nebius - there is no relay proxy to
     // emulate web_search - so this is its only live-web path. The key stays in
     // the environment: `{env:TAVILY_API_KEY}` resolves inside opencode

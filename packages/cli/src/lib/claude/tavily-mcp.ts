@@ -1,5 +1,5 @@
 /**
- * Tavily MCP auto-inject for klaude. The proxy already emulates Claude Code's
+ * Tavily MCP auto-inject for nclaude. The proxy already emulates Claude Code's
  * native web_search via Tavily; this additionally hands the session Tavily's
  * remote MCP server (tavily_search / tavily_extract / ...) when a key is
  * configured. The config is written to an ephemeral 0600 temp file passed via
@@ -14,7 +14,7 @@ import { TAVILY_MCP_BASE_URL } from "../tavily-mcp-key.js";
 export const TAVILY_MCP_URL = TAVILY_MCP_BASE_URL;
 
 export function shouldInjectTavilyMcp(args: string[], env: NodeJS.ProcessEnv): boolean {
-  if (env.KIMIRELAY_DISABLE_TAVILY_MCP === "1") {
+  if (env.NEMOCODE_DISABLE_TAVILY_MCP === "1") {
     return false;
   }
   if (!env.TAVILY_API_KEY?.trim()) {
@@ -29,7 +29,7 @@ export function shouldInjectTavilyMcp(args: string[], env: NodeJS.ProcessEnv): b
 }
 
 export function writeTavilyMcpConfig(tavilyApiKey: string): { path: string; dir: string } {
-  const dir = mkdtempSync(join(tmpdir(), "kimirelay-tavily-mcp-"));
+  const dir = mkdtempSync(join(tmpdir(), "nemocode-tavily-mcp-"));
   const path = join(dir, "mcp.json");
   // Tavily's remote MCP authenticates via the tavilyApiKey query parameter.
   const url = `${TAVILY_MCP_URL}?tavilyApiKey=${encodeURIComponent(tavilyApiKey)}`;

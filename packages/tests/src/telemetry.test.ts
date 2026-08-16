@@ -12,7 +12,7 @@ describe("telemetry", () => {
   let tmpDir: string;
 
   beforeEach(async () => {
-    tmpDir = await mkdtemp(path.join(os.tmpdir(), "kimirelay-telemetry-"));
+    tmpDir = await mkdtemp(path.join(os.tmpdir(), "nemocode-telemetry-"));
   });
 
   afterEach(async () => {
@@ -30,7 +30,7 @@ describe("telemetry", () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
     await expect(
-      readFile(path.join(tmpDir, ".kimirelay", "install-id"), "utf8"),
+      readFile(path.join(tmpDir, ".nemocode", "install-id"), "utf8"),
     ).rejects.toMatchObject({
       code: "ENOENT",
     });
@@ -40,9 +40,7 @@ describe("telemetry", () => {
     const ids = await Promise.all(Array.from({ length: 10 }, () => getInstallId(tmpDir)));
 
     expect(new Set(ids)).toHaveLength(1);
-    const stored = JSON.parse(
-      await readFile(path.join(tmpDir, ".kimirelay", "install-id"), "utf8"),
-    );
+    const stored = JSON.parse(await readFile(path.join(tmpDir, ".nemocode", "install-id"), "utf8"));
     expect(stored.id).toBe(ids[0]);
   });
 
@@ -51,7 +49,7 @@ describe("telemetry", () => {
     vi.stubGlobal("fetch", fetchMock);
     vi.stubEnv("GITHUB_ACTIONS", "false");
     // Telemetry is opt-in in this fork: it only sends when the endpoint is set.
-    vi.stubEnv("KIMIRELAY_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
+    vi.stubEnv("NEMOCODE_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
 
     await sendTelemetryEvent(
       {
@@ -102,7 +100,7 @@ describe("context trim alarm (telemetry + stderr)", () => {
     vi.stubGlobal("fetch", fetchMock);
     vi.stubEnv("GITHUB_ACTIONS", "false");
     // Telemetry is opt-in in this fork: it only sends when the endpoint is set.
-    vi.stubEnv("KIMIRELAY_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
+    vi.stubEnv("NEMOCODE_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
 
     emitContextTrimAlarm({
       path: "retry",
@@ -117,7 +115,7 @@ describe("context trim alarm (telemetry + stderr)", () => {
 
     // The stderr warning is always-on (not debug-gated) and single-line.
     const written = stderrWrite.mock.calls.map((c: unknown[]) => String(c[0])).join("");
-    expect(written).toContain("kimirelay: trimmed 9001 chars");
+    expect(written).toContain("nemocode: trimmed 9001 chars");
     expect(written).toContain("nvidia/NVIDIA-Nemotron-Nano-9B-v2");
     expect(written).toContain("(retry path)");
     expect(written).toContain("if you see this often, report it");

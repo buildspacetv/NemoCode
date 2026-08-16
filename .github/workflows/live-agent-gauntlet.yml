@@ -52,7 +52,7 @@ jobs:
       # Optional: enables the tenki.cloud sandbox live smoke below. Provider
       # selection is explicit-only, so this key alone changes nothing else.
       TENKI_API_KEY: ${{ secrets.TENKI_API_KEY }}
-      KIMIRELAY_DEBUG: "1"
+      NEMOCODE_DEBUG: "1"
       VITEST_RETRY: "3"
       HARNESS: ${{ github.event.inputs.harness || 'all' }}
 
@@ -143,8 +143,8 @@ jobs:
               ;;
           esac
 
-      - name: Build kimirelay CLI
-        run: pnpm exec turbo run build --filter @kimirelay/models --filter @kimirelay/cli
+      - name: Build nemocode CLI
+        run: pnpm exec turbo run build --filter @nemocode/models --filter @nemocode/cli
 
       - name: Typecheck live tests
         run: node_modules/.bin/tsc -p packages/tests/tsconfig.json --noEmit
@@ -153,22 +153,22 @@ jobs:
         run: |
           case "$HARNESS" in
             all)
-              VITEST_FILE_PARALLELISM=0 VITEST_MAX_CONCURRENCY=1 pnpm exec turbo run test:gauntlet:core test:gauntlet:claude test:gauntlet:codex test:gauntlet:opencode test:gauntlet:pi --filter @kimirelay/tests --concurrency=1 --continue
+              VITEST_FILE_PARALLELISM=0 VITEST_MAX_CONCURRENCY=1 pnpm exec turbo run test:gauntlet:core test:gauntlet:claude test:gauntlet:codex test:gauntlet:opencode test:gauntlet:pi --filter @nemocode/tests --concurrency=1 --continue
               ;;
             claude)
-              pnpm exec turbo run test:gauntlet:claude --filter @kimirelay/tests
+              pnpm exec turbo run test:gauntlet:claude --filter @nemocode/tests
               ;;
             codex)
-              pnpm exec turbo run test:gauntlet:codex --filter @kimirelay/tests
+              pnpm exec turbo run test:gauntlet:codex --filter @nemocode/tests
               ;;
             live-models-check)
-              pnpm exec turbo run test:gauntlet:live-models-check --filter @kimirelay/tests
+              pnpm exec turbo run test:gauntlet:live-models-check --filter @nemocode/tests
               ;;
             opencode)
-              pnpm exec turbo run test:gauntlet:opencode --filter @kimirelay/tests
+              pnpm exec turbo run test:gauntlet:opencode --filter @nemocode/tests
               ;;
             pi)
-              pnpm exec turbo run test:gauntlet:pi --filter @kimirelay/tests
+              pnpm exec turbo run test:gauntlet:pi --filter @nemocode/tests
               ;;
             *)
               echo "Unknown harness: $HARNESS" >&2
@@ -185,16 +185,16 @@ jobs:
             echo "TENKI_API_KEY not set - skipping tenki live smoke."
             exit 0
           fi
-          out="$(node packages/cli/dist/bin/kimirelay.js sandbox run --provider tenki -- echo kimirelay-tenki-ok)"
+          out="$(node packages/cli/dist/bin/nemocode.js sandbox run --provider tenki -- echo nemocode-tenki-ok)"
           echo "$out"
           case "$out" in
-            *kimirelay-tenki-ok*) echo "tenki smoke passed." ;;
+            *nemocode-tenki-ok*) echo "tenki smoke passed." ;;
             *) echo "tenki smoke: expected marker missing from output." >&2; exit 1 ;;
           esac
 
-      - name: Stop kimirelay daemon
+      - name: Stop nemocode daemon
         if: always()
-        run: node packages/cli/dist/bin/kimirelay.js daemon stop || true
+        run: node packages/cli/dist/bin/nemocode.js daemon stop || true
 
       - name: Save Turborepo cache
         if: always()

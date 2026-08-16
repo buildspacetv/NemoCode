@@ -1,7 +1,7 @@
 {
-  "name": "@kimirelay/models",
+  "name": "@nemocode/models",
   "version": "0.3.0",
-  "description": "Shared Nebius model definitions, capabilities, and pricing for kimirelay harnesses",
+  "description": "Shared Nebius model definitions, capabilities, and pricing for nemocode harnesses",
   "license": "MIT",
   "files": [
     "dist"

@@ -21,7 +21,7 @@
       ]
     },
     {
-      "source": "/kimirelay.js",
+      "source": "/nemocode.js",
       "headers": [
         { "key": "content-type", "value": "application/javascript; charset=utf-8" },
         { "key": "cache-control", "value": "public, max-age=60, must-revalidate" }

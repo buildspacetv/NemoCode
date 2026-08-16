@@ -1,4 +1,4 @@
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 
 export type AnthropicContentBlock =
   | { type: "text"; text: string }
@@ -106,7 +106,7 @@ export type OpenAIChatResponse = {
       cached_tokens?: number;
     };
   };
-  _kimirelayNativeWebSearches?: ClaudeNativeWebSearchRecord[];
+  _nemocodeNativeWebSearches?: ClaudeNativeWebSearchRecord[];
 };
 
 export type ResolvedClaudeModel = {

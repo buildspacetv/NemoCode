@@ -34,37 +34,37 @@ import {
 } from "../sandbox/tenki.js";
 
 const USAGE = `Usage:
-  kimirelay sandbox status [--project <id>]   Report your key's Sandboxes permissions
-  kimirelay sandbox project [<id>|--clear]    Show, store, or clear the Nebius project id
+  nemocode sandbox status [--project <id>]   Report your key's Sandboxes permissions
+  nemocode sandbox project [<id>|--clear]    Show, store, or clear the Nebius project id
                                               sent on contree (Token Factory) calls
-  kimirelay sandbox run [--image <tag>] [--timeout <s>] [--keep] [--fetch <path>]... <command...>
+  nemocode sandbox run [--image <tag>] [--timeout <s>] [--keep] [--fetch <path>]... <command...>
                                               Run a shell command in a sandbox. --keep
                                               snapshots the filesystem into a result image;
                                               --fetch (implies --keep) downloads files from
                                               it afterwards
-  kimirelay sandbox fetch <image-uuid> <path> [--out <file>]
+  nemocode sandbox fetch <image-uuid> <path> [--out <file>]
                                               Download one file from a result/checkpoint image
-  kimirelay sandbox prebake [--image <base>] [--tag <name>]
-                                              Bake kimirelay + both agent CLIs into a reusable
-                                              image (default tag kimirelay:prebaked); later runs
-                                              with --image tag:kimirelay:prebaked skip the cold
+  nemocode sandbox prebake [--image <base>] [--tag <name>]
+                                              Bake nemocode + both agent CLIs into a reusable
+                                              image (default tag nemocode:prebaked); later runs
+                                              with --image tag:nemocode:prebaked skip the cold
                                               bootstrap
-  kimirelay sandbox advisory [--write]        Print (or append) the agent-instructions
+  nemocode sandbox advisory [--write]        Print (or append) the agent-instructions
                                               block steering agents toward sandboxes
 
 Providers: tenki.cloud (tenki, open signup - set TENKI_API_KEY) and Nebius
 Token Factory Sandboxes (contree, gated beta). Default is tenki; select
-Nebius with --provider contree or KIMIRELAY_SANDBOX_PROVIDER=contree.
+Nebius with --provider contree or NEMOCODE_SANDBOX_PROVIDER=contree.
 See docs/TENKI-SANDBOXES-PRD.md.
 
 Some accounts require a Nebius project on every contree call; pass it with
 --project, set NEBIUS_PROJECT, or store it once with
-"kimirelay sandbox project <id>" (the id is in the Token Factory console -
+"nemocode sandbox project <id>" (the id is in the Token Factory console -
 there is no API to discover it).
 
 Remote harness sessions (headless, requires a pushed git repo):
-  klaude --sandbox -p "<task>"                Claude Code on Nemotron inside a sandbox
-  kodex --sandbox exec "<task>"               Codex inside a sandbox
+  nclaude --sandbox -p "<task>"                Claude Code on Nemotron inside a sandbox
+  ncodex --sandbox exec "<task>"               Codex inside a sandbox
 
 Sandboxes is a Nebius Token Factory beta; access: https://tokenfactory.nebius.com/sandboxes/about`;
 
@@ -86,7 +86,7 @@ type SandboxCliOptions = {
  * The Nebius project the Sandboxes API should bill/authorize against. Some
  * accounts require it on every call (the API answers 400 "Missing Project
  * header" otherwise). There is no discovery API - the id only exists in the
- * Token Factory console - so `kimirelay sandbox project <id>` stores it once
+ * Token Factory console - so `nemocode sandbox project <id>` stores it once
  * in the global config as the last-resort fallback.
  */
 export async function resolveSandboxProject(
@@ -170,7 +170,7 @@ function parseSandboxArgs(args: string[]): SandboxCliOptions {
 async function buildClient(apiKeyFlag?: string, projectFlag?: string): Promise<ContreeClient> {
   const apiKey = await resolveNebiusApiKey({ apiKey: apiKeyFlag, home: os.homedir() });
   if (!apiKey) {
-    throw new Error("No Nebius API key found. Run `kimirelay configure` or set NEBIUS_API_KEY.");
+    throw new Error("No Nebius API key found. Run `nemocode configure` or set NEBIUS_API_KEY.");
   }
   const project = await resolveSandboxProject(projectFlag);
   return new ContreeClient({ apiKey, ...(project ? { project } : {}) });
@@ -201,7 +201,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
       const effective = await resolveSandboxProject();
       if (!effective) {
         console.log(
-          "No Nebius project configured. Store one with `kimirelay sandbox project <id>` " +
+          "No Nebius project configured. Store one with `nemocode sandbox project <id>` " +
             "(the id is shown in the Token Factory console).",
         );
         return;
@@ -217,7 +217,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
     }
     await setGlobalSandboxProject(os.homedir(), value.trim());
     console.log(
-      `Stored Nebius project ${value.trim()} in ~/.kimirelay/config.json - ` +
+      `Stored Nebius project ${value.trim()} in ~/.nemocode/config.json - ` +
         "contree sandbox calls now send it automatically.",
     );
     return;
@@ -228,7 +228,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
     const provider = resolveSandboxProvider(opts.provider);
     const tenkiAuth = resolveTenkiAuth();
     console.log(
-      `Provider: ${provider}${opts.provider || process.env.KIMIRELAY_SANDBOX_PROVIDER ? "" : " (default)"}. ` +
+      `Provider: ${provider}${opts.provider || process.env.NEMOCODE_SANDBOX_PROVIDER ? "" : " (default)"}. ` +
         `Tenki credential: ${tenkiAuth ? "set" : `not set (get one at tenki.cloud - ${TENKI_DOCS_URL})`}.`,
     );
     if (provider === "tenki") {
@@ -238,7 +238,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
       }
       console.log(
         "Tenki sandboxes: credential present; prove it end to end with: " +
-          "kimirelay sandbox run -- echo ok",
+          "nemocode sandbox run -- echo ok",
       );
       return;
     }
@@ -352,9 +352,9 @@ export async function runSandboxCli(args: string[]): Promise<void> {
           "bootstrap already skips installed tooling via the command -v guards.",
       );
     }
-    const tag = opts.tag ?? "kimirelay:prebaked";
+    const tag = opts.tag ?? "nemocode:prebaked";
     const client = await buildClient(opts.apiKey, opts.project);
-    console.log("Prebaking: installing kimirelay + agent CLIs into a reusable image…");
+    console.log("Prebaking: installing nemocode + agent CLIs into a reusable image…");
     const status = await runSandboxCommand(
       client,
       {
@@ -379,7 +379,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
     }
     await client.tagImage(status.resultImageUuid, tag);
     console.log(`Prebaked image ready: ${status.resultImageUuid} tagged as ${tag}.`);
-    console.log(`Use it with: klaude --sandbox --image tag:${tag} -p "<task>"`);
+    console.log(`Use it with: nclaude --sandbox --image tag:${tag} -p "<task>"`);
     return;
   }
 
@@ -387,7 +387,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
     const opts = parseSandboxArgs(rest);
     if (!opts.write) {
       console.log(SANDBOX_ADVISORY_BLOCK);
-      console.log("Append it to your agent instructions with: kimirelay sandbox advisory --write");
+      console.log("Append it to your agent instructions with: nemocode sandbox advisory --write");
       return;
     }
     const home = os.homedir();
@@ -452,7 +452,7 @@ async function handleRunArtifacts(
   }
   console.log(
     `Result image: ${status.resultImageUuid} (fetch more later with ` +
-      `\`kimirelay sandbox fetch ${status.resultImageUuid} <path>\`)`,
+      `\`nemocode sandbox fetch ${status.resultImageUuid} <path>\`)`,
   );
   for (const remotePath of opts.fetches) {
     const dest = path.join(opts.out ?? ".", path.basename(remotePath));
@@ -468,7 +468,7 @@ async function handleRunArtifacts(
 }
 
 /**
- * Entry point for `klaude --sandbox ...` / `kodex --sandbox ...`: runs the
+ * Entry point for `nclaude --sandbox ...` / `ncodex --sandbox ...`: runs the
  * harness headlessly inside a disposable Token Factory Sandbox against the
  * project's pushed git state. Interactive TUI sessions are not supported over
  * the beta API's polling surface - pass a headless prompt (e.g. `-p` for
@@ -489,8 +489,8 @@ export async function runHarnessSandbox(
     throw new Error(
       `--sandbox runs are headless: pass the harness a task, e.g. ` +
         (harness === "claude"
-          ? `klaude --sandbox -p "fix the failing test"`
-          : `kodex --sandbox exec "fix the failing test"`),
+          ? `nclaude --sandbox -p "fix the failing test"`
+          : `ncodex --sandbox exec "fix the failing test"`),
     );
   }
   const origin = detectGitOrigin(process.cwd());
@@ -502,7 +502,7 @@ export async function runHarnessSandbox(
   }
   const apiKey = await resolveNebiusApiKey({ apiKey: flags.apiKey, home: os.homedir() });
   if (!apiKey) {
-    throw new Error("No Nebius API key found. Run `kimirelay configure` or set NEBIUS_API_KEY.");
+    throw new Error("No Nebius API key found. Run `nemocode configure` or set NEBIUS_API_KEY.");
   }
   if (resolveSandboxProvider(flags.provider) === "tenki") {
     console.log(
@@ -561,7 +561,7 @@ export async function runHarnessSandbox(
   if (flags.keep && status.resultImageUuid) {
     console.log(
       `Result image: ${status.resultImageUuid} - download files with ` +
-        `\`kimirelay sandbox fetch ${status.resultImageUuid} <path>\` (the repo lives at /work).`,
+        `\`nemocode sandbox fetch ${status.resultImageUuid} <path>\` (the repo lives at /work).`,
     );
   }
 }

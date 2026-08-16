@@ -24,7 +24,7 @@ export type CodexLaunchResult = {
 const MODEL_OVERRIDE_FLAGS = new Set(["--model", "-m"]);
 
 /**
- * `--no-mcp` is a kimirelay convenience: Codex connects to every MCP server
+ * `--no-mcp` is a nemocode convenience: Codex connects to every MCP server
  * in `~/.codex/config.toml` at startup (docker containers, remote URLs), which
  * can add many seconds even to a "hi". We can't clear individual `[mcp_servers]`
  * TOML tables reliably via `-c`, so `--no-mcp` maps to Codex's own
@@ -55,7 +55,7 @@ export async function runCodexNebius(options: CodexLaunchOptions): Promise<Codex
   if (!codexArgsIgnoreUserConfig(args)) {
     await ensureCodexGenericUserDefaults(options.home);
   }
-  // Tavily MCP auto-inject, mirroring klaude: hand the session Tavily's remote
+  // Tavily MCP auto-inject, mirroring nclaude: hand the session Tavily's remote
   // MCP server when a key is configured. Codex sends the key itself via
   // bearer_token_env_var, so the launch flags carry only the env var NAME -
   // never the key. Skipped under --no-mcp / --ignore-user-config (the user
@@ -77,9 +77,9 @@ export async function runCodexNebius(options: CodexLaunchOptions): Promise<Codex
     keepaliveLabel: "Codex session",
     ...(tavilyMcpInjected ? { extraRegistration: { tavilyMcpInjected: true } } : {}),
     banner: (modelName) =>
-      `Kimi Relay ▸ Routing Codex → Nebius Token Factory (${modelName}). Not OpenAI.\n` +
+      `NemoCode ▸ Routing Codex → Nebius Token Factory (${modelName}). Not OpenAI.\n` +
       (tavilyMcpInjected
-        ? "Kimi Relay ▸ Tavily MCP injected for this session (ephemeral - won't appear in `codex mcp list`).\n"
+        ? "NemoCode ▸ Tavily MCP injected for this session (ephemeral - won't appear in `codex mcp list`).\n"
         : ""),
     beforeSpawn: () => {
       catalog = writeCodexModelCatalog();
@@ -139,7 +139,7 @@ function codexConfigArgs(
     "-c",
     `model_catalog_json="${catalogPath}"`,
     "-c",
-    `model_providers.${CODEX_PROVIDER_ID}.name="Kimi Relay"`,
+    `model_providers.${CODEX_PROVIDER_ID}.name="NemoCode"`,
     "-c",
     `model_providers.${CODEX_PROVIDER_ID}.base_url="${proxyUrl}/v1"`,
     "-c",
@@ -150,7 +150,7 @@ function codexConfigArgs(
 }
 
 function writeCodexModelCatalog(): { path: string; cleanup: () => void } {
-  const dir = mkdtempSync(join(tmpdir(), "kimirelay-codex-catalog-"));
+  const dir = mkdtempSync(join(tmpdir(), "nemocode-codex-catalog-"));
   const path = join(dir, "models.json");
   writeFileSync(path, codexModelCatalogJson(), "utf8");
   return {

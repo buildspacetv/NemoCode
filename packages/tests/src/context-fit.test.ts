@@ -10,8 +10,8 @@ import {
 } from "../../cli/src/lib/context-fit.js";
 import { postChatCompletion, postChatCompletionStream } from "../../cli/src/lib/nebius-client.js";
 
-const TRIM_MARKER = "[kimirelay trimmed older context to fit the model window]";
-const IMAGE_PLACEHOLDER = "[kimirelay removed an older image to fit the model window]";
+const TRIM_MARKER = "[nemocode trimmed older context to fit the model window]";
+const IMAGE_PLACEHOLDER = "[nemocode removed an older image to fit the model window]";
 
 const model: ModelDefinition = {
   id: "test/fit-model",
@@ -57,7 +57,7 @@ describe("contextLengthOverflow", () => {
   });
 
   test("parses the 'prompt contains at least' phrasing (live-observed 2026-08-07)", () => {
-    // Verbatim shape of the 400 that leaked to a real klaude session: the
+    // Verbatim shape of the 400 that leaked to a real nclaude session: the
     // request was exactly one token over the window and none of the earlier
     // matchers recognized this message, so the raw error reached Claude Code.
     const liveMessage =

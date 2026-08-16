@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { toOpenAIMessages } from "../../cli/src/lib/claude/translate-request.js";
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 
 const NEMOTRON = {
   id: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",

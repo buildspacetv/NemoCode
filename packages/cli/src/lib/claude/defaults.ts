@@ -5,7 +5,7 @@ import {
   getSelectableModels,
   resolveModelByKeys,
   type ModelDefinition,
-} from "@kimirelay/models";
+} from "@nemocode/models";
 
 export const CLAUDE_LOCAL_PROXY_HOST = "127.0.0.1";
 export const CLAUDE_MODEL_CAPABILITIES = DEFAULT_ANTHROPIC_CAPABILITIES;

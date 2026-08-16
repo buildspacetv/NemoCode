@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { type ServerResponse } from "node:http";
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import type { WebSearchOutcome } from "../tavily-search.js";
 import { runNativeWebSearchCall } from "../native-web-search.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
@@ -1090,7 +1090,7 @@ function debugLog(
   label: string,
   value: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay proxy", options, label, value);
+  writeProxyDebugLog("nemocode proxy", options, label, value);
 }
 
 /**

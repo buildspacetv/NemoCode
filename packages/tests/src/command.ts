@@ -13,10 +13,10 @@ export async function runCommand(
   const cwd = options.cwd ?? context.repoRoot;
   const timeoutMs = options.timeoutMs ?? 120_000;
   const isolatedEnv =
-    context.kimirelayHome && context.daemonPort
+    context.nemocodeHome && context.daemonPort
       ? {
-          KIMIRELAY_HOME: context.kimirelayHome,
-          KIMIRELAY_PORT: String(context.daemonPort),
+          NEMOCODE_HOME: context.nemocodeHome,
+          NEMOCODE_PORT: String(context.daemonPort),
         }
       : {};
   const child = spawn(command, args, {
@@ -26,7 +26,7 @@ export async function runCommand(
       ...process.env,
       ...isolatedEnv,
       ...options.env,
-      KIMIRELAY_DEBUG: "1",
+      NEMOCODE_DEBUG: "1",
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
       DISABLE_FEEDBACK_COMMAND: "1",
     },

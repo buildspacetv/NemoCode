@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
-import { GLM_5_2 } from "@kimirelay/models";
+import { GLM_5_2 } from "@nemocode/models";
 import { runProxiedSession } from "../../cli/src/lib/proxied-session.js";
 import { cleanupTmpDir, createTestContext } from "./context.js";
 import { startTestDaemon, type TestDaemon } from "./daemon-session.js";
@@ -12,9 +12,9 @@ describe("proxied background session lifecycle", () => {
   beforeAll(async () => {
     context = await createTestContext();
     daemon = await startTestDaemon(context);
-    vi.stubEnv("KIMIRELAY_HOME", daemon.home);
-    vi.stubEnv("KIMIRELAY_PORT", new URL(daemon.url).port);
-    vi.stubEnv("KIMIRELAY_TELEMETRY_DISABLED", "1");
+    vi.stubEnv("NEMOCODE_HOME", daemon.home);
+    vi.stubEnv("NEMOCODE_PORT", new URL(daemon.url).port);
+    vi.stubEnv("NEMOCODE_TELEMETRY_DISABLED", "1");
 
     // Keep one persistent registration active so ensureDaemon reuses this
     // intentionally isolated test daemon even though Vitest is the parent

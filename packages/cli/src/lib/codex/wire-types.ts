@@ -1,4 +1,4 @@
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 
 export type ResponsesContentPart = {
   type?: string;

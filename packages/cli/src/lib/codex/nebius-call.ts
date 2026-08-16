@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import { runNativeWebSearchCall } from "../native-web-search.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
 import { postChatCompletion } from "../nebius-client.js";
@@ -274,5 +274,5 @@ function debugLog(
   label: string,
   payload: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay codex proxy", options, label, payload);
+  writeProxyDebugLog("nemocode codex proxy", options, label, payload);
 }

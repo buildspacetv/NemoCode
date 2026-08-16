@@ -23,11 +23,11 @@ export type CodexAppSessionLock = {
 };
 
 export function appSessionLockPath(home: string): string {
-  return path.join(kimirelayHomeDir(home), "codex-app", "session.json");
+  return path.join(nemocodeHomeDir(home), "codex-app", "session.json");
 }
 
-function kimirelayHomeDir(home: string): string {
-  return process.env.KIMIRELAY_HOME || path.join(home, ".kimirelay");
+function nemocodeHomeDir(home: string): string {
+  return process.env.NEMOCODE_HOME || path.join(home, ".nemocode");
 }
 
 export async function readAppSessionLock(home: string): Promise<CodexAppSessionLock | undefined> {
@@ -56,12 +56,12 @@ export async function assertNoLiveCodexAppSession(home: string): Promise<void> {
     return;
   }
   throw new Error(
-    `Another kimirelay chatgpt session appears to be running (pid ${lock.pid}). Stop it with Ctrl+C, or run \`kimirelay chatgpt --restore\` after it exits.`,
+    `Another nemocode chatgpt session appears to be running (pid ${lock.pid}). Stop it with Ctrl+C, or run \`nemocode chatgpt --restore\` after it exits.`,
   );
 }
 
 /**
- * Is the codex config at ~/.codex/config.toml one that kimirelay wrote?
+ * Is the codex config at ~/.codex/config.toml one that nemocode wrote?
  * Detects both the current managed block (marker comments) and the legacy
  * openai-provider+local-proxy+catalog triplet. Used by the orchestrator to
  * decide whether an interrupted session is recoverable, and by backup to
@@ -111,4 +111,4 @@ function isNodeError(err: unknown): err is NodeJS.ErrnoException {
   return err instanceof Error && "code" in err;
 }
 
-// avoid a dead-import lint once kimirelayHomeDir is consolidated (see #7).
+// avoid a dead-import lint once nemocodeHomeDir is consolidated (see #7).
