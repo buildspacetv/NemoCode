@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
-export const githubUrl = "https://github.com/opencolin/nemocode";
-export const docsUrl = "https://github.com/opencolin/nemocode/blob/main/README.md";
+export const githubUrl = "https://github.com/buildspacetv/NemoCode";
+export const docsUrl = "https://github.com/buildspacetv/NemoCode/blob/main/README.md";
 export const nebiusApiKeysUrl = "https://tokenfactory.nebius.com/?modals=create-api-key";
 export const llmsUrl = "/llms.txt";
 export const tavilyKeysUrl = "https://app.tavily.com";

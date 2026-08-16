@@ -123,7 +123,7 @@ the "curl | sh" trust objection and gives macOS users upgrades via
 
 ### 2026-07-29 (condensed from the original plan)
 
-- **Fork nebius-tf-relay** as `opencolin/nemocode` (full-history port)
+- **Fork nebius-tf-relay** as `opencolin/kimi-relay` (full-history port)
   rather than extending the Python proxy's installer; the relay engine and
   `curl | sh` distribution come from upstream (MIT, credited in README and on
   the site).

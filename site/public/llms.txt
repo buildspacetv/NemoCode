@@ -6,11 +6,11 @@ nemocode is an MIT-licensed CLI router. Install once, then launch your agent wit
 
 This is the LLM-readable documentation file for the project. If you are an AI agent asked to install, configure, or use nemocode (headless or interactive), read this file first. It covers installation, configuration, every command, the available models, headless/agentic usage patterns, how to keep the tool up to date, and the routing architecture.
 
-- Project: https://github.com/opencolin/nemocode
+- Project: https://github.com/buildspacetv/NemoCode
 - Website: https://nemocode.com
 - Installer: https://nemocode.com/install.sh
 - Version manifest: https://nemocode.com/latest.json
-- README: https://github.com/opencolin/nemocode/blob/main/README.md
+- README: https://github.com/buildspacetv/NemoCode/blob/main/README.md
 - This file: https://nemocode.com/llms.txt
 
 ## Install
@@ -263,8 +263,8 @@ nemocode daemon stop
 
 ## Links
 
-- [GitHub](https://github.com/opencolin/nemocode): source repository and issues
-- [README](https://github.com/opencolin/nemocode/blob/main/README.md): human-readable project overview
+- [GitHub](https://github.com/buildspacetv/NemoCode): source repository and issues
+- [README](https://github.com/buildspacetv/NemoCode/blob/main/README.md): human-readable project overview
 - [Website](https://nemocode.com): landing page
 - [Install script](https://nemocode.com/install.sh): one-command installer (`curl -fsSL https://nemocode.com/install.sh | sh`)
 - [Version manifest](https://nemocode.com/latest.json): current published version and release timestamp
