@@ -1,6 +1,6 @@
 {
   "name": "nemocode",
-  "version": "0.15.6",
+  "version": "0.15.7",
   "private": true,
   "description": "Use Nebius Token Factory models in Claude Code, OpenCode, Codex, and Pi Code",
   "license": "MIT",
@@ -16,8 +16,8 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "hooks:install": "lefthook install",
-    "test": "pnpm -F @nemocode/tests test",
-    "test:offline": "pnpm -F @nemocode/tests test:offline",
+    "test": "turbo run test --filter @nemocode/tests",
+    "test:offline": "turbo run test:offline --filter @nemocode/tests",
     "bench:proxy": "pnpm -F @nemocode/tests bench:proxy",
     "capture:proxy-fixtures": "pnpm -F @nemocode/tests capture:proxy-fixtures",
     "watch": "pnpm dev",

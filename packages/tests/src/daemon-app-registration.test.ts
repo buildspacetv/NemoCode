@@ -106,10 +106,38 @@ describe("daemon lazy codex-app session restore", () => {
     expect(response.status).toBe(401);
   });
 
+  test("401s internal control-plane calls that present no credential", async () => {
+    // Loopback reachability is not authorization: any local process can bind
+    // and connect. Without this gate an unauthenticated POST could register
+    // no-pid sessions until the cap evicted the real codex-app session.
+    const listed = await fetch(`${daemon.url}/internal/sessions`);
+    expect(listed.status).toBe(401);
+
+    const registered = await fetch(`${daemon.url}/internal/sessions`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(registration()),
+    });
+    expect(registered.status).toBe(401);
+  });
+
+  test("401s internal calls presenting the wrong credential", async () => {
+    const response = await fetch(`${daemon.url}/internal/sessions`, {
+      headers: { "x-nemocode-internal": "nemocode-local-not-the-real-token" },
+    });
+    expect(response.status).toBe(401);
+  });
+
+  test("leaves unauthenticated health endpoints reachable", async () => {
+    // ensureDaemon polls these before any credential exists on a fresh home.
+    expect((await fetch(`${daemon.url}/healthz`)).status).toBe(200);
+    expect((await fetch(`${daemon.url}/`)).status).toBe(200);
+  });
+
   test("stops resurrecting the session after restore clears the registration", async () => {
     // `nemocode codex-app --restore` deletes both the daemon session and
     // the persisted registration; the token must go back to 401.
-    await fetch(`${daemon.url}/internal/sessions/${encodeURIComponent(TOKEN)}`, {
+    await daemon.internalFetch(`${daemon.url}/internal/sessions/${encodeURIComponent(TOKEN)}`, {
       method: "DELETE",
     });
     await clearAppRegistration(daemon.home);
@@ -120,7 +148,7 @@ describe("daemon lazy codex-app session restore", () => {
   });
 
   async function listSessions(): Promise<Array<{ agent?: string }>> {
-    const response = await fetch(`${daemon.url}/internal/sessions`);
+    const response = await daemon.internalFetch(`${daemon.url}/internal/sessions`);
     const body = (await response.json()) as { sessions?: Array<{ agent?: string }> };
     return body.sessions ?? [];
   }

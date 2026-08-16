@@ -15,6 +15,36 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "test": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "package.json",
+        "tsconfig.json",
+        "vitest.config.ts",
+        "src/**",
+        "scripts/**",
+        "fixtures/**",
+        "$TURBO_ROOT$/packages/cli/src/**",
+        "$TURBO_ROOT$/packages/models/src/**"
+      ],
+      "outputs": []
+    },
+    "test:offline": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "package.json",
+        "tsconfig.json",
+        "vitest.config.ts",
+        "src/**",
+        "scripts/**",
+        "fixtures/**",
+        "$TURBO_ROOT$/packages/cli/src/**",
+        "$TURBO_ROOT$/packages/models/src/**"
+      ],
+      "outputs": []
+    },
     "test:gauntlet:core": {
       "cache": false,
       "dependsOn": ["^build"],

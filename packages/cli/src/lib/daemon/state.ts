@@ -4,7 +4,7 @@ import { resolveNebiusBaseUrl } from "../nebius-core.js";
 import type { ClaudeProxyOptions } from "../claude/proxy.js";
 import type { CodexProxyOptions } from "../codex/proxy.js";
 import type { ProxyPerfPayload } from "../proxy-perf.js";
-import { sendTelemetryEvent } from "../telemetry.js";
+import { derivedSessionId, sendTelemetryEvent } from "../telemetry.js";
 import { isProcessAlive } from "../paths.js";
 import {
   createSessionStore,
@@ -509,20 +509,6 @@ function envInt(name: string, fallback: number): number {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
-function storedSessionToPersistInput(session: StoredSession): SessionPersistInput {
-  return {
-    ...session,
-    lastSeenAt: session.lastSeenAt ?? session.startedAt,
-    costSummary: session.externalSummary ?? "[nemocode cost] session total: $0.0000 (0 in, 0 out)",
-    costTotals: {
-      promptTokens: session.promptTokens ?? 0,
-      cachedTokens: session.cachedTokens ?? 0,
-      completionTokens: session.completionTokens ?? 0,
-      costUsd: session.costUsd ?? 0,
-    },
-  };
-}
-
 function emitDaemonSessionEndedTelemetry(state: SessionState): void {
   if (state.agent !== "codex-app" || state.endedAt === undefined) {
     return;
@@ -531,7 +517,10 @@ function emitDaemonSessionEndedTelemetry(state: SessionState): void {
   const fallbackModel = state.options?.targetModelId ?? state.modelDefinition.id;
   void sendTelemetryEvent({
     event: "session_ended",
-    sessionId: state.token,
+    // Derived, never the raw token - the token authorizes this session's
+    // spend against its Nebius key. Matches what codex-app.ts sends on
+    // session_started, so the pair still correlates.
+    sessionId: derivedSessionId(state.token),
     agent: state.agent,
     initialModel: fallbackModel,
     finalModel: fallbackModel,

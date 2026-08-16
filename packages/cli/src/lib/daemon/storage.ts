@@ -1,9 +1,9 @@
 import type { TokenUsage } from "../cost.js";
 import type { AgentId, RegisterSessionRequest } from "./state.js";
-import { chmod, mkdir } from "node:fs/promises";
+import { chmod } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { nemocodeHome } from "../paths.js";
+import { ensurePrivateDir, nemocodeHome } from "../paths.js";
 
 const DATABASE_FILE = "daemon.sqlite";
 
@@ -59,10 +59,20 @@ export type SessionStore = {
 };
 
 export async function createSessionStore(home = nemocodeHome()): Promise<SessionStore> {
-  await mkdir(home, { recursive: true });
+  // 0700 on the directory, not just 0600 on the database: WAL mode (set in
+  // migrate()) makes SQLite create `daemon.sqlite-wal` and `-shm` itself, at
+  // the process umask, and those sidecars hold recently-written rows -
+  // including each session's Nebius api_key. Nothing here can chmod a file
+  // sqlite has not created yet, so the containing directory is the only
+  // reliable boundary.
+  await ensurePrivateDir(home);
   const sqlite = await openSqlite(path.join(home, DATABASE_FILE));
   if (sqlite) {
     await chmod(path.join(home, DATABASE_FILE), 0o600).catch(() => {});
+    // Belt and braces for the sidecars that already exist at this point.
+    for (const suffix of ["-wal", "-shm"]) {
+      await chmod(path.join(home, `${DATABASE_FILE}${suffix}`), 0o600).catch(() => {});
+    }
     try {
       return new ResilientSessionStore(new SqliteSessionStore(sqlite));
     } catch (err) {

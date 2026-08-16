@@ -1,5 +1,6 @@
 import os from "node:os";
 import path from "node:path";
+import { nemocodeHome } from "./paths.js";
 import {
   readJsonIfExists,
   writeJsonAtomic,
@@ -14,9 +15,10 @@ export type GlobalConfig = {
   sandboxProject: string;
 };
 
-export function nemocodeHome(home = os.homedir()): string {
-  return path.join(home, ".nemocode");
-}
+// Re-exported rather than redefined: this module used to carry its own copy
+// that ignored NEMOCODE_HOME, which silently split custom-home installs (see
+// the note in paths.ts). Existing importers keep their import path.
+export { nemocodeHome };
 
 function globalConfigPath(home = os.homedir()): string {
   return path.join(nemocodeHome(home), "config.json");

@@ -127,7 +127,7 @@ describe("harness bootstrap", () => {
     });
     expect(script).toContain("curl -fsSL https://nemocode.com/install.sh | sh");
     expect(script).toContain(
-      "git clone --depth 1 -b 'main' 'https://github.com/example/repo.git' /work",
+      "git clone --depth 1 -b 'main' -- 'https://github.com/example/repo.git' /work",
     );
     expect(script).toContain(`nclaude '-p' 'fix the "auth" bug; don'\\''t break tests'`);
     expect(script).not.toContain("secret-key");

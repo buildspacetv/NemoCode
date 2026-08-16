@@ -15,9 +15,9 @@ import {
 } from "./daemon/launch.js";
 import type { RegisterSessionRequest } from "./daemon/state.js";
 import type { HarnessContext, HarnessResult } from "./harness-types.js";
-import { sendTelemetryEvent } from "./telemetry.js";
+import { derivedSessionId, sendTelemetryEvent } from "./telemetry.js";
 import { resolveNebiusApiKey } from "./nebius-core.js";
-import { isProcessAlive } from "./paths.js";
+import { isProcessAlive, nemocodeHome } from "./paths.js";
 import {
   removeManagedBlock as tomlRemoveManagedBlock,
   removeTomlSections,
@@ -82,7 +82,9 @@ export async function runCodexAppCommand(ctx: HarnessContext): Promise<HarnessRe
   const selectedModel = resolveCodexModel(ctx.main);
   const authToken = await localProxyAuthToken();
   const sessionToken = codexAppSessionToken(authToken);
-  const telemetrySessionId = sessionToken;
+  // Derived, not the raw token: the token is this session's live proxy
+  // credential. See derivedSessionId in telemetry.ts.
+  const telemetrySessionId = derivedSessionId(sessionToken);
   const startedAt = Date.now();
   const { url: proxyUrl } = await ensureDaemon();
   const agentProxyUrl = daemonSessionUrl(proxyUrl, sessionToken);
@@ -104,7 +106,7 @@ export async function runCodexAppCommand(ctx: HarnessContext): Promise<HarnessRe
   // This command exits after configuring, so no launcher stays alive to
   // re-register the session. Persist the register body so the daemon can
   // rebuild the session on demand (restart, idle reap) from disk.
-  await writeAppRegistration(registration, nemocodeHomeDir(ctx.home));
+  await writeAppRegistration(registration, nemocodeHome(ctx.home));
 
   const configPath = codexConfigPath(ctx.home);
   const backup = await backupCodexAppConfig(ctx.home, configPath);
@@ -255,7 +257,7 @@ async function restoreCodexApp(home: string): Promise<HarnessResult> {
   await rm(appSessionLockPath(home), { force: true });
   // Drop the persisted registration so the daemon stops lazily resurrecting
   // the codex-app session after the user restores their original profile.
-  await clearAppRegistration(nemocodeHomeDir(home));
+  await clearAppRegistration(nemocodeHome(home));
   // Restore should also drop the models cache: a stale OpenAI-only cache left
   // behind by a nemocode session would make Codex show "Unknown model"
   // warnings for the user's real (restored) model until the cache expires.
@@ -389,10 +391,6 @@ async function bustStaleModelsCache(home: string): Promise<void> {
   } catch {
     // Best-effort: a missing or locked file is fine; Codex will re-evaluate.
   }
-}
-
-function nemocodeHomeDir(home: string): string {
-  return process.env.NEMOCODE_HOME || path.join(home, ".nemocode");
 }
 
 function codexAppSessionToken(authToken: string): string {

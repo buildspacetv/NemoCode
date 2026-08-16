@@ -19,7 +19,7 @@ describe("proxied background session lifecycle", () => {
     // Keep one persistent registration active so ensureDaemon reuses this
     // intentionally isolated test daemon even though Vitest is the parent
     // process rather than the CLI entrypoint that launched it.
-    const seed = await fetch(`${daemon.url}/internal/sessions`, {
+    const seed = await daemon.internalFetch(`${daemon.url}/internal/sessions`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -61,7 +61,7 @@ describe("proxied background session lifecycle", () => {
     });
 
     expect(result).toEqual({ status: 0, signal: null });
-    const response = await fetch(`${daemon.url}/internal/sessions`);
+    const response = await daemon.internalFetch(`${daemon.url}/internal/sessions`);
     const body = (await response.json()) as {
       sessions?: Array<{ agent?: string; pid?: number; status?: string }>;
     };
@@ -87,7 +87,7 @@ describe("proxied background session lifecycle", () => {
     });
 
     expect(failed).toEqual({ status: 1, signal: null });
-    const afterFailure = await fetch(`${daemon.url}/internal/sessions`);
+    const afterFailure = await daemon.internalFetch(`${daemon.url}/internal/sessions`);
     const afterFailureBody = (await afterFailure.json()) as {
       sessions?: Array<{ agent?: string }>;
     };

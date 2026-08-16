@@ -1,7 +1,7 @@
 import { constants as fsConstants } from "node:fs";
 import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { isProcessAlive } from "../paths.js";
+import { isProcessAlive, nemocodeHome } from "../paths.js";
 
 /**
  * The codex-app session lock - the deep module behind "is another codex-app
@@ -23,11 +23,7 @@ export type CodexAppSessionLock = {
 };
 
 export function appSessionLockPath(home: string): string {
-  return path.join(nemocodeHomeDir(home), "codex-app", "session.json");
-}
-
-function nemocodeHomeDir(home: string): string {
-  return process.env.NEMOCODE_HOME || path.join(home, ".nemocode");
+  return path.join(nemocodeHome(home), "codex-app", "session.json");
 }
 
 export async function readAppSessionLock(home: string): Promise<CodexAppSessionLock | undefined> {
@@ -110,5 +106,3 @@ async function writeTextAtomic(file: string, value: string): Promise<void> {
 function isNodeError(err: unknown): err is NodeJS.ErrnoException {
   return err instanceof Error && "code" in err;
 }
-
-// avoid a dead-import lint once nemocodeHomeDir is consolidated (see #7).

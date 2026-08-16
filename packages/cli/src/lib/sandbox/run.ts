@@ -115,7 +115,12 @@ export function buildHarnessBootstrap(spec: HarnessSandboxSpec): string {
   return [
     ...bootstrapPreamble(),
     `command -v ${binary} >/dev/null 2>&1 || ${install}`,
-    `git clone --depth 1 ${branchArg}${shellQuote(spec.repoUrl)} /work`,
+    // `--` before the URL: shellQuote stops shell injection, but not git's own
+    // option parsing. detectGitOrigin reads the origin out of whatever repo the
+    // user happens to be sitting in, so a hostile checkout can set it to
+    // something like `--upload-pack=…` and turn a clone into command execution.
+    // The end-of-options marker makes the URL a positional argument, always.
+    `git clone --depth 1 ${branchArg}-- ${shellQuote(spec.repoUrl)} /work`,
     "cd /work",
     `${bin} ${args}`.trim(),
   ].join("\n");

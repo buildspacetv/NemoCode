@@ -1,5 +1,6 @@
-import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
+import { readFile, writeFile, rename } from "node:fs/promises";
 import path from "node:path";
+import { ensurePrivateDir } from "./paths.js";
 import { NEBIUS_BASE_URL as SHARED_NEBIUS_BASE_URL } from "@nemocode/models";
 import type { HarnessContext } from "./harness-types.js";
 
@@ -40,7 +41,11 @@ export async function readJsonIfExists<T extends JsonObject = JsonObject>(
 }
 
 export async function writeJsonAtomic(filePath: string, value: unknown): Promise<void> {
-  await mkdir(path.dirname(filePath), { recursive: true });
+  // This is the writer behind config.json (the Nebius + Tavily keys) and the
+  // install id, so the containing directory is created owner-only rather than
+  // at the ambient umask. The file mode below is 0600 either way; the
+  // directory mode is what keeps a listing private too.
+  await ensurePrivateDir(path.dirname(filePath));
   const serialized = `${JSON.stringify(value, null, 2)}\n`;
   const tmpPath = `${filePath}.tmp-${process.pid}`;
   await writeFile(tmpPath, serialized, { mode: 0o600 });

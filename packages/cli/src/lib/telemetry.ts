@@ -1,6 +1,6 @@
 import os from "node:os";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { readJsonIfExists, writeJsonAtomic } from "./nebius-core.js";
 import { nemocodeHome } from "./global-config.js";
 import { VERSION } from "./version.js";
@@ -182,4 +182,25 @@ export async function sendTelemetryEvent(
 
 export function randomSessionId(): string {
   return randomUUID();
+}
+
+/**
+ * A stable telemetry id derived from a session's local-proxy token.
+ *
+ * Some integrations (codex-app) have no launcher process alive to hold a
+ * random id across the session_started/session_ended pair - the only thing
+ * that persists is the session token itself. That token must NOT be the id:
+ * it is the credential that authorizes `/v1/*` traffic against the session's
+ * Nebius key, so sending it to a telemetry endpoint ships a live secret
+ * off-machine. Hashing keeps the two events correlatable while making the id
+ * useless as a credential and impossible to reverse.
+ *
+ * Launcher-backed sessions should keep using `randomSessionId()`, which is
+ * unlinkable to anything on disk.
+ */
+export function derivedSessionId(sessionToken: string): string {
+  return createHash("sha256")
+    .update(`nemocode-telemetry:${sessionToken}`)
+    .digest("hex")
+    .slice(0, 32);
 }

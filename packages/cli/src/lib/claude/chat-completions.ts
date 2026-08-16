@@ -146,12 +146,14 @@ export async function callNebiusChatCompletions(
     const promptTokens = usage?.prompt_tokens ?? 0;
     const completionTokens = usage?.completion_tokens ?? 0;
     const cachedTokens = usage?.prompt_tokens_details?.cached_tokens ?? usage?.cached_tokens ?? 0;
+    // Bill the model that served the response, not the one we asked for - the
+    // client may have failed over underneath us.
     const incrementalCost =
       options.costTracker?.addUsage(
         promptTokens,
         cachedTokens,
         completionTokens,
-        targetModel.definition,
+        response.servedModel,
       ) ?? 0;
     debugLog(options, "nebius response", {
       id: json.id,
