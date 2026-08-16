@@ -29,7 +29,7 @@ sandbox status|run|advisory` plus headless `klaude --sandbox` /
   kimi.guide via Vercel git deploys. Launcher wrappers are self-locating
   (bun found via PATH or `~/.bun/bin`) and self-heal: the installed bundle
   rewrites stale wrappers on its hourly update check.
-- **The site**: dark landing page ("Kimi K3 for ⟨agent⟩" with the robot
+- **The site**: dark landing page ("Nemotron for ⟨agent⟩" with the robot
   mascot), benchmark section, community showcase at `/showcase`
   (PR-submittable), $25+$25 Token Factory/Tavily credits promo, and the
   hosting trust row (SOC 2-compliant data centers, Paris, zero data
@@ -44,7 +44,7 @@ sandbox status|run|advisory` plus headless `klaude --sandbox` /
 The relay already emulates Claude Code's native `web_search` via Tavily. When
 a Tavily key is configured, `klaude` additionally injects Tavily's remote MCP
 server per run (generated `--mcp-config`, ephemeral like everything else),
-giving Kimi K3 the explicit `tavily_search` / `tavily_extract` toolset
+giving Nemotron the explicit `tavily_search` / `tavily_extract` toolset
 alongside the emulated native search. Opt out with
 `KIMIRELAY_DISABLE_TAVILY_MCP=1`; never injected when the session passes
 `--strict-mcp-config`. ~Small; no relay changes needed.
@@ -90,7 +90,7 @@ the "curl | sh" trust objection and gives macOS users upgrades via
 - **Upstream sandbox support** to nebius-tf-relay now that the first pass
   exists — per the decision log, the fork's delta is branding + sandboxing,
   and upstreaming keeps the fork thin.
-- **Google provider slot** if/when Kimi K3 lands on Vertex AI (multi-provider
+- **Google provider slot** if/when Nemotron lands on Vertex AI (multi-provider
   remains out of scope until then; see decision log).
 
 ## Open questions (for Collin)

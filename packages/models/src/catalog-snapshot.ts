@@ -4,9 +4,16 @@
  * when the live fetch fails or has not run yet, and as the deterministic
  * source for the named model constants the test-suite imports.
  *
- * Regenerate with: pnpm -F @kimirelay/cli exec kimirelay ... (see
+ * Regenerate with: pnpm -F @nemocode/cli exec nemocode ... (see
  * scripts/list-nebius-models.mjs) or re-run the capture in the models package.
  * Only the fields buildCatalog() reads are kept.
+ *
+ * UNVERIFIED: the four `nvidia/*` rows (Nemotron x3, Cosmos x1) were added
+ * without a live catalog read - the capture host could not reach
+ * api.tokenfactory.nebius.com. Their ids, context lengths and prices are
+ * best-effort and MUST be reconciled against `GET /v1/models?verbose=true`
+ * before release; a wrong id makes every session 404. Everything else here is
+ * a real capture.
  */
 import type { NebiusApiModel } from "./index.js";
 
@@ -42,32 +49,66 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     },
   },
   {
-    id: "moonshotai/Kimi-K2.7-Code",
-    name: "Kimi-K2.7-Code",
+    // UNVERIFIED - see file header.
+    id: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
+    name: "Llama-3_1-Nemotron-Ultra-253B-v1",
     description:
-      "Open-source code-focused reasoning model built for long-context software engineering, tool use, and agentic coding workflows.",
-    context_length: 8000,
+      "NVIDIA's flagship Nemotron reasoning model: a 253B dense Llama derivative tuned with neural architecture search for agentic tool use, long-horizon reasoning, and coding, with a toggleable reasoning mode.",
+    context_length: 131072,
     architecture: {
       modality: "text->text",
     },
     pricing: {
-      prompt: "0.00000095",
-      completion: "0.000004",
+      prompt: "0.0000006",
+      completion: "0.0000018",
       image: "0",
     },
   },
   {
-    id: "moonshotai/Kimi-K2.6",
-    name: "Kimi-K2.6",
+    // UNVERIFIED - see file header.
+    id: "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5",
+    name: "Llama-3_3-Nemotron-Super-49B-v1_5",
     description:
-      "Kimi K2.6 is an open-source, native multimodal agentic model built through continual pretraining on approximately 15 trillion mixed visual and text tokens atop Kimi-K2-Base",
-    context_length: 262144,
+      "Mid-sized NVIDIA Nemotron reasoning model balancing throughput and accuracy on a single node, tuned for tool calling, instruction following, and software engineering workflows.",
+    context_length: 131072,
+    architecture: {
+      modality: "text->text",
+    },
+    pricing: {
+      prompt: "0.00000013",
+      completion: "0.0000004",
+      image: "0",
+    },
+  },
+  {
+    // UNVERIFIED - see file header.
+    id: "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
+    name: "NVIDIA-Nemotron-Nano-9B-v2",
+    description:
+      "Small, fast NVIDIA Nemotron hybrid Mamba-Transformer model with a runtime thinking budget, built for high-throughput background tasks and cheap agentic turns.",
+    context_length: 131072,
+    architecture: {
+      modality: "text->text",
+    },
+    pricing: {
+      prompt: "0.00000004",
+      completion: "0.00000012",
+      image: "0",
+    },
+  },
+  {
+    // UNVERIFIED - see file header.
+    id: "nvidia/Cosmos-Reason1-7B",
+    name: "Cosmos-Reason1-7B",
+    description:
+      "NVIDIA Cosmos Reason is a multimodal vision-language model for physical-world reasoning: it understands screenshots, diagrams, video frames, and spatial layouts, and emits chain-of-thought grounded in what it sees.",
+    context_length: 131072,
     architecture: {
       modality: "text+image->text",
     },
     pricing: {
-      prompt: "0.00000095",
-      completion: "0.000004",
+      prompt: "0.00000005",
+      completion: "0.00000015",
       image: "0",
     },
   },
@@ -113,21 +154,6 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     pricing: {
       prompt: "0.0000014",
       completion: "0.0000044",
-      image: "0",
-    },
-  },
-  {
-    id: "moonshotai/Kimi-K3",
-    name: "Kimi-K3",
-    description:
-      "Moonshot AI's Kimi K3 frontier open-weights MoE model (MXFP4, 1M context) with MTP speculative decoding, strong agentic tool use, reasoning, and coding.",
-    context_length: 8000,
-    architecture: {
-      modality: "text->text",
-    },
-    pricing: {
-      prompt: "0.000003",
-      completion: "0.000015",
       image: "0",
     },
   },

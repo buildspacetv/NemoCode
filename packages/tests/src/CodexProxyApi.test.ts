@@ -1,7 +1,13 @@
 import http from "node:http";
 import { asRecord } from "./json-lines.js";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { GLM_5_2, MINIMAX_M3, QWEN_2_5_VL_72B, QWEN_3_5_397B } from "@kimirelay/models";
+import {
+  GLM_5_2,
+  MINIMAX_M3,
+  NEMOTRON_ULTRA_253B,
+  QWEN_2_5_VL_72B,
+  QWEN_3_5_397B,
+} from "@kimirelay/models";
 import { handleCodexProxyRequest, type CodexProxyOptions } from "../../cli/src/lib/codex/proxy.js";
 
 const realFetch = globalThis.fetch.bind(globalThis);
@@ -561,8 +567,8 @@ describe("Codex Responses proxy tool compatibility", () => {
     const catalog = await getModels();
     const first = catalog.models?.[0] as Record<string, unknown> | undefined;
 
-    expect(first?.slug).toBe("moonshotai/Kimi-K3");
-    expect(first?.display_name).toBe("Kimi K3 · default");
+    expect(first?.slug).toBe("nvidia/Llama-3_1-Nemotron-Ultra-253B-v1");
+    expect(first?.display_name).toBe("Nemotron Ultra 253B · default");
     expect(first?.default_reasoning_level).toBe("minimal");
     expect(first?.default_reasoning_summary).toBe("auto");
     expect(first?.model_messages).toEqual(
@@ -572,7 +578,9 @@ describe("Codex Responses proxy tool compatibility", () => {
     );
     expect(first?.apply_patch_tool_type).toBe("freeform");
     expect(first?.web_search_tool_type).toBe("text_and_image");
-    const expectedLimit = Math.floor(GLM_5_2.limit.context / 1.8);
+    // Derived from the default model (the catalog's first row), not a literal, so
+    // swapping the default model does not silently invalidate this assertion.
+    const expectedLimit = Math.floor(NEMOTRON_ULTRA_253B.limit.context / 1.8);
     expect(first?.truncation_policy).toEqual({
       mode: "tokens",
       limit: expectedLimit,
@@ -1808,7 +1816,7 @@ describe("Codex Responses proxy tool compatibility", () => {
     });
 
     // Nebius silently caps omitted max_tokens at 2048, which truncates
-    // long-reasoning models (Kimi K2.6/K2.7) mid-turn; the proxy must always
+    // long-reasoning models (Nemotron Ultra/Super) mid-turn; the proxy must always
     // send an explicit budget. A tiny input leaves the full output limit free.
     expect(requests[0]?.max_tokens).toBe(GLM_5_2.limit.output);
 

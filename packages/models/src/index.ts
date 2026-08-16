@@ -1,5 +1,5 @@
 /**
- * Single source of truth for the Nebius models kimirelay routes to:
+ * Single source of truth for the Nebius models nemocode routes to:
  * ids, capabilities, modalities, and per-token cost. Both harnesses (Claude
  * Code's local proxy and OpenCode's ephemeral config) import from here so the
  * facts can't drift between them.
@@ -132,26 +132,30 @@ const CURATED_OVERRIDES: Record<string, ModelOverride> = {
     minContext: 262_144, // API reports a placeholder 8000
     order: 5, // was the default; Nebius removed it from the live catalog (2026-07-27)
   },
-  "moonshotai/Kimi-K2.6": {
-    name: "Kimi K2.6 · vision",
-    anthropicAlias: "nebius-kimi-k2-6",
-    outputLimit: 131_000,
+  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1": {
+    name: "Nemotron Ultra 253B · default",
+    anthropicAlias: "nebius-nemotron-ultra-253b",
+    outputLimit: 131_072,
+    order: 0, // the default model
+  },
+  "nvidia/Cosmos-Reason1-7B": {
+    name: "Cosmos Reason1 7B · vision",
+    anthropicAlias: "nebius-cosmos-reason1-7b",
+    outputLimit: 32_768,
     order: 10,
     visionRank: 0, // vision flagship: primary for image description
   },
-  "moonshotai/Kimi-K3": {
-    name: "Kimi K3 · default",
-    anthropicAlias: "nebius-kimi-k3",
-    outputLimit: 131_072,
-    minContext: 262_144, // API reports a placeholder 8000 (real model is ~1M)
-    order: 0, // the default model
-  },
-  "moonshotai/Kimi-K2.7-Code": {
-    name: "Kimi K2.7 Code",
-    anthropicAlias: "nebius-kimi-k2-7-code",
-    outputLimit: 131_072,
-    minContext: 262_144, // API reports a placeholder 8000
+  "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5": {
+    name: "Nemotron Super 49B",
+    anthropicAlias: "nebius-nemotron-super-49b",
+    outputLimit: 65_536,
     order: 20,
+  },
+  "nvidia/NVIDIA-Nemotron-Nano-9B-v2": {
+    name: "Nemotron Nano 9B · fast",
+    anthropicAlias: "nebius-nemotron-nano-9b",
+    outputLimit: 32_768,
+    order: 25,
   },
   "MiniMaxAI/MiniMax-M3": {
     name: "MiniMax M3",
@@ -179,12 +183,11 @@ const CURATED_OVERRIDES: Record<string, ModelOverride> = {
 };
 
 /**
- * The pinned default model id. Kept stable so both harnesses agree. Kimi-K3
- * since 2026-07-27, when Nebius removed GLM-5.2 from the live catalog. Note:
- * K3's Nebius capacity can be flaky (occasional header/SSE-idle timeouts); the
- * 120s response-header timeout and reasoning cap mitigate it.
+ * The pinned default model id. Kept stable so both harnesses agree. The
+ * Nemotron Ultra flagship since 2026-08-16, when the Moonshot Kimi models were
+ * dropped in favour of NVIDIA's Nemotron (text) and Cosmos (vision) families.
  */
-export const DEFAULT_MODEL_ID = "moonshotai/Kimi-K3";
+export const DEFAULT_MODEL_ID = "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1";
 
 /**
  * Nebius model ids verified to accept the OpenAI `reasoning_effort` parameter.
@@ -195,8 +198,13 @@ export const DEFAULT_MODEL_ID = "moonshotai/Kimi-K3";
  */
 export const REASONING_EFFORT_MODEL_IDS: ReadonlySet<string> = new Set([
   "zai-org/GLM-5.2",
-  "moonshotai/Kimi-K2.6",
-  "moonshotai/Kimi-K3",
+  // UNVERIFIED: the Nemotron reasoners are listed here on the assumption they
+  // accept `reasoning_effort` like the flagships they replace. Confirm against
+  // a live Nebius call before release - a model that rejects the parameter
+  // fails the whole request. Nemotron Nano is deliberately absent: it backs the
+  // Haiku tier, where the pre-existing behaviour was to send no effort at all.
+  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
+  "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5",
 ]);
 
 /** Whether a model accepts the `reasoning_effort` parameter. */
@@ -210,11 +218,12 @@ const DEFAULT_CONTEXT = 131_072;
 
 /**
  * Capabilities string Claude Code reads from
- * ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES. Mirrors what GLM-5.2
- * supports on Nebius: adjustable reasoning effort (incl. xhigh/max), thinking,
- * adaptive thinking, and interleaved thinking.
+ * ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES. Mirrors what the
+ * default model (Nemotron Ultra) supports on Nebius: adjustable reasoning
+ * effort (incl. xhigh/max), thinking, adaptive thinking, and interleaved
+ * thinking.
  */
-export const GLM_5_2_ANTHROPIC_CAPABILITIES =
+export const DEFAULT_ANTHROPIC_CAPABILITIES =
   "effort,xhigh_effort,max_effort,thinking,adaptive_thinking,interleaved_thinking";
 
 function priceToMillion(value: string | number | null | undefined): number {
@@ -389,8 +398,14 @@ function fromSnapshot(id: string): ModelDefinition {
  * catalog uses the getters below instead.
  */
 export const GLM_5_2: ModelDefinition = fromSnapshot("zai-org/GLM-5.2");
-export const KIMI_K2_6: ModelDefinition = fromSnapshot("moonshotai/Kimi-K2.6");
-export const KIMI_K2_7_CODE: ModelDefinition = fromSnapshot("moonshotai/Kimi-K2.7-Code");
+export const NEMOTRON_ULTRA_253B: ModelDefinition = fromSnapshot(
+  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
+);
+export const NEMOTRON_SUPER_49B: ModelDefinition = fromSnapshot(
+  "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5",
+);
+export const NEMOTRON_NANO_9B: ModelDefinition = fromSnapshot("nvidia/NVIDIA-Nemotron-Nano-9B-v2");
+export const COSMOS_REASON1_7B: ModelDefinition = fromSnapshot("nvidia/Cosmos-Reason1-7B");
 export const MINIMAX_M3: ModelDefinition = fromSnapshot("MiniMaxAI/MiniMax-M3");
 export const QWEN_3_5_397B: ModelDefinition = fromSnapshot("Qwen/Qwen3.5-397B-A17B");
 export const DEEPSEEK_V4_PRO: ModelDefinition = fromSnapshot("deepseek-ai/DeepSeek-V4-Pro");

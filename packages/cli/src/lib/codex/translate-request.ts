@@ -649,7 +649,7 @@ function reasoningEffort(body: ResponsesRequest, model: ModelDefinition): string
     return undefined;
   }
   if (acceptsReasoningEffort(model.id)) {
-    // Mirror the Claude proxy: GLM-5.2 and Kimi-K3 reason on every turn unless
+    // Mirror the Claude proxy: GLM-5.2 and Nemotron reason on every turn unless
     // told not to, which dominates latency. Honor an explicit effort, else
     // default to a fast "none" (overridable with KIMIRELAY_REASONING_EFFORT).
     // See the note on defaultReasoningEffort in claude/translate-request.ts.

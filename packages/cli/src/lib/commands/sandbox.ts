@@ -63,7 +63,7 @@ Some accounts require a Nebius project on every contree call; pass it with
 there is no API to discover it).
 
 Remote harness sessions (headless, requires a pushed git repo):
-  klaude --sandbox -p "<task>"                Claude Code on Kimi K3 inside a sandbox
+  klaude --sandbox -p "<task>"                Claude Code on Nemotron inside a sandbox
   kodex --sandbox exec "<task>"               Codex inside a sandbox
 
 Sandboxes is a Nebius Token Factory beta; access: https://tokenfactory.nebius.com/sandboxes/about`;

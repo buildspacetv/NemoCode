@@ -78,7 +78,7 @@ export function nebiusReasoningEffort(
   body: AnthropicMessagesRequest,
   targetModel: ModelDefinition,
 ): NebiusReasoningEffort | undefined {
-  // Only send reasoning_effort to models known to accept it (GLM-5.2, Kimi-K3);
+  // Only send reasoning_effort to models known to accept it (GLM-5.2, Nemotron);
   // other Nebius models may reject the parameter. Both are hybrid reasoners that
   // reason on every turn without an explicit effort, so capping it keeps trivial
   // turns fast and prevents runaway output.

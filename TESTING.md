@@ -86,7 +86,7 @@ Pick a backend for one launch:
 
 ```bash
 pnpm -F @kimirelay/cli exec kimirelay --main nebius-glm-5-2 claude
-pnpm -F @kimirelay/cli exec kimirelay --main nebius-kimi-k2-7-code claude
+pnpm -F @kimirelay/cli exec kimirelay --main nebius-nemotron-nano-9b claude
 pnpm -F @kimirelay/cli exec kimirelay --main Qwen/Qwen3.5-397B-A17B claude
 ```
 
@@ -117,7 +117,7 @@ Codex App support is an alpha feature. Unlike `kimirelay codex`, it persistently
 export NEBIUS_API_KEY="..."
 
 pnpm -F @kimirelay/cli exec kimirelay codex-app
-pnpm -F @kimirelay/cli exec kimirelay codex-app --model moonshotai/Kimi-K2.7-Code
+pnpm -F @kimirelay/cli exec kimirelay codex-app --model nvidia/NVIDIA-Nemotron-Nano-9B-v2
 ```
 
 Restore the previous Codex config:

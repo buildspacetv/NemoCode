@@ -1,8 +1,8 @@
 # kimi-relay
 
-**Run Kimi K3 in Claude Code, Codex, and OpenCode on [Nebius Token Factory](https://tokenfactory.nebius.com/) (EU hosting).**
+**Run NVIDIA Nemotron in Claude Code, Codex, and OpenCode on [Nebius Token Factory](https://tokenfactory.nebius.com/) (EU hosting).**
 
-One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Kimi K3, Kimi K2.6, Qwen 3.5, DeepSeek V4, MiniMax M3) served from the EU instead of their default backends.
+One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Nemotron Ultra, Cosmos Reason, Qwen 3.5, DeepSeek V4, MiniMax M3) served from the EU instead of their default backends.
 
 ```bash
 curl -fsSL https://kimirelay.com/install.sh | sh
@@ -11,7 +11,7 @@ curl -fsSL https://kimirelay.com/install.sh | sh
 Then:
 
 ```bash
-klaude     # Claude Code on Kimi K3 (long form: kimirelay claude)
+klaude     # Claude Code on Nemotron (long form: kimirelay claude)
 ```
 
 > **Note:** [kimirelay.com](https://kimirelay.com) is the project's home; [kimi.guide](https://kimi.guide) serves the same content.
@@ -79,21 +79,22 @@ kodex exec "add a test for the parser"
 
 ## Models
 
-The model list is **fetched live** from Nebius (`GET /v1/models?verbose=true`) at startup, so every model Nebius serves is available and each model's vision support comes straight from the API's modality field, never a hand-maintained list. Results are cached in `~/.kimirelay/` and fall back to a bundled snapshot when offline. The default coding model is **Kimi K3**; switch inside your agent or with `--model`.
+The model list is **fetched live** from Nebius (`GET /v1/models?verbose=true`) at startup, so every model Nebius serves is available and each model's vision support comes straight from the API's modality field, never a hand-maintained list. Results are cached in `~/.kimirelay/` and fall back to a bundled snapshot when offline. The default coding model is **Nemotron Ultra 253B**; switch inside your agent or with `--model`.
 
 Featured flagships:
 
-| Model                   | Best for                  | Context | Vision |
-| ----------------------- | ------------------------- | ------- | ------ |
-| **Kimi K3** _(default)_ | General coding + agentic  | 262K    | No     |
-| Kimi K2.6               | Vision flagship           | 262K    | Yes    |
-| Kimi K2.7 Code          | Coding                    | 262K    | No     |
-| MiniMax M3              | Fast, cheap               | 196K    | No     |
-| Qwen 3.5 397B           | General / coding flagship | 262K    | No     |
-| DeepSeek V4 Pro         | Long-context reasoning    | 1M      | No     |
-| Qwen2.5-VL 72B          | Vision fallback           | 32K     | Yes    |
+| Model                               | Best for                  | Context | Vision |
+| ----------------------------------- | ------------------------- | ------- | ------ |
+| **Nemotron Ultra 253B** _(default)_ | General coding + agentic  | 128K    | No     |
+| Cosmos Reason1 7B                   | Vision flagship           | 128K    | Yes    |
+| Nemotron Super 49B                  | Reasoning + tool use      | 128K    | No     |
+| Nemotron Nano 9B                    | Fast, cheap background    | 128K    | No     |
+| MiniMax M3                          | Fast, cheap               | 196K    | No     |
+| Qwen 3.5 397B                       | General / coding flagship | 262K    | No     |
+| DeepSeek V4 Pro                     | Long-context reasoning    | 1M      | No     |
+| Qwen2.5-VL 72B                      | Vision fallback           | 32K     | Yes    |
 
-Claude Code and Codex are text-native; image blocks are auto-routed to a vision-capable model (Kimi K2.6, then Qwen2.5-VL). OpenCode uses a dedicated `@vision` subagent pinned to the vision flagship. Run `scripts/list-nebius-models.mjs` (with `NEBIUS_API_KEY` set) to print the raw catalog Nebius serves.
+Claude Code and Codex are text-native; image blocks are auto-routed to a vision-capable model (Cosmos Reason1 7B, then Qwen2.5-VL). OpenCode uses a dedicated `@vision` subagent pinned to the vision flagship. Run `scripts/list-nebius-models.mjs` (with `NEBIUS_API_KEY` set) to print the raw catalog Nebius serves.
 
 ## Web search
 
@@ -103,18 +104,18 @@ With a Tavily key configured, `klaude`, `kodex`, and `openkode` also get [Tavily
 
 ## Configuration & env vars
 
-| Variable                         | Effect                                                                                                                                           |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `NEBIUS_API_KEY`                 | Nebius Token Factory key (or set via `configure`).                                                                                               |
-| `TAVILY_API_KEY`                 | Enables web search (or set via `configure`).                                                                                                     |
-| `NEBIUS_BASE_URL`                | Override the API base (default `https://api.tokenfactory.nebius.com/v1`).                                                                        |
-| `KIMIRELAY_REASONING_EFFORT`     | `none`\|`low`\|`medium`\|`high`\|`max`. Default `none` for speed; raise for harder tasks.                                                        |
-| `KIMIRELAY_FALLBACK_MODEL`       | Model to fail over to when the target model returns no response headers (down/overloaded). Default `moonshotai/Kimi-K2.6`; set `off` to disable. |
-| `NEBIUS_PROJECT`                 | Nebius project id for Token Factory Sandboxes calls (or `--project`, or store once: `kimirelay sandbox project <id>`).                           |
-| `TENKI_API_KEY`                  | tenki.cloud credential (`tk_…`) for the default (tenki) sandbox provider.                                                                        |
-| `KIMIRELAY_DISABLE_TAVILY_MCP=1` | Skip the Tavily MCP server auto-inject (klaude, kodex, openkode).                                                                                |
-| `KIMIRELAY_DISABLE_AUTOUPDATE=1` | Stop the installed binary from self-updating.                                                                                                    |
-| `KIMIRELAY_TELEMETRY_URL`        | Opt in to telemetry by pointing at your own collector. Off by default.                                                                           |
+| Variable                         | Effect                                                                                                                                                               |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEBIUS_API_KEY`                 | Nebius Token Factory key (or set via `configure`).                                                                                                                   |
+| `TAVILY_API_KEY`                 | Enables web search (or set via `configure`).                                                                                                                         |
+| `NEBIUS_BASE_URL`                | Override the API base (default `https://api.tokenfactory.nebius.com/v1`).                                                                                            |
+| `KIMIRELAY_REASONING_EFFORT`     | `none`\|`low`\|`medium`\|`high`\|`max`. Default `none` for speed; raise for harder tasks.                                                                            |
+| `KIMIRELAY_FALLBACK_MODEL`       | Model to fail over to when the target model returns no response headers (down/overloaded). Default `nvidia/Llama-3_3-Nemotron-Super-49B-v1_5`; set `off` to disable. |
+| `NEBIUS_PROJECT`                 | Nebius project id for Token Factory Sandboxes calls (or `--project`, or store once: `kimirelay sandbox project <id>`).                                               |
+| `TENKI_API_KEY`                  | tenki.cloud credential (`tk_…`) for the default (tenki) sandbox provider.                                                                                            |
+| `KIMIRELAY_DISABLE_TAVILY_MCP=1` | Skip the Tavily MCP server auto-inject (klaude, kodex, openkode).                                                                                                    |
+| `KIMIRELAY_DISABLE_AUTOUPDATE=1` | Stop the installed binary from self-updating.                                                                                                                        |
+| `KIMIRELAY_TELEMETRY_URL`        | Opt in to telemetry by pointing at your own collector. Off by default.                                                                                               |
 
 The installed binary keeps itself up to date from `kimirelay.com`, throttled to once an hour, and swallows every failure. On the same cadence it refreshes the launcher wrappers (`kimirelay`, `klaude`, …) next to the bundle, so wrapper fixes reach existing installs too. Dev/source runs never self-update.
 
@@ -159,7 +160,7 @@ pnpm build:site        # builds the CLI bundle + latest.json + the site
 
 ## Credits
 
-kimi-relay is a friendly fork of [shivaylamba/nebius-tf-relay](https://github.com/shivaylamba/nebius-tf-relay) (MIT). The daemon, wire-format translation, live model catalog, cost tracking, web-search emulation, and installer are that project's work; this fork rebrands the commands around Kimi K3 (`klaude` / `kodex` / `openkode` / `kpi`) and plans Token Factory Sandboxes integration on top.
+kimi-relay is a friendly fork of [shivaylamba/nebius-tf-relay](https://github.com/shivaylamba/nebius-tf-relay) (MIT). The daemon, wire-format translation, live model catalog, cost tracking, web-search emulation, and installer are that project's work; this fork rebrands the commands around NVIDIA Nemotron (`klaude` / `kodex` / `openkode` / `kpi`) and plans Token Factory Sandboxes integration on top.
 
 ## License
 

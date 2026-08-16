@@ -59,7 +59,7 @@ Extra args after codex/claude/pi/opencode are passed through.
 
 Sandbox sessions (default provider: tenki.cloud - open signup, set TENKI_API_KEY;
 Nebius Token Factory with --provider contree needs Sandboxes beta access):
-  klaude --sandbox -p "<task>"    Claude Code on Kimi K3 in a disposable microVM,
+  klaude --sandbox -p "<task>"    Claude Code on Nemotron in a disposable microVM,
                                   against your repo's pushed state. Headless only.
   kodex --sandbox exec "<task>"   Same for Codex.
 ChatGPT App support is alpha; run \`kimirelay chatgpt --restore\` (alias: codex-app) to restore the previous desktop config.

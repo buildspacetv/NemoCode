@@ -51,12 +51,12 @@ const DEFAULT_RESPONSE_HEADER_TIMEOUT_MS = 45_000;
 // Automatic model fallback: when a request's target model returns no response
 // headers (its Nebius endpoint is down/overloaded), the relay transparently
 // re-issues the SAME request on a healthy fallback model instead of surfacing
-// an error - so a provider-side outage of one model (e.g. Kimi-K3) doesn't
+// an error - so a provider-side outage of one model (e.g. Nemotron Ultra) doesn't
 // break sessions mid-flight. A short-lived per-model circuit breaker then skips
 // the dead model entirely for a cooldown window, so only the first failing turn
 // pays the timeout. Configure with KIMIRELAY_FALLBACK_MODEL (set to
 // "off"/"none" to disable) and KIMIRELAY_FALLBACK_COOLDOWN_MS.
-const DEFAULT_FALLBACK_MODEL = "moonshotai/Kimi-K2.6";
+const DEFAULT_FALLBACK_MODEL = "nvidia/Llama-3_3-Nemotron-Super-49B-v1_5";
 const DEFAULT_FALLBACK_COOLDOWN_MS = 60_000;
 
 /** model id -> epoch ms of its last response-header timeout (circuit breaker). */
