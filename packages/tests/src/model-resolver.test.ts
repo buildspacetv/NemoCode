@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  acceptsReasoningEffort,
   GLM_5_2,
   NEMOTRON_3_NANO,
   SELECTABLE_MODELS,
@@ -63,5 +64,22 @@ describe("resolveModelByKeys", () => {
 
   it("returns undefined for an empty list", () => {
     expect(resolveModelByKeys([], undefined, byId, GLM_5_2.id)).toBeUndefined();
+  });
+});
+
+describe("reasoning_effort routing", () => {
+  // Verified against live Nebius 2026-08-17. These are not style preferences:
+  // this proxy's default effort is "none", so sending the parameter to a model
+  // whose enum omits "none" 400s the entire request.
+  test("only sends reasoning_effort to models that accept this proxy's values", () => {
+    expect(acceptsReasoningEffort("nvidia/Nemotron-3-Ultra-550b-a55b")).toBe(true);
+
+    // super-120b accepts reasoning_effort but only low/medium/high. It is also
+    // the header-timeout failover target, so sending it an effort broke the
+    // rescue path, not just direct selection.
+    expect(acceptsReasoningEffort("nvidia/nemotron-3-super-120b-a12b")).toBe(false);
+
+    // The Haiku tier has always been sent no effort; keep it that way.
+    expect(acceptsReasoningEffort("nvidia/Nemotron-3_5-Lightning")).toBe(false);
   });
 });
