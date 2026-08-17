@@ -8,6 +8,7 @@ import {
 } from "./defaults.js";
 import {} from "../daemon/launch.js";
 import { runProxiedSession, type ProxiedSessionResult } from "../proxied-session.js";
+import { renderLaunchBanner } from "../banner.js";
 
 const CONFLICTING_ENV_KEYS = [
   "ANTHROPIC_API_KEY",
@@ -171,10 +172,16 @@ export async function runClaudeNebius(options: ClaudeLaunchOptions): Promise<Cla
     keepaliveLabel: "Claude session",
     preserveSessionAfterExit: claudeRunsInBackground(args),
     banner: (modelName) =>
-      `NemoCode ▸ Routing Claude Code → Nebius Token Factory (${modelName}). Not Anthropic.\n` +
-      (options.tavilyMcpInjected
-        ? "NemoCode ▸ Tavily MCP injected for this session (ephemeral - won't appear in `claude mcp list`).\n"
-        : ""),
+      renderLaunchBanner({
+        lines: [
+          "NemoCode",
+          `Claude Code → Nebius Token Factory`,
+          `${modelName} · not Anthropic`,
+          ...(options.tavilyMcpInjected
+            ? ["Tavily MCP injected (ephemeral - not in `claude mcp list`)"]
+            : []),
+        ],
+      }),
     buildEnv: ({ proxyUrl, authToken, modelId, modelName }) =>
       buildClaudeEnv({ ...options, modelId, modelName, proxyUrl, authToken }),
     buildArgs: ({ args: launchArgs, authToken }) => buildClaudeLaunchArgs(launchArgs, authToken),

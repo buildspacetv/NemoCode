@@ -7,6 +7,7 @@ import { resolveTavilyMcpKey } from "../tavily-mcp-key.js";
 import { defineHarness } from "../harness-types.js";
 import { HARNESS } from "../harness.js";
 import type { HarnessContext, HarnessResult } from "../harness-types.js";
+import { renderLaunchBanner } from "../banner.js";
 
 /**
  * Strips any `--model`/`-m`/`--model=` from passthrough args so a user can't
@@ -52,6 +53,9 @@ export default defineHarness({
     const tavilyMcp = Boolean(resolveTavilyMcpKey());
     const configJson = buildOpencodeConfigJson({ modelId, tavilyMcp });
     const env = buildOpencodeEnv({ apiKey, configJson });
+    process.stderr.write(
+      renderLaunchBanner({ lines: ["NemoCode", "OpenCode → Nebius Token Factory", modelId] }),
+    );
     if (tavilyMcp) {
       process.stderr.write(
         "NemoCode ▸ Tavily MCP injected for this session (ephemeral - config is never written to disk).\n",

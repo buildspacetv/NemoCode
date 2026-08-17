@@ -7,6 +7,7 @@ import { getCodexSupportedModels, resolveCodexModel } from "../codex/defaults.js
 import { HARNESS } from "../harness.js";
 import { defineHarness, type HarnessContext, type HarnessResult } from "../harness-types.js";
 import { resolveNebiusApiKey, resolveNebiusBaseUrl } from "../nebius-core.js";
+import { renderLaunchBanner } from "../banner.js";
 
 const PI_PROVIDER_ID = "nebius";
 function piSupportedModels(): string {
@@ -128,7 +129,9 @@ export default defineHarness({
       process.stderr.write(`[nemo pi] session dir: ${sessionDir}\n`);
     }
 
-    process.stderr.write(`NemoCode ▸ Launching Pi Code with Nebius Token Factory.\n`);
+    process.stderr.write(
+      renderLaunchBanner({ lines: ["NemoCode", "Pi Code → Nebius Token Factory"] }),
+    );
     const child = spawn("pi", args, {
       env: {
         ...process.env,
