@@ -12,9 +12,9 @@ describe("proxied background session lifecycle", () => {
   beforeAll(async () => {
     context = await createTestContext();
     daemon = await startTestDaemon(context);
-    vi.stubEnv("KIMIRELAY_HOME", daemon.home);
-    vi.stubEnv("KIMIRELAY_PORT", new URL(daemon.url).port);
-    vi.stubEnv("KIMIRELAY_TELEMETRY_DISABLED", "1");
+    vi.stubEnv("NEMORELAY_HOME", daemon.home);
+    vi.stubEnv("NEMORELAY_PORT", new URL(daemon.url).port);
+    vi.stubEnv("NEMORELAY_TELEMETRY_DISABLED", "1");
 
     // Keep one persistent registration active so ensureDaemon reuses this
     // intentionally isolated test daemon even though Vitest is the parent

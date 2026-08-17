@@ -71,7 +71,7 @@ Codex flags:
 Your last-used model is remembered per tool: change it with /model (or --model
 before the harness) and the next launch reuses it.
 
-Docs: https://kimirelay.com/llms.txt
+Docs: https://nemocode.org/llms.txt
   LLM-readable documentation - if you are an AI agent asked to install, configure,
   or use kimirelay (including headless use), read that file first.
 `);

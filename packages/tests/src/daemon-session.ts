@@ -21,7 +21,7 @@ const GLM_5_2 = {
 
 export type TestDaemon = {
   url: string;
-  /** The daemon's isolated KIMIRELAY_HOME. */
+  /** The daemon's isolated NEMORELAY_HOME. */
   home: string;
   /**
    * The local-proxy token this daemon will accept on `/internal/*`. Seeded
@@ -61,9 +61,9 @@ export async function startTestDaemon(context: TestContext): Promise<TestDaemon>
     cwd: context.repoRoot,
     env: {
       ...process.env,
-      KIMIRELAY_DEBUG: "1",
-      KIMIRELAY_HOME: home,
-      KIMIRELAY_PORT: String(port),
+      NEMORELAY_DEBUG: "1",
+      NEMORELAY_HOME: home,
+      NEMORELAY_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

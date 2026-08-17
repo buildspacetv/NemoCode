@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { appendFile, chmod, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { kimirelayHome } from "./paths.js";
@@ -31,7 +32,7 @@ export type NebiusRequestDiagnostic = {
 export async function persistRequestDiagnostic(
   diagnostic: Omit<NebiusRequestDiagnostic, "at">,
 ): Promise<void> {
-  if (process.env.KIMIRELAY_REQUEST_DIAGNOSTICS === "0") {
+  if (relayEnv("REQUEST_DIAGNOSTICS") === "0") {
     return;
   }
   const file = resolveRequestDiagnosticsPath();

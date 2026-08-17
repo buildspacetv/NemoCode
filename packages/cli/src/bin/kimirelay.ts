@@ -154,7 +154,7 @@ async function main() {
   // parsing so even `kimirelay help` keeps an install current, but it's a
   // no-op unless this is the installed bundle and the throttle window passed.
   // Keep this before loading project .env files so a repo cannot redirect the
-  // updater with KIMIRELAY_MANIFEST_URL / KIMIRELAY_HOME.
+  // updater with NEMORELAY_MANIFEST_URL / NEMORELAY_HOME.
   await maybeSelfUpdate();
 
   // Load a .env (cwd → repo root) after self-update, and only for approved

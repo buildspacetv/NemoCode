@@ -163,9 +163,9 @@ describe("Claude proxy compatibility API", () => {
   });
 
   test("retries a streamed Claude turn when Nebius never returns response headers", async () => {
-    vi.stubEnv("KIMIRELAY_RESPONSE_HEADER_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
-    vi.stubEnv("KIMIRELAY_REQUEST_DIAGNOSTICS", "0");
+    vi.stubEnv("NEMORELAY_RESPONSE_HEADER_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_REQUEST_DIAGNOSTICS", "0");
     let upstreamCalls = 0;
     vi.stubGlobal(
       "fetch",
@@ -208,9 +208,9 @@ describe("Claude proxy compatibility API", () => {
   }, 2_500);
 
   test("retries a streamed Claude turn when Nebius returns headers but emits no SSE", async () => {
-    vi.stubEnv("KIMIRELAY_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
-    vi.stubEnv("KIMIRELAY_REQUEST_DIAGNOSTICS", "0");
+    vi.stubEnv("NEMORELAY_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_REQUEST_DIAGNOSTICS", "0");
     const upstreamBodies: Array<Record<string, unknown>> = [];
     vi.stubGlobal(
       "fetch",

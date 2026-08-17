@@ -729,7 +729,7 @@ test("vision delayed failover timing", async () => {
     5,
     1,
     async () => {
-      vi.stubEnv("KIMIRELAY_VISION_FAILOVER_RACE_DELAY_MS", "5");
+      vi.stubEnv("NEMORELAY_VISION_FAILOVER_RACE_DELAY_MS", "5");
       let requests = 0;
       vi.stubGlobal(
         "fetch",
@@ -1081,12 +1081,12 @@ function loadCapturedPayload(file: URL): Record<string, unknown> | undefined {
 }
 
 function sanityP95CeilingMs(): number {
-  const raw = process.env.KIMIRELAY_PROXY_BENCH_MAX_RAW_P95_MS;
+  const raw = process.env.NEMORELAY_PROXY_BENCH_MAX_RAW_P95_MS;
   return raw ? Number.parseFloat(raw) : 100;
 }
 
 function optionalOverheadCeilingMs(): number | undefined {
-  const raw = process.env.KIMIRELAY_PROXY_BENCH_MAX_P95_OVERHEAD_MS;
+  const raw = process.env.NEMORELAY_PROXY_BENCH_MAX_P95_OVERHEAD_MS;
   if (!raw) {
     return undefined;
   }

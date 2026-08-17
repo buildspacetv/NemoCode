@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import type { ModelDefinition } from "@kimirelay/models";
@@ -103,7 +104,7 @@ export type ProxiedSessionSpec = {
 };
 
 export async function runProxiedSession(spec: ProxiedSessionSpec): Promise<ProxiedSessionResult> {
-  const debug = process.env.KIMIRELAY_DEBUG === "1";
+  const debug = relayEnv("DEBUG") === "1";
   const sessionId = randomLocalProxyToken();
   const authToken = await localProxyAuthToken();
   const telemetrySessionId = randomSessionId();

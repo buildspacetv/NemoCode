@@ -24,8 +24,8 @@ sandbox status|run|advisory` plus headless `klaude --sandbox` /
   `kodex --sandbox` against pushed git state (`docs/SANDBOXES.md`).
   Interactive TTY, artifact download, and prebaked images remain open; live
   verification is blocked on beta access.
-- **Distribution**: `curl -fsSL https://kimirelay.com/install.sh | sh`
-  (POSIX-sh safe, self-updating, v0.10.1), serving from kimirelay.com and
+- **Distribution**: `curl -fsSL https://nemocode.org/install.sh | sh`
+  (POSIX-sh safe, self-updating, v0.10.1), serving from nemocode.org and
   kimi.guide via Vercel git deploys. Launcher wrappers are self-locating
   (bun found via PATH or `~/.bun/bin`) and self-heal: the installed bundle
   rewrites stale wrappers on its hourly update check.
@@ -46,7 +46,7 @@ a Tavily key is configured, `klaude` additionally injects Tavily's remote MCP
 server per run (generated `--mcp-config`, ephemeral like everything else),
 giving Kimi K3 the explicit `tavily_search` / `tavily_extract` toolset
 alongside the emulated native search. Opt out with
-`KIMIRELAY_DISABLE_TAVILY_MCP=1`; never injected when the session passes
+`NEMORELAY_DISABLE_TAVILY_MCP=1`; never injected when the session passes
 `--strict-mcp-config`. ~Small; no relay changes needed.
 
 ### 2. Beta → stable for `klaude` and `kodex`

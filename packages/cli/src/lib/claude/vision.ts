@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { createHash } from "node:crypto";
 import { VISION_PROMPT, getVisionModels } from "@kimirelay/models";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";
@@ -273,7 +274,7 @@ async function describeImageWithDelayedFailoverRace(
 }
 
 function visionFailoverRaceDelayMs(): number | undefined {
-  const raw = process.env.KIMIRELAY_VISION_FAILOVER_RACE_DELAY_MS;
+  const raw = relayEnv("VISION_FAILOVER_RACE_DELAY_MS");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
 }

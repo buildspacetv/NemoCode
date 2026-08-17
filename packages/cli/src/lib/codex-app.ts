@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { constants as fsConstants } from "node:fs";
 import { access, copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -100,7 +101,7 @@ export async function runCodexAppCommand(ctx: HarnessContext): Promise<HarnessRe
     targetModelId: selectedModel.definition.id,
     modelName: selectedModel.definition.name,
     modelDefinition: selectedModel.definition,
-    ...(process.env.KIMIRELAY_DEBUG === "1" ? { debug: true } : {}),
+    ...(relayEnv("DEBUG") === "1" ? { debug: true } : {}),
   };
   await registerDaemonSession(proxyUrl, registration);
   // This command exits after configuring, so no launcher stays alive to
@@ -364,11 +365,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 function backupDir(home: string): string {
-  return path.join(
-    process.env.KIMIRELAY_HOME || path.join(home, ".kimirelay"),
-    "backup",
-    "codex-app",
-  );
+  return path.join(relayEnv("HOME") || path.join(home, ".kimirelay"), "backup", "codex-app");
 }
 
 function modelCatalogPath(home: string): string {

@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { appendFile } from "node:fs/promises";
 
 let warnedAboutDebugLogWrite = false;
@@ -5,7 +6,7 @@ let warnedAboutDebugLogWrite = false;
 export function writeDebugLogLine(line: string): void {
   process.stderr.write(line);
 
-  const logPath = process.env.KIMIRELAY_DEBUG_LOG;
+  const logPath = relayEnv("DEBUG_LOG");
   if (!logPath) {
     return;
   }

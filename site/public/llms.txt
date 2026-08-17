@@ -2,23 +2,23 @@
 
 > Use Nebius Token Factory models in the coding-agent CLIs you already run - OpenCode, Claude Code, Codex CLI, and Pi Code. kimirelay injects Nebius settings for a single run so your normal tool configs stay untouched.
 
-kimirelay is an MIT-licensed CLI router. Install once, then launch your agent with short commands (`kodex`, `klaude`, `openkode`, `kpi`). For Claude Code and Codex CLI it routes the agent's API traffic to Nebius Token Factory through a local translation proxy; for OpenCode and Pi Code it injects ephemeral per-run config. The installed binary keeps itself up to date automatically from kimirelay.com. kimirelay is a friendly fork of nebius-tf-relay (https://github.com/shivaylamba/nebius-tf-relay, MIT), whose daemon, wire-format translation, and installer this project builds on.
+kimirelay is an MIT-licensed CLI router. Install once, then launch your agent with short commands (`kodex`, `klaude`, `openkode`, `kpi`). For Claude Code and Codex CLI it routes the agent's API traffic to Nebius Token Factory through a local translation proxy; for OpenCode and Pi Code it injects ephemeral per-run config. The installed binary keeps itself up to date automatically from nemocode.org. kimirelay is a friendly fork of nebius-tf-relay (https://github.com/shivaylamba/nebius-tf-relay, MIT), whose daemon, wire-format translation, and installer this project builds on.
 
 This is the LLM-readable documentation file for the project. If you are an AI agent asked to install, configure, or use kimirelay (headless or interactive), read this file first. It covers installation, configuration, every command, the available models, headless/agentic usage patterns, how to keep the tool up to date, and the routing architecture.
 
 - Project: https://github.com/opencolin/kimi-relay
-- Website: https://kimirelay.com
-- Installer: https://kimirelay.com/install.sh
-- Version manifest: https://kimirelay.com/latest.json
+- Website: https://nemocode.org
+- Installer: https://nemocode.org/install.sh
+- Version manifest: https://nemocode.org/latest.json
 - README: https://github.com/opencolin/kimi-relay/blob/main/README.md
-- This file: https://kimirelay.com/llms.txt
+- This file: https://nemocode.org/llms.txt
 
 ## Install
 
 One command installs the `kimirelay`, `klaude`, `openkode`, `kodex`, and `kpi` commands to `~/.kimirelay/bin/` and installs Bun for you if it isn't already present:
 
 ```
-curl -fsSL https://kimirelay.com/install.sh | sh
+curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
 After install, restart your shell (or run the `export PATH=...` line it prints) so the commands are on PATH. The install:
@@ -38,7 +38,7 @@ Before the first launch you need a Nebius API key (get one at https://tokenfacto
 kimirelay configure
 ```
 
-This stores your Nebius API key in `~/.kimirelay/` and optionally a Tavily API key (https://app.tavily.com) that powers web-search emulation in Claude Code and Codex. Web search is optional - without it, searches return a clear "TAVILY_API_KEY not set" error instead of failing silently. When a Tavily key is configured, `klaude`, `kodex`, and `openkode` auto-inject Tavily's remote MCP server per session (ephemeral, nothing durable written; skipped with `--strict-mcp-config` on klaude or `--no-mcp` on kodex; disable everywhere with `KIMIRELAY_DISABLE_TAVILY_MCP=1`), adding explicit `tavily_search` / `tavily_extract` tools. For openkode this is the only live-web path. kpi is excluded: pi has no MCP support by design.
+This stores your Nebius API key in `~/.kimirelay/` and optionally a Tavily API key (https://app.tavily.com) that powers web-search emulation in Claude Code and Codex. Web search is optional - without it, searches return a clear "TAVILY_API_KEY not set" error instead of failing silently. When a Tavily key is configured, `klaude`, `kodex`, and `openkode` auto-inject Tavily's remote MCP server per session (ephemeral, nothing durable written; skipped with `--strict-mcp-config` on klaude or `--no-mcp` on kodex; disable everywhere with `NEMORELAY_DISABLE_TAVILY_MCP=1`), adding explicit `tavily_search` / `tavily_extract` tools. For openkode this is the only live-web path. kpi is excluded: pi has no MCP support by design.
 
 You can also set the key non-interactively:
 
@@ -203,7 +203,7 @@ Per-task cost varies a lot with how verbose the agent is. Mechanical, well-scope
 
 ## Sandboxes (beta)
 
-Two providers: tenki.cloud (the default; open signup, `TENKI_API_KEY`) and Nebius Token Factory Sandboxes (gated beta, `NEBIUS_API_KEY`; select with `--provider contree` or `KIMIRELAY_SANDBOX_PROVIDER=contree`; some accounts also need `kimirelay sandbox project <id>`).
+Two providers: tenki.cloud (the default; open signup, `TENKI_API_KEY`) and Nebius Token Factory Sandboxes (gated beta, `NEBIUS_API_KEY`; select with `--provider contree` or `NEMORELAY_SANDBOX_PROVIDER=contree`; some accounts also need `kimirelay sandbox project <id>`).
 
 Token Factory Sandboxes support (disposable microVMs on the same Nebius key):
 
@@ -225,15 +225,15 @@ uncommitted changes do not travel.
 
 ## Keeping kimirelay up to date
 
-The installed binary self-updates automatically in the background. The check is throttled and bounded, never throws, and runs before argument parsing - so even `kimirelay help` keeps an install current. The update is pulled from https://kimirelay.com/latest.json, which contains `version`, `url`, and `publishedAt`.
+The installed binary self-updates automatically in the background. The check is throttled and bounded, never throws, and runs before argument parsing - so even `kimirelay help` keeps an install current. The update is pulled from https://nemocode.org/latest.json, which contains `version`, `url`, and `publishedAt`.
 
 To force a refresh, re-run the install one-liner:
 
 ```
-curl -fsSL https://kimirelay.com/install.sh | sh
+curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
-You can check the installed version with `kimirelay --version` and compare it against the published manifest at https://kimirelay.com/latest.json.
+You can check the installed version with `kimirelay --version` and compare it against the published manifest at https://nemocode.org/latest.json.
 
 ## Architecture (how routing works)
 
@@ -264,9 +264,9 @@ kimirelay daemon stop
 
 - [GitHub](https://github.com/opencolin/kimi-relay): source repository and issues
 - [README](https://github.com/opencolin/kimi-relay/blob/main/README.md): human-readable project overview
-- [Website](https://kimirelay.com): landing page
-- [Install script](https://kimirelay.com/install.sh): one-command installer (`curl -fsSL https://kimirelay.com/install.sh | sh`)
-- [Version manifest](https://kimirelay.com/latest.json): current published version and release timestamp
-- [This LLM docs file](https://kimirelay.com/llms.txt): the file you are reading now
+- [Website](https://nemocode.org): landing page
+- [Install script](https://nemocode.org/install.sh): one-command installer (`curl -fsSL https://nemocode.org/install.sh | sh`)
+- [Version manifest](https://nemocode.org/latest.json): current published version and release timestamp
+- [This LLM docs file](https://nemocode.org/llms.txt): the file you are reading now
 - [Nebius Token Factory API keys](https://tokenfactory.nebius.com/?modals=create-api-key): get a key to route traffic
 - [llms.txt specification](https://llmstxt.org): the convention this file follows

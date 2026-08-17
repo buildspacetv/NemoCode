@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { performance } from "node:perf_hooks";
 
 type ProxyPerfFields = Record<string, unknown>;
@@ -40,7 +41,7 @@ export function createProxyPerfTracer(
   fields: ProxyPerfFields = {},
   sink?: ProxyPerfSink,
 ): ProxyPerfTracer {
-  if (process.env.KIMIRELAY_PERF !== "1") {
+  if (relayEnv("PERF") !== "1") {
     return disabledProxyPerfTracer;
   }
   const startedAt = performance.now();

@@ -12,7 +12,7 @@
  * Integrity is the load-bearing part. The downloaded bundle is executed by
  * every subsequent `klaude`/`kodex`/… invocation, so a manifest that could
  * name an arbitrary URL, or a bundle nobody checksums, turns any compromise
- * of the release site (or of whatever `KIMIRELAY_MANIFEST_URL` points at)
+ * of the release site (or of whatever `NEMORELAY_MANIFEST_URL` points at)
  * into code execution on the user's machine. Two gates close that:
  *
  *  1. The download URL must live on the SAME origin as the manifest it came
@@ -21,10 +21,11 @@
  *  2. The manifest must carry a `sha256` of the bundle, and the bytes must
  *     hash to it before anything is renamed into place. No digest, no update.
  *
- * `KIMIRELAY_MANIFEST_URL` therefore stays useful for local mirrors while no
+ * `NEMORELAY_MANIFEST_URL` therefore stays useful for local mirrors while no
  * longer being a one-variable path to running someone else's code.
  */
 
+import { relayEnv } from "./env.js";
 import { readFile, writeFile, rename, stat, unlink } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
@@ -33,10 +34,10 @@ import { VERSION } from "./version.js";
 import { refreshLauncherWrappers } from "./wrappers.js";
 
 /** Single origin for the landing page, manifest, and downloadable bundle. */
-const UPDATE_ORIGIN = "https://kimirelay.com";
+const UPDATE_ORIGIN = "https://nemocode.org";
 /** Override for testing/local mirrors; normally unset. */
 function resolveManifestUrl(): string {
-  return process.env.KIMIRELAY_MANIFEST_URL ?? `${UPDATE_ORIGIN}/latest.json`;
+  return relayEnv("MANIFEST_URL") ?? `${UPDATE_ORIGIN}/latest.json`;
 }
 
 const THROTTLE_MS = 60 * 60 * 1000; // re-check at most once per hour
@@ -46,13 +47,13 @@ const FETCH_TIMEOUT_MS = 5_000;
 type Manifest = { version: string; url?: string; sha256?: string };
 
 /**
- * Where the install lives. `KIMIRELAY_HOME` (when set) is the `.kimirelay`
+ * Where the install lives. `NEMORELAY_HOME` (when set) is the `.kimirelay`
  * directory itself - matching `scripts/install.sh`, which installs the bundle
- * at `$KIMIRELAY_HOME/bin/kimirelay.js`. When unset, default to
+ * at `$NEMORELAY_HOME/bin/kimirelay.js`. When unset, default to
  * `~/.kimirelay`.
  */
 function resolveInstallDir(): string {
-  return process.env.KIMIRELAY_HOME || path.join(os.homedir(), ".kimirelay");
+  return relayEnv("HOME") || path.join(os.homedir(), ".kimirelay");
 }
 
 /** Installed bundle path. `kimirelay` wrapper runs `bun run` on this. */
@@ -246,8 +247,8 @@ export async function maybeSelfUpdate(): Promise<void> {
   // Only the installed bundle self-updates, and only against the deployed
   // release site the bundle was installed from - so this is a safe default-on:
   // dev/source runs no-op, and every failure below is swallowed. Set
-  // KIMIRELAY_DISABLE_AUTOUPDATE=1 to opt out.
-  if (process.env.KIMIRELAY_DISABLE_AUTOUPDATE === "1") {
+  // NEMORELAY_DISABLE_AUTOUPDATE=1 to opt out.
+  if (relayEnv("DISABLE_AUTOUPDATE") === "1") {
     return;
   }
   if (!isInstalledBundle()) {

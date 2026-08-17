@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import {
   CLAUDE_HAIKU_MODEL_SELECTION,
   CLAUDE_MODEL_CAPABILITIES,
@@ -219,7 +220,7 @@ function claudeEffortArgs(args: string[]): string[] {
       return [];
     }
   }
-  const env = process.env.KIMIRELAY_REASONING_EFFORT?.toLowerCase();
+  const env = relayEnv("REASONING_EFFORT")?.toLowerCase();
   const level =
     env === "medium" || env === "high" || env === "xhigh" || env === "max" || env === "low"
       ? env

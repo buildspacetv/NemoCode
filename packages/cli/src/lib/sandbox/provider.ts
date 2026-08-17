@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 /**
  * Sandbox provider selection. Two backends share the sandbox surface:
  * `contree` (Nebius Token Factory Sandboxes - gated beta, same key as
@@ -22,7 +23,7 @@ export function resolveSandboxProvider(
   flag: string | undefined,
   env: NodeJS.ProcessEnv = process.env,
 ): SandboxProviderName {
-  const requested = (flag ?? env.KIMIRELAY_SANDBOX_PROVIDER)?.trim().toLowerCase();
+  const requested = (flag ?? relayEnv("SANDBOX_PROVIDER", env))?.trim().toLowerCase();
   if (requested === "tenki" || requested === "contree") {
     return requested;
   }

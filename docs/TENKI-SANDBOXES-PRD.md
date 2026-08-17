@@ -70,7 +70,7 @@ A `provider` axis on the existing sandbox layer, no rewrite:
 Selection (first match wins):
 
 1. `--provider tenki|contree` on any sandbox command / `--sandbox` hoist
-2. `KIMIRELAY_SANDBOX_PROVIDER` env
+2. `NEMORELAY_SANDBOX_PROVIDER` env
 3. Default: `tenki` (Collin, 2026-08-02, superseding same-day `contree`).
    No credential sniffing — credentials in the env never switch providers
    on their own; `--provider contree` selects Nebius explicitly.
@@ -115,12 +115,12 @@ which one the current flags/env select.
 - Sessions are always `close()`d in a `finally`; `maxDurationMs` is set from
   `--timeout` so orphans self-expire server-side.
 - M3 MCP inject ships with the audit knob documented and respects
-  `KIMIRELAY_DISABLE_TAVILY_MCP`-style opt-out conventions.
+  `NEMORELAY_DISABLE_TAVILY_MCP`-style opt-out conventions.
 
 ## Milestones
 
 - **M1 (this PR)**: provider selection (`--provider` /
-  `KIMIRELAY_SANDBOX_PROVIDER` / auto), Tenki backend for `sandbox status`,
+  `NEMORELAY_SANDBOX_PROVIDER` / auto), Tenki backend for `sandbox status`,
   `sandbox run` (incl. `--fetch` via live-session `readFile`), and headless
   `klaude --sandbox` / `kodex --sandbox`. Offline tests with an injected SDK
   stub; live verification the moment a `tk_…` key is available.
@@ -151,10 +151,10 @@ fetch` and `sandbox prebake` on tenki; pause/resume surfacing.
    environment; the live gauntlet runs a tenki smoke
    (`sandbox run --provider tenki`) whenever the secret resolves.
 2. **Answered.** No auto-selection at all: providers are explicit opt-in
-   (`--provider tenki` / `KIMIRELAY_SANDBOX_PROVIDER=tenki`), default
+   (`--provider tenki` / `NEMORELAY_SANDBOX_PROVIDER=tenki`), default
    `contree`. The credential-based fallback M1 briefly shipped was removed.
 3. **Still open.** M3 MCP inject default-on vs opt-in
-   (`KIMIRELAY_TENKI_MCP=1`): Collin is undecided; PRD keeps leaning
+   (`NEMORELAY_TENKI_MCP=1`): Collin is undecided; PRD keeps leaning
    **opt-in** for cost safety, to be settled before M3 starts.
 
 ## Decision-log update
@@ -169,6 +169,6 @@ provider.** Rationale: tenki is open-signup and live-verified in CI on
 every gauntlet run, while ConTree remains double-gated and unverified for
 this account; the default should be the path that works out of the box.
 ConTree stays fully supported behind `--provider contree` /
-`KIMIRELAY_SANDBOX_PROVIDER=contree` and becomes a candidate for default
+`NEMORELAY_SANDBOX_PROVIDER=contree` and becomes a candidate for default
 again if/when its gates open up. Revision recorded in
 `docs/ROADMAP.md`'s decision log with this PRD as rationale.

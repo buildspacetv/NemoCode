@@ -19,8 +19,8 @@ describe("shared Nebius SSE transport", () => {
   });
 
   test("retries an idle response before harness output starts", async () => {
-    vi.stubEnv("KIMIRELAY_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
     const retry = vi.fn(async () =>
       sseResponse([{ choices: [{ delta: { content: "recovered" } }] }]),
     );
@@ -37,7 +37,7 @@ describe("shared Nebius SSE transport", () => {
   });
 
   test("retries a stream that closes before DONE when no harness output started", async () => {
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
     const retry = vi.fn(async () =>
       sseResponse([
         { choices: [{ delta: { content: "recovered" } }] },
@@ -57,8 +57,8 @@ describe("shared Nebius SSE transport", () => {
   });
 
   test("does not retry an idle response after harness output starts", async () => {
-    vi.stubEnv("KIMIRELAY_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
     const retry = vi.fn(async () => sseResponse([]));
 
     const consume = async () => {
@@ -75,9 +75,9 @@ describe("shared Nebius SSE transport", () => {
 
   test("persists and surfaces request IDs when an SSE stream stays idle", async () => {
     temporaryHome = await mkdtemp(path.join(os.tmpdir(), "kimirelay-sse-test-"));
-    vi.stubEnv("KIMIRELAY_HOME", temporaryHome);
-    vi.stubEnv("KIMIRELAY_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "0");
+    vi.stubEnv("NEMORELAY_HOME", temporaryHome);
+    vi.stubEnv("NEMORELAY_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "0");
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => {

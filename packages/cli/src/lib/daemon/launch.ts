@@ -77,7 +77,7 @@ export async function ensureDaemon(): Promise<{ url: string }> {
     stdio: "ignore",
     env: {
       ...process.env,
-      KIMIRELAY_PORT: String(port),
+      NEMORELAY_PORT: String(port),
     },
   });
   child.unref();
@@ -92,7 +92,7 @@ export async function ensureDaemon(): Promise<{ url: string }> {
   }
   throw new Error(
     `kimirelay daemon did not become healthy on ${url} within ${HEALTH_POLL_TIMEOUT_MS / 1000}s. ` +
-      `Set KIMIRELAY_PORT to use a different port.`,
+      `Set NEMORELAY_PORT to use a different port.`,
   );
 }
 

@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import os from "node:os";
 import path from "node:path";
 import { chmod, mkdir } from "node:fs/promises";
@@ -28,7 +29,7 @@ import { chmod, mkdir } from "node:fs/promises";
  * zero-argument daemon callers.
  */
 export function kimirelayHome(base = os.homedir()): string {
-  return process.env.KIMIRELAY_HOME || path.join(base, ".kimirelay");
+  return relayEnv("HOME") || path.join(base, ".kimirelay");
 }
 
 /**

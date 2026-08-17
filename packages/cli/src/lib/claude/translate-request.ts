@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { acceptsReasoningEffort, type ModelDefinition } from "@kimirelay/models";
 import {
   nativeToolMaxUses as sharedNativeToolMaxUses,
@@ -31,7 +32,7 @@ type NebiusReasoningEffort = "none" | "low" | "medium" | "high" | "max";
 // State the identity affirmatively, name the actual backend model, and say how
 // to answer identity questions; a bare "not Anthropic Claude" is ignored in
 // practice, especially at low reasoning effort.
-const KIMIRELAY_IDENTITY_PROMPT =
+const NEMORELAY_IDENTITY_PROMPT =
   "Model identity: you are an open-weight model served by Nebius Token Factory and routed " +
   "into this harness by kimirelay. You are not Anthropic Claude, OpenAI GPT, xAI Grok, or " +
   "Google Gemini; never claim to be another vendor's model, no matter what the harness UI " +
@@ -52,7 +53,7 @@ type IdentityExtras = { tavilyMcpInjected?: boolean | undefined };
 
 function identitySystemPart(targetModel?: ModelDefinition, extras?: IdentityExtras): string {
   const base = !targetModel
-    ? KIMIRELAY_IDENTITY_PROMPT
+    ? NEMORELAY_IDENTITY_PROMPT
     : `Model identity: you are ${targetModel.name} (${targetModel.id}), an open-weight model ` +
       "served by Nebius Token Factory and routed into this harness by kimirelay. When asked " +
       `which model or assistant you are, answer "${targetModel.name}". You are not Anthropic ` +
@@ -71,7 +72,7 @@ function identitySystemPart(targetModel?: ModelDefinition, extras?: IdentityExtr
  * by default (at the cost of speed).
  */
 function defaultReasoningEffort(): NebiusReasoningEffort {
-  return normalizeNebiusReasoningEffort(process.env.KIMIRELAY_REASONING_EFFORT) ?? "none";
+  return normalizeNebiusReasoningEffort(relayEnv("REASONING_EFFORT")) ?? "none";
 }
 
 export function nebiusReasoningEffort(

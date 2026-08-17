@@ -48,7 +48,7 @@ describe("resolveSandboxProvider", () => {
     expect(resolveSandboxProvider("tenki", {} as NodeJS.ProcessEnv)).toBe("tenki");
     expect(
       resolveSandboxProvider(undefined, {
-        KIMIRELAY_SANDBOX_PROVIDER: "tenki",
+        NEMORELAY_SANDBOX_PROVIDER: "tenki",
       } as NodeJS.ProcessEnv),
     ).toBe("tenki");
     expect(() => resolveSandboxProvider("docker", {} as NodeJS.ProcessEnv)).toThrow(
@@ -64,7 +64,7 @@ describe("resolveSandboxProvider", () => {
     expect(resolveSandboxProvider("contree", {} as NodeJS.ProcessEnv)).toBe("contree");
     expect(
       resolveSandboxProvider(undefined, {
-        KIMIRELAY_SANDBOX_PROVIDER: "contree",
+        NEMORELAY_SANDBOX_PROVIDER: "contree",
       } as NodeJS.ProcessEnv),
     ).toBe("contree");
   });

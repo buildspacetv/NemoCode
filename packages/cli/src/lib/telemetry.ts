@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import os from "node:os";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
@@ -10,7 +11,7 @@ import { VERSION } from "./version.js";
 // explicitly, so the CLI has no network dependency on a telemetry backend.
 // Resolved at call time (not module load) so it stays overridable in tests.
 function telemetryEndpoint(): string | undefined {
-  return process.env.KIMIRELAY_TELEMETRY_URL;
+  return relayEnv("TELEMETRY_URL");
 }
 const TELEMETRY_TIMEOUT_MS = 2000;
 

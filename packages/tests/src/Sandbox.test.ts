@@ -125,7 +125,7 @@ describe("harness bootstrap", () => {
       branch: "main",
       apiKey: "secret-key",
     });
-    expect(script).toContain("curl -fsSL https://kimirelay.com/install.sh | sh");
+    expect(script).toContain("curl -fsSL https://nemocode.org/install.sh | sh");
     expect(script).toContain(
       "git clone --depth 1 -b 'main' -- 'https://github.com/example/repo.git' /work",
     );

@@ -6,6 +6,7 @@
  * `--mcp-config` - argv never carries the key, and nothing durable is written.
  */
 
+import { relayEnv } from "../env.js";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -14,7 +15,7 @@ import { TAVILY_MCP_BASE_URL } from "../tavily-mcp-key.js";
 export const TAVILY_MCP_URL = TAVILY_MCP_BASE_URL;
 
 export function shouldInjectTavilyMcp(args: string[], env: NodeJS.ProcessEnv): boolean {
-  if (env.KIMIRELAY_DISABLE_TAVILY_MCP === "1") {
+  if (relayEnv("DISABLE_TAVILY_MCP", env) === "1") {
     return false;
   }
   if (!env.TAVILY_API_KEY?.trim()) {

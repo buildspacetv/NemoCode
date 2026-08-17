@@ -90,14 +90,14 @@ async function captureCodex(outDir) {
       "-c",
       'model_providers.capture.wire_api="responses"',
       "-c",
-      'model_providers.capture.env_key="KIMIRELAY_CODEX_AUTH_TOKEN"',
+      'model_providers.capture.env_key="NEMORELAY_CODEX_AUTH_TOKEN"',
       codingPrompt(),
     ];
     const result = await runCommand("codex", args, {
       cwd: repo.path,
       env: {
         ...isolatedHomeEnv(runtimeHome.path),
-        KIMIRELAY_CODEX_AUTH_TOKEN: "local-token",
+        NEMORELAY_CODEX_AUTH_TOKEN: "local-token",
       },
       timeoutMs: 45_000,
     });

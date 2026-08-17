@@ -32,9 +32,10 @@ cp "$ROOT/scripts/install.sh" "$TRACKED_DIR/install.sh"
 # same host it came from, rather than silently reaching back to the default.
 # Only site/public is stamped; site/install.sh stays a verbatim mirror of the
 # source script so the tracked copy does not churn per deployment.
-if [ -n "${KIMIRELAY_ORIGIN:-}" ]; then
-  ORIGIN_CLEAN="${KIMIRELAY_ORIGIN%/}"
-  sed -i.bak "s|ORIGIN=\"\${KIMIRELAY_ORIGIN:-https://kimirelay.com}\"|ORIGIN=\"\${KIMIRELAY_ORIGIN:-${ORIGIN_CLEAN}}\"|" "$PUBLIC_DIR/install.sh"
+if [ -n "${NEMORELAY_ORIGIN:-${NEMORELAY_ORIGIN:-}}" ]; then
+  ORIGIN_RAW="${NEMORELAY_ORIGIN:-${NEMORELAY_ORIGIN:-}}"
+  ORIGIN_CLEAN="${ORIGIN_RAW%/}"
+  sed -i.bak "s|https://nemocode.org}}\"|${ORIGIN_CLEAN}}}\"|" "$PUBLIC_DIR/install.sh"
   rm -f "$PUBLIC_DIR/install.sh.bak"
   echo "✓ installer → site/public/install.sh (origin ${ORIGIN_CLEAN}) and site/install.sh"
 else
@@ -47,7 +48,7 @@ bun build \
   "$ROOT/packages/cli/src/bin/kimirelay.ts" \
   --target=bun \
   --production \
-  --define "process.env.KIMIRELAY_VERSION=\"${VERSION}\"" \
+  --define "process.env.NEMORELAY_VERSION=\"${VERSION}\"" \
   --outfile "$PUBLIC_DIR/kimirelay.js"
 
 cp "$PUBLIC_DIR/kimirelay.js" "$TRACKED_DIR/kimirelay.js"
@@ -63,12 +64,12 @@ echo "✓ bundle → site/public/kimirelay.js and site/kimirelay.js ($(wc -c < "
 # `url` is RELATIVE by default, and that is deliberate. The updater requires
 # the bundle to live on the same origin as the manifest that named it, so a
 # hardcoded absolute URL is only correct on exactly one host - a manifest
-# baked with `https://kimirelay.com/kimirelay.js` but served from any other
+# baked with `https://nemocode.org/kimirelay.js` but served from any other
 # deployment (a fork's Vercel project, a preview URL, a local mirror) names a
 # cross-origin bundle and is refused. A relative path is resolved against
 # whatever origin actually served the manifest, so one build artifact is
-# correct everywhere. Set KIMIRELAY_ORIGIN to pin an absolute URL instead.
-MANIFEST_ORIGIN="${KIMIRELAY_ORIGIN:-}"
+# correct everywhere. Set NEMORELAY_ORIGIN to pin an absolute URL instead.
+MANIFEST_ORIGIN="${NEMORELAY_ORIGIN:-${NEMORELAY_ORIGIN:-}}"
 node -e "
 const fs = require('node:fs');
 const crypto = require('node:crypto');

@@ -15,8 +15,8 @@ export async function runCommand(
   const isolatedEnv =
     context.kimirelayHome && context.daemonPort
       ? {
-          KIMIRELAY_HOME: context.kimirelayHome,
-          KIMIRELAY_PORT: String(context.daemonPort),
+          NEMORELAY_HOME: context.kimirelayHome,
+          NEMORELAY_PORT: String(context.daemonPort),
         }
       : {};
   const child = spawn(command, args, {
@@ -26,7 +26,7 @@ export async function runCommand(
       ...process.env,
       ...isolatedEnv,
       ...options.env,
-      KIMIRELAY_DEBUG: "1",
+      NEMORELAY_DEBUG: "1",
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1",
       DISABLE_FEEDBACK_COMMAND: "1",
     },

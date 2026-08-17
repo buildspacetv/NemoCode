@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -54,7 +55,7 @@ const USAGE = `Usage:
 
 Providers: tenki.cloud (tenki, open signup - set TENKI_API_KEY) and Nebius
 Token Factory Sandboxes (contree, gated beta). Default is tenki; select
-Nebius with --provider contree or KIMIRELAY_SANDBOX_PROVIDER=contree.
+Nebius with --provider contree or NEMORELAY_SANDBOX_PROVIDER=contree.
 See docs/TENKI-SANDBOXES-PRD.md.
 
 Some accounts require a Nebius project on every contree call; pass it with
@@ -228,7 +229,7 @@ export async function runSandboxCli(args: string[]): Promise<void> {
     const provider = resolveSandboxProvider(opts.provider);
     const tenkiAuth = resolveTenkiAuth();
     console.log(
-      `Provider: ${provider}${opts.provider || process.env.KIMIRELAY_SANDBOX_PROVIDER ? "" : " (default)"}. ` +
+      `Provider: ${provider}${opts.provider || relayEnv("SANDBOX_PROVIDER") ? "" : " (default)"}. ` +
         `Tenki credential: ${tenkiAuth ? "set" : `not set (get one at tenki.cloud - ${TENKI_DOCS_URL})`}.`,
     );
     if (provider === "tenki") {

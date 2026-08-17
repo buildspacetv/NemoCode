@@ -9,18 +9,18 @@ import { CostTracker } from "../../cli/src/lib/claude/cost.js";
 import { handleProxyRequest, type ClaudeProxyOptions } from "../../cli/src/lib/claude/proxy.js";
 import type { ProxyPerfPayload } from "../../cli/src/lib/proxy-perf.js";
 
-const maybeTest = process.env.KIMIRELAY_LIVE_PROXY_BENCH === "1" ? test : test.skip;
-const maybeConnectionTest = process.env.KIMIRELAY_LIVE_CONNECTION_BENCH === "1" ? test : test.skip;
+const maybeTest = process.env.NEMORELAY_LIVE_PROXY_BENCH === "1" ? test : test.skip;
+const maybeConnectionTest = process.env.NEMORELAY_LIVE_CONNECTION_BENCH === "1" ? test : test.skip;
 const maybeGenerationConnectionTest =
-  process.env.KIMIRELAY_LIVE_GENERATION_CONNECTION_BENCH === "1" ? test : test.skip;
+  process.env.NEMORELAY_LIVE_GENERATION_CONNECTION_BENCH === "1" ? test : test.skip;
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
-const iterations = positiveInt(process.env.KIMIRELAY_LIVE_PROXY_BENCH_ITERATIONS) ?? 5;
-const warmup = positiveInt(process.env.KIMIRELAY_LIVE_PROXY_BENCH_WARMUP) ?? 1;
-const concurrentRequests = positiveInt(process.env.KIMIRELAY_LIVE_PROXY_BENCH_CONCURRENCY) ?? 3;
+const iterations = positiveInt(process.env.NEMORELAY_LIVE_PROXY_BENCH_ITERATIONS) ?? 5;
+const warmup = positiveInt(process.env.NEMORELAY_LIVE_PROXY_BENCH_WARMUP) ?? 1;
+const concurrentRequests = positiveInt(process.env.NEMORELAY_LIVE_PROXY_BENCH_CONCURRENCY) ?? 3;
 const realFetch = globalThis.fetch.bind(globalThis);
 
 afterEach(() => {
-  delete process.env.KIMIRELAY_PERF;
+  delete process.env.NEMORELAY_PERF;
   globalThis.fetch = realFetch;
 });
 
@@ -42,7 +42,7 @@ maybeTest(
       costTracker,
       perfSink: (payload) => perfPayloads.push(payload),
     };
-    process.env.KIMIRELAY_PERF = "1";
+    process.env.NEMORELAY_PERF = "1";
     const server = createServer((req, res) => {
       handleProxyRequest(req, res, options).catch((err) => {
         res.writeHead(500, { "content-type": "application/json" });
@@ -412,7 +412,7 @@ async function startClaudeProxyServer({
         fields: { ...payload.fields, benchCondition: perfCondition?.() },
       }),
   };
-  process.env.KIMIRELAY_PERF = "1";
+  process.env.NEMORELAY_PERF = "1";
   const server = createServer((req, res) => {
     handleProxyRequest(req, res, options).catch((err) => {
       res.writeHead(500, { "content-type": "application/json" });

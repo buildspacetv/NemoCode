@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -119,7 +120,7 @@ export default defineHarness({
       ...piArgsWithoutKimirelayOverrides(ctx.passthrough ?? []),
     ];
 
-    if (process.env.KIMIRELAY_DEBUG === "1") {
+    if (relayEnv("DEBUG") === "1") {
       process.stderr.write(`[kimirelay pi] provider: ${PI_PROVIDER_ID}\n`);
       process.stderr.write(`[kimirelay pi] model: ${selectedModel.id}\n`);
       process.stderr.write(`[kimirelay pi] models: ${supportedModels}\n`);

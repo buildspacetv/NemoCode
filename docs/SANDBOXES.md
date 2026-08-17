@@ -17,7 +17,7 @@ Two sandbox backends share this surface (see `docs/TENKI-SANDBOXES-PRD.md`):
   `TENKI_API_KEY` (a `tk_…` key). `--fetch` reads files from the live
   session; post-hoc fetch/prebake land with snapshots (PRD milestone 2).
 
-Select with `--provider <tenki|contree>` or `KIMIRELAY_SANDBOX_PROVIDER`.
+Select with `--provider <tenki|contree>` or `NEMORELAY_SANDBOX_PROVIDER`.
 The default is tenki (open signup, CI-verified live); select Nebius with
 `--provider contree`. Credentials in the env never switch providers on
 their own. Harness keys reach tenki sessions via the create request body

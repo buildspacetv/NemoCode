@@ -16,8 +16,8 @@ set -eu
 # dash on Debian/Ubuntu. Enable it only where the shell supports it.
 if (set -o pipefail) 2>/dev/null; then set -o pipefail; fi
 
-ORIGIN="${KIMIRELAY_ORIGIN:-https://kimirelay.com}"
-INSTALL_DIR="${KIMIRELAY_HOME:-$HOME/.kimirelay}"
+ORIGIN="${NEMORELAY_ORIGIN:-${KIMIRELAY_ORIGIN:-https://nemocode.org}}"
+INSTALL_DIR="${NEMORELAY_HOME:-${KIMIRELAY_HOME:-$HOME/.kimirelay}}"
 BIN_DIR="$INSTALL_DIR/bin"
 
 bold() { printf "\033[1m%s\033[0m\n" "$1"; }

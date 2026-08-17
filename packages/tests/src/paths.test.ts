@@ -2,25 +2,25 @@ import { describe, expect, test } from "vitest";
 import { kimirelayHome, isProcessAlive } from "@kimirelay/cli/dist/lib/paths.js";
 
 describe("paths.ts - single source of truth for home + liveness (#7)", () => {
-  test("kimirelayHome honors KIMIRELAY_HOME env", () => {
-    const original = process.env.KIMIRELAY_HOME;
-    process.env.KIMIRELAY_HOME = "/tmp/kimirelay-test-home-xyz";
+  test("kimirelayHome honors NEMORELAY_HOME env", () => {
+    const original = process.env.NEMORELAY_HOME;
+    process.env.NEMORELAY_HOME = "/tmp/kimirelay-test-home-xyz";
     try {
       expect(kimirelayHome()).toBe("/tmp/kimirelay-test-home-xyz");
     } finally {
-      if (original === undefined) delete process.env.KIMIRELAY_HOME;
-      else process.env.KIMIRELAY_HOME = original;
+      if (original === undefined) delete process.env.NEMORELAY_HOME;
+      else process.env.NEMORELAY_HOME = original;
     }
   });
 
   test("kimirelayHome falls back to ~/.kimirelay when env unset", () => {
-    const original = process.env.KIMIRELAY_HOME;
-    delete process.env.KIMIRELAY_HOME;
+    const original = process.env.NEMORELAY_HOME;
+    delete process.env.NEMORELAY_HOME;
     try {
       const home = kimirelayHome();
       expect(home.endsWith("/.kimirelay")).toBe(true);
     } finally {
-      if (original !== undefined) process.env.KIMIRELAY_HOME = original;
+      if (original !== undefined) process.env.NEMORELAY_HOME = original;
     }
   });
 

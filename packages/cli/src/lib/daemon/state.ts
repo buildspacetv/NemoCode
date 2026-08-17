@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { CostTracker } from "../cost.js";
 import type { ModelDefinition } from "@kimirelay/models";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";
@@ -17,15 +18,12 @@ const DEFAULT_NO_PID_SESSION_IDLE_TTL_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MAX_NO_PID_SESSIONS = 50;
 const DEFAULT_LAST_SEEN_PERSIST_INTERVAL_MS = 5 * 60 * 1000;
 const NO_PID_SESSION_IDLE_TTL_MS = envInt(
-  "KIMIRELAY_DAEMON_NO_PID_SESSION_IDLE_TTL_MS",
+  "DAEMON_NO_PID_SESSION_IDLE_TTL_MS",
   DEFAULT_NO_PID_SESSION_IDLE_TTL_MS,
 );
-const MAX_NO_PID_SESSIONS = envInt(
-  "KIMIRELAY_DAEMON_MAX_NO_PID_SESSIONS",
-  DEFAULT_MAX_NO_PID_SESSIONS,
-);
+const MAX_NO_PID_SESSIONS = envInt("DAEMON_MAX_NO_PID_SESSIONS", DEFAULT_MAX_NO_PID_SESSIONS);
 const LAST_SEEN_PERSIST_INTERVAL_MS = envInt(
-  "KIMIRELAY_DAEMON_LAST_SEEN_PERSIST_INTERVAL_MS",
+  "DAEMON_LAST_SEEN_PERSIST_INTERVAL_MS",
   DEFAULT_LAST_SEEN_PERSIST_INTERVAL_MS,
 );
 
@@ -402,7 +400,7 @@ export function buildSession(req: RegisterSessionRequest): SessionState {
       ...(req.tavilyMcpInjected !== undefined ? { tavilyMcpInjected: req.tavilyMcpInjected } : {}),
       ...(req.debug !== undefined ? { debug: req.debug } : {}),
       costTracker,
-      ...(process.env.KIMIRELAY_PERF === "1"
+      ...(relayEnv("PERF") === "1"
         ? { perfSink: (payload: ProxyPerfPayload) => recordSessionProxyPerf(state, payload) }
         : {}),
     };
@@ -500,8 +498,10 @@ function isNoPidSessionIdle(lastSeenAt: number, now: number): boolean {
   return now - lastSeenAt > NO_PID_SESSION_IDLE_TTL_MS;
 }
 
+/** `name` is the namespace suffix (e.g. "DAEMON_MAX_NO_PID_SESSIONS"), not a
+ *  bare process.env key - relayEnv applies the NEMORELAY_/KIMIRELAY_ prefix. */
 function envInt(name: string, fallback: number): number {
-  const raw = process.env[name];
+  const raw = relayEnv(name);
   if (!raw) {
     return fallback;
   }

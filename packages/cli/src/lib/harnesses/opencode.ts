@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { spawn } from "node:child_process";
 import { OPENCODE_DEFAULT_MODEL, OPENCODE_PROVIDER_ID } from "../opencode/defaults.js";
 import { buildOpencodeConfigJson, buildOpencodeEnv } from "../opencode/core.js";
@@ -57,7 +58,7 @@ export default defineHarness({
       );
     }
 
-    if (process.env.KIMIRELAY_DEBUG === "1") {
+    if (relayEnv("DEBUG") === "1") {
       process.stderr.write(`[kimirelay opencode] custom model: ${modelId}\n`);
       process.stderr.write(`[kimirelay opencode] config: ${JSON.stringify(configJson)}\n`);
     }

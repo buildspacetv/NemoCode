@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import http, { type IncomingMessage, type ServerResponse, type Server } from "node:http";
 import { once } from "node:events";
 import { statSync } from "node:fs";
@@ -70,7 +71,7 @@ export function daemonPidPath(home = kimirelayHome()): string {
 }
 
 export function resolveDaemonPort(): number {
-  const raw = process.env.KIMIRELAY_PORT;
+  const raw = relayEnv("PORT");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_DAEMON_PORT;
 }
@@ -173,7 +174,7 @@ export function renderDaemonError(
  */
 export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   const port = resolveDaemonPort();
-  const debug = options.debug ?? process.env.KIMIRELAY_DEBUG === "1";
+  const debug = options.debug ?? relayEnv("DEBUG") === "1";
   activeSessions = options.sessions ?? defaultSessions;
   const restored = await activeSessions.restorePersisted();
 

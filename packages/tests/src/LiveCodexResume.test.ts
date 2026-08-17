@@ -8,7 +8,7 @@ import { cleanupTmpDir, createTestContext, resetTmpDir } from "./context.js";
 import { asRecord, jsonLines } from "./json-lines.js";
 import type { CommandResult, TestContext } from "./types.js";
 
-const maybeDescribe = process.env.KIMIRELAY_LIVE_CODEX_RESUME === "1" ? describe : describe.skip;
+const maybeDescribe = process.env.NEMORELAY_LIVE_CODEX_RESUME === "1" ? describe : describe.skip;
 
 maybeDescribe("live Codex cross-provider resume", () => {
   let context: TestContext;

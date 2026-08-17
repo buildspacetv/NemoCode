@@ -25,7 +25,7 @@ describe("shouldInjectTavilyMcp", () => {
     expect(
       shouldInjectTavilyMcp([], {
         ...withKey,
-        KIMIRELAY_DISABLE_TAVILY_MCP: "1",
+        NEMORELAY_DISABLE_TAVILY_MCP: "1",
       } as NodeJS.ProcessEnv),
     ).toBe(false);
   });

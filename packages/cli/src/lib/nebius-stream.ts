@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { backoffMs, sleep } from "./nebius-retry.js";
 import { getNebiusResponseDiagnostics } from "./nebius-client.js";
 import { persistRequestDiagnostic } from "./request-diagnostics.js";
@@ -195,9 +196,7 @@ async function persistStreamDiagnostic(
 }
 
 function streamIdleTimeoutMs(): number {
-  const raw =
-    process.env.KIMIRELAY_STREAM_IDLE_TIMEOUT_MS ??
-    process.env.KIMIRELAY_CODEX_STREAM_IDLE_TIMEOUT_MS;
+  const raw = relayEnv("STREAM_IDLE_TIMEOUT_MS") ?? relayEnv("CODEX_STREAM_IDLE_TIMEOUT_MS");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0
     ? Math.max(100, parsed)
@@ -205,8 +204,7 @@ function streamIdleTimeoutMs(): number {
 }
 
 function streamRetries(): number {
-  const raw =
-    process.env.KIMIRELAY_STREAM_RETRIES ?? process.env.KIMIRELAY_CODEX_STREAM_IDLE_RETRIES;
+  const raw = relayEnv("STREAM_RETRIES") ?? relayEnv("CODEX_STREAM_IDLE_RETRIES");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 0 ? Math.floor(parsed) : DEFAULT_STREAM_RETRIES;
 }

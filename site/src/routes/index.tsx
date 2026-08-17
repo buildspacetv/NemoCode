@@ -11,7 +11,7 @@ import {
   tavilyKeysUrl,
 } from "../components/SiteChrome";
 
-const installCommand = "curl -fsSL https://kimirelay.com/install.sh | sh";
+const installCommand = "curl -fsSL https://nemocode.org/install.sh | sh";
 
 type Agent = {
   name: string;
@@ -562,7 +562,7 @@ function Home() {
             className="inline-flex items-center gap-2.5 rounded-xl bg-ink px-5 py-3 font-mono text-[13.5px] text-surface shadow-[0_1px_2px_rgba(10,10,10,.14),0_16px_40px_-20px_rgba(10,15,30,.6)] transition hover:brightness-110 active:scale-[.98]"
           >
             <span className="text-lime-ink">$</span>
-            <span className="max-[520px]:hidden">curl -fsSL kimirelay.com/install.sh | sh</span>
+            <span className="max-[520px]:hidden">curl -fsSL nemocode.org/install.sh | sh</span>
             <span className="hidden max-[520px]:inline">curl … | sh</span>
             <span className="ml-1 text-surface/60">{copyState === "copied" ? "✓" : "⧉"}</span>
           </button>

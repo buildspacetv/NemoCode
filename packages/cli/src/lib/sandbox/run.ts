@@ -98,7 +98,7 @@ function bootstrapPreamble(): string[] {
     "command -v curl >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq curl ca-certificates; }",
     "command -v git >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq git; }",
     "command -v npm >/dev/null 2>&1 || { curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null && apt-get install -y -qq nodejs; }",
-    "command -v kimirelay >/dev/null 2>&1 || curl -fsSL https://kimirelay.com/install.sh | sh",
+    "command -v kimirelay >/dev/null 2>&1 || curl -fsSL https://nemocode.org/install.sh | sh",
   ];
 }
 

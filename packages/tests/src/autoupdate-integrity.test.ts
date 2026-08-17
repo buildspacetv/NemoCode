@@ -8,23 +8,23 @@ import { resolveBundleUrl, sha256Hex } from "../../cli/src/lib/autoupdate.js";
  * to the digest the manifest published.
  */
 describe("update bundle URL origin pinning", () => {
-  const manifestUrl = "https://kimirelay.com/latest.json";
+  const manifestUrl = "https://nemocode.org/latest.json";
 
   test("accepts an absolute url on the manifest's origin", () => {
     expect(
-      resolveBundleUrl({ version: "1.0.0", url: "https://kimirelay.com/x.js" }, manifestUrl),
-    ).toBe("https://kimirelay.com/x.js");
+      resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.org/x.js" }, manifestUrl),
+    ).toBe("https://nemocode.org/x.js");
   });
 
   test("accepts a relative url and resolves it against the manifest", () => {
     expect(resolveBundleUrl({ version: "1.0.0", url: "/build/x.js" }, manifestUrl)).toBe(
-      "https://kimirelay.com/build/x.js",
+      "https://nemocode.org/build/x.js",
     );
   });
 
   test("defaults to the standard bundle path when the manifest omits url", () => {
     expect(resolveBundleUrl({ version: "1.0.0" }, manifestUrl)).toBe(
-      "https://kimirelay.com/kimirelay.js",
+      "https://nemocode.org/kimirelay.js",
     );
   });
 
@@ -36,19 +36,19 @@ describe("update bundle URL origin pinning", () => {
 
   test("refuses a downgrade to plaintext on the same host", () => {
     expect(() =>
-      resolveBundleUrl({ version: "1.0.0", url: "http://kimirelay.com/x.js" }, manifestUrl),
+      resolveBundleUrl({ version: "1.0.0", url: "http://nemocode.org/x.js" }, manifestUrl),
     ).toThrow(/origin/);
   });
 
   test("honors a local mirror's own origin rather than the hardcoded one", () => {
-    // KIMIRELAY_MANIFEST_URL stays useful: a mirror can serve a
+    // NEMORELAY_MANIFEST_URL stays useful: a mirror can serve a
     // self-consistent manifest + bundle pair, but only from its own host.
     const mirror = "http://127.0.0.1:8080/latest.json";
     expect(resolveBundleUrl({ version: "1.0.0", url: "/kimirelay.js" }, mirror)).toBe(
       "http://127.0.0.1:8080/kimirelay.js",
     );
     expect(() =>
-      resolveBundleUrl({ version: "1.0.0", url: "https://kimirelay.com/x.js" }, mirror),
+      resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.org/x.js" }, mirror),
     ).toThrow(/origin/);
   });
 });

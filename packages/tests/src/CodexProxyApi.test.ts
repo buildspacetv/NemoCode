@@ -223,9 +223,9 @@ describe("Codex Responses proxy tool compatibility", () => {
   });
 
   test("retries streamed Codex turns when Nebius never returns response headers", async () => {
-    vi.stubEnv("KIMIRELAY_RESPONSE_HEADER_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_STREAM_RETRIES", "1");
-    vi.stubEnv("KIMIRELAY_REQUEST_DIAGNOSTICS", "0");
+    vi.stubEnv("NEMORELAY_RESPONSE_HEADER_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_REQUEST_DIAGNOSTICS", "0");
     let upstreamCalls = 0;
     vi.stubGlobal(
       "fetch",
@@ -1027,8 +1027,8 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("retries streamed Codex turns when upstream SSE goes idle before output", async () => {
     const requests: Array<{ body: any }> = [];
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_IDLE_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_RETRIES", "1");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1402,8 +1402,8 @@ describe("Codex Responses proxy tool compatibility", () => {
   test("fails streamed native web_search completion when upstream SSE goes idle", async () => {
     const requests: Array<{ url: string; body: any }> = [];
     vi.stubEnv("TAVILY_API_KEY", "test-exa-key");
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_IDLE_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_RETRIES", "1");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1447,8 +1447,8 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("fails when upstream SSE keepalives make no Codex progress", async () => {
     const requests: Array<{ url: string; body: any }> = [];
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_IDLE_RETRIES", "1");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_RETRIES", "1");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1480,7 +1480,7 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("fails when native stream emits reasoning but never final output", async () => {
     const requests: Array<{ url: string; body: any }> = [];
-    vi.stubEnv("KIMIRELAY_CODEX_STREAM_TURN_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMORELAY_CODEX_STREAM_TURN_TIMEOUT_MS", "100");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1902,7 +1902,7 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("allows Codex memory extraction model override from env", async () => {
     const requests: unknown[] = [];
-    vi.stubEnv("KIMIRELAY_CODEX_MEMORY_MODEL", QWEN_2_5_VL_72B.id);
+    vi.stubEnv("NEMORELAY_CODEX_MEMORY_MODEL", QWEN_2_5_VL_72B.id);
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {

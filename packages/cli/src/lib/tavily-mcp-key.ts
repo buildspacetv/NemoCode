@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 /**
  * Shared bits of the per-harness Tavily MCP auto-inject. Each harness injects
  * Tavily's remote MCP server its own way (klaude: ephemeral --mcp-config file;
@@ -14,7 +15,7 @@ export const TAVILY_MCP_BASE_URL = "https://mcp.tavily.com/mcp/";
  * not happen (no key, or the user opted out via KIMIRELAY_DISABLE_TAVILY_MCP).
  */
 export function resolveTavilyMcpKey(env: NodeJS.ProcessEnv = process.env): string | undefined {
-  if (env.KIMIRELAY_DISABLE_TAVILY_MCP === "1") {
+  if (relayEnv("DISABLE_TAVILY_MCP", env) === "1") {
     return undefined;
   }
   const key = env.TAVILY_API_KEY?.trim();

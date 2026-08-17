@@ -5,7 +5,7 @@
 One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Kimi K3, Kimi K2.6, Qwen 3.5, DeepSeek V4, MiniMax M3) served from the EU instead of their default backends.
 
 ```bash
-curl -fsSL https://kimirelay.com/install.sh | sh
+curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
 Then:
@@ -14,7 +14,7 @@ Then:
 klaude     # Claude Code on Kimi K3 (long form: kimirelay claude)
 ```
 
-> **Note:** [kimirelay.com](https://kimirelay.com) is the project's home; [kimi.guide](https://kimi.guide) serves the same content.
+> **Note:** [nemocode.org](https://nemocode.org) is the project's home; [kimi.guide](https://kimi.guide) serves the same content.
 
 ---
 
@@ -32,7 +32,7 @@ Nothing about your agent install changes. The relay injects a base URL and API k
 The one-liner installs the `kimirelay`, `klaude`, `kodex`, `openkode`, and `kpi` commands to `~/.kimirelay/bin/` and installs [Bun](https://bun.sh) for you if it isn't already present:
 
 ```bash
-curl -fsSL https://kimirelay.com/install.sh | sh
+curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
 First run walks you through configuration (or run it directly):
@@ -99,7 +99,7 @@ Claude Code and Codex are text-native; image blocks are auto-routed to a vision-
 
 Claude Code and Codex expose a native `web_search` tool. The relay backs it with [Tavily](https://tavily.com): if a Tavily key is configured, searches return real results with citations. Without one, a search returns a clear "TAVILY_API_KEY not set" message instead of failing silently. Nebius has no hosted search tool, so this is how agents get live web access.
 
-With a Tavily key configured, `klaude`, `kodex`, and `openkode` also get [Tavily's remote MCP server](https://docs.tavily.com) injected per session, adding the explicit `tavily_search` / `tavily_extract` toolset. Each harness uses its native ephemeral mechanism (klaude: a temp `--mcp-config` file; kodex: `-c` launch flags with env-var bearer auth; openkode: the generated config) - nothing durable is written and the key never appears in argv. For OpenCode this is notable: as a spawned harness it has no relay-emulated `web_search`, so the MCP server is its only live-web path. `kpi` is excluded on purpose - Pi has no MCP support by design. The inject is skipped when you pass `--strict-mcp-config` (klaude) or `--no-mcp` (kodex), and `KIMIRELAY_DISABLE_TAVILY_MCP=1` disables it everywhere.
+With a Tavily key configured, `klaude`, `kodex`, and `openkode` also get [Tavily's remote MCP server](https://docs.tavily.com) injected per session, adding the explicit `tavily_search` / `tavily_extract` toolset. Each harness uses its native ephemeral mechanism (klaude: a temp `--mcp-config` file; kodex: `-c` launch flags with env-var bearer auth; openkode: the generated config) - nothing durable is written and the key never appears in argv. For OpenCode this is notable: as a spawned harness it has no relay-emulated `web_search`, so the MCP server is its only live-web path. `kpi` is excluded on purpose - Pi has no MCP support by design. The inject is skipped when you pass `--strict-mcp-config` (klaude) or `--no-mcp` (kodex), and `NEMORELAY_DISABLE_TAVILY_MCP=1` disables it everywhere.
 
 ## Configuration & env vars
 
@@ -108,15 +108,15 @@ With a Tavily key configured, `klaude`, `kodex`, and `openkode` also get [Tavily
 | `NEBIUS_API_KEY`                 | Nebius Token Factory key (or set via `configure`).                                                                                               |
 | `TAVILY_API_KEY`                 | Enables web search (or set via `configure`).                                                                                                     |
 | `NEBIUS_BASE_URL`                | Override the API base (default `https://api.tokenfactory.nebius.com/v1`).                                                                        |
-| `KIMIRELAY_REASONING_EFFORT`     | `none`\|`low`\|`medium`\|`high`\|`max`. Default `none` for speed; raise for harder tasks.                                                        |
-| `KIMIRELAY_FALLBACK_MODEL`       | Model to fail over to when the target model returns no response headers (down/overloaded). Default `moonshotai/Kimi-K2.6`; set `off` to disable. |
+| `NEMORELAY_REASONING_EFFORT`     | `none`\|`low`\|`medium`\|`high`\|`max`. Default `none` for speed; raise for harder tasks.                                                        |
+| `NEMORELAY_FALLBACK_MODEL`       | Model to fail over to when the target model returns no response headers (down/overloaded). Default `moonshotai/Kimi-K2.6`; set `off` to disable. |
 | `NEBIUS_PROJECT`                 | Nebius project id for Token Factory Sandboxes calls (or `--project`, or store once: `kimirelay sandbox project <id>`).                           |
 | `TENKI_API_KEY`                  | tenki.cloud credential (`tk_…`) for the default (tenki) sandbox provider.                                                                        |
-| `KIMIRELAY_DISABLE_TAVILY_MCP=1` | Skip the Tavily MCP server auto-inject (klaude, kodex, openkode).                                                                                |
-| `KIMIRELAY_DISABLE_AUTOUPDATE=1` | Stop the installed binary from self-updating.                                                                                                    |
-| `KIMIRELAY_TELEMETRY_URL`        | Opt in to telemetry by pointing at your own collector. Off by default.                                                                           |
+| `NEMORELAY_DISABLE_TAVILY_MCP=1` | Skip the Tavily MCP server auto-inject (klaude, kodex, openkode).                                                                                |
+| `NEMORELAY_DISABLE_AUTOUPDATE=1` | Stop the installed binary from self-updating.                                                                                                    |
+| `NEMORELAY_TELEMETRY_URL`        | Opt in to telemetry by pointing at your own collector. Off by default.                                                                           |
 
-The installed binary keeps itself up to date from `kimirelay.com`, throttled to once an hour, and swallows every failure. On the same cadence it refreshes the launcher wrappers (`kimirelay`, `klaude`, …) next to the bundle, so wrapper fixes reach existing installs too. Dev/source runs never self-update.
+The installed binary keeps itself up to date from `nemocode.org`, throttled to once an hour, and swallows every failure. On the same cadence it refreshes the launcher wrappers (`kimirelay`, `klaude`, …) next to the bundle, so wrapper fixes reach existing installs too. Dev/source runs never self-update.
 
 ## Sandboxing (beta)
 
@@ -124,7 +124,7 @@ The installed binary keeps itself up to date from `kimirelay.com`, throttled to 
 
 ## For AI agents
 
-An LLM-readable doc is published at <https://kimirelay.com/llms.txt>. If you are an agent asked to install, configure, or drive kimirelay (including headless), read that first. It covers install, configure, every command, the models, and headless usage patterns.
+An LLM-readable doc is published at <https://nemocode.org/llms.txt>. If you are an agent asked to install, configure, or drive kimirelay (including headless), read that first. It covers install, configure, every command, the models, and headless usage patterns.
 
 ## Local development
 

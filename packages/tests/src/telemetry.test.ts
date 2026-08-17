@@ -51,7 +51,7 @@ describe("telemetry", () => {
     vi.stubGlobal("fetch", fetchMock);
     vi.stubEnv("GITHUB_ACTIONS", "false");
     // Telemetry is opt-in in this fork: it only sends when the endpoint is set.
-    vi.stubEnv("KIMIRELAY_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
+    vi.stubEnv("NEMORELAY_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
 
     await sendTelemetryEvent(
       {
@@ -102,7 +102,7 @@ describe("context trim alarm (telemetry + stderr)", () => {
     vi.stubGlobal("fetch", fetchMock);
     vi.stubEnv("GITHUB_ACTIONS", "false");
     // Telemetry is opt-in in this fork: it only sends when the endpoint is set.
-    vi.stubEnv("KIMIRELAY_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
+    vi.stubEnv("NEMORELAY_TELEMETRY_URL", "https://telemetry.test/api/telemetry");
 
     emitContextTrimAlarm({
       path: "retry",

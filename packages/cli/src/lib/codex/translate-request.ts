@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { randomUUID } from "node:crypto";
 import {
   acceptsReasoningEffort,
@@ -29,7 +30,7 @@ const CODEX_IDENTITY_PROMPT =
   "The upstream model is a Nebius Token Factory model, not an OpenAI model. " +
   "If asked what model you are, identify yourself as the selected Nebius Token Factory backend routed by kimirelay.";
 
-const CODEX_MEMORY_MODEL_ENV = "KIMIRELAY_CODEX_MEMORY_MODEL";
+const CODEX_MEMORY_MODEL_ENV = "CODEX_MEMORY_MODEL";
 const CODEX_MEMORY_REQUESTED_MODELS = new Set(["gpt-5.4-mini"]);
 const CODEX_CONTEXT_OUTPUT_SAFETY_TOKENS = 512;
 
@@ -105,7 +106,7 @@ export function resolveCodexRequestModel(
 ): ResolvedCodexRequestModel {
   const requestedModelId = body.model ?? options.modelId;
   if (isCodexMemoryRequest(body, requestedModelId)) {
-    const configured = process.env[CODEX_MEMORY_MODEL_ENV]?.trim();
+    const configured = relayEnv(CODEX_MEMORY_MODEL_ENV)?.trim();
     const configuredModel = configured ? findModelById(configured) : undefined;
     const definition = configuredModel ?? MINIMAX_M3;
     return {
@@ -678,7 +679,7 @@ function reasoningEffort(body: ResponsesRequest, model: ModelDefinition): string
 
 /** Env-overridable default reasoning effort for GLM-5.2 (fast "none" by default). */
 function glmDefaultReasoningEffort(): string {
-  const raw = process.env.KIMIRELAY_REASONING_EFFORT?.toLowerCase();
+  const raw = relayEnv("REASONING_EFFORT")?.toLowerCase();
   switch (raw) {
     case "low":
     case "medium":

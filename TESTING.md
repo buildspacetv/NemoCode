@@ -156,7 +156,7 @@ Claude support must be tested headlessly before testing the interactive UI. Head
 Use debug logs while working on the proxy:
 
 ```bash
-export KIMIRELAY_DEBUG=1
+export NEMORELAY_DEBUG=1
 ```
 
 Basic chat, no tools:
@@ -407,7 +407,7 @@ Current scenarios cover:
 
 ## Live Models Check
 
-`packages/tests/src/livemodelscheck.test.ts` is the exhaustive real-inference model check. It is skipped by the normal suite unless `KIMIRELAY_LIVE_MODELS_CHECK=1` is set, because it launches real Claude Code and Codex CLI sessions and calls Nebius for every curated model.
+`packages/tests/src/livemodelscheck.test.ts` is the exhaustive real-inference model check. It is skipped by the normal suite unless `NEMORELAY_LIVE_MODELS_CHECK=1` is set, because it launches real Claude Code and Codex CLI sessions and calls Nebius for every curated model.
 
 Run it with:
 
