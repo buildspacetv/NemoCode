@@ -200,5 +200,5 @@ function debugLog(
   label: string,
   payload: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("nemocode codex proxy", options, label, payload);
+  writeProxyDebugLog("nemo codex proxy", options, label, payload);
 }

@@ -227,7 +227,7 @@ class ResilientSessionStore implements SessionStore {
 
 function warnStoreError(action: string, err: unknown): void {
   const message = err instanceof Error ? err.message : String(err);
-  process.stderr.write(`[nemocode daemon] Could not ${action}: ${message}\n`);
+  process.stderr.write(`[nemo daemon] Could not ${action}: ${message}\n`);
 }
 
 class SqliteSessionStore implements SessionStore {

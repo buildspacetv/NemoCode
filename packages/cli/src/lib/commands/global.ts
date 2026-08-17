@@ -44,14 +44,14 @@ export function printHelp() {
   console.log(`nemocode v${VERSION} - Nebius Token Factory for coding CLIs
 
 Usage:
-  nemocode configure
-  nemocode whoami
-  nemocode chatgpt [--model <model>] [--restore]  (alpha)
-  nemocode codex [...]       (alias: ncodex)
-  nemocode claude [...]      (alias: nclaude)
-  nemocode pi [...]          (alias: npi)
-  nemocode opencode [...]    (alias: nopencode)
-  nemocode sandbox status|project|run|fetch|prebake|advisory
+  nemo configure
+  nemo whoami
+  nemo chatgpt [--model <model>] [--restore]  (alpha)
+  nemo codex [...]       (alias: codemo)
+  nemo claude [...]      (alias: claudemo)
+  nemo pi [...]          (alias: pimo)
+  nemo opencode [...]    (alias: opencodemo)
+  nemo sandbox status|project|run|fetch|prebake|advisory
                               Cloud sandboxes - tenki.cloud by default (set TENKI_API_KEY);
                               Nebius Token Factory Sandboxes via --provider contree (gated beta)
 
@@ -59,10 +59,10 @@ Extra args after codex/claude/pi/opencode are passed through.
 
 Sandbox sessions (default provider: tenki.cloud - open signup, set TENKI_API_KEY;
 Nebius Token Factory with --provider contree needs Sandboxes beta access):
-  nclaude --sandbox -p "<task>"    Claude Code on Nemotron in a disposable microVM,
+  claudemo --sandbox -p "<task>"    Claude Code on Nemotron in a disposable microVM,
                                   against your repo's pushed state. Headless only.
-  ncodex --sandbox exec "<task>"   Same for Codex.
-ChatGPT App support is alpha; run \`nemocode chatgpt --restore\` (alias: codex-app) to restore the previous desktop config.
+  codemo --sandbox exec "<task>"   Same for Codex.
+ChatGPT App support is alpha; run \`nemo chatgpt --restore\` (alias: codex-app) to restore the previous desktop config.
 
 Codex flags:
   --no-mcp   Skip your ~/.codex/config.toml MCP servers for a fast startup
@@ -71,7 +71,7 @@ Codex flags:
 Your last-used model is remembered per tool: change it with /model (or --model
 before the harness) and the next launch reuses it.
 
-Docs: https://nemocode.com/llms.txt
+Docs: https://nemocode.org/llms.txt
   LLM-readable documentation - if you are an AI agent asked to install, configure,
   or use nemocode (including headless use), read that file first.
 `);
@@ -81,7 +81,7 @@ export async function runConfigure(
   home = os.homedir(),
   checkKey: (apiKey: string) => Promise<NebiusKeyCheck> = checkNebiusKey,
 ): Promise<boolean> {
-  clack.intro("nemocode configure");
+  clack.intro("nemo configure");
 
   const detected = detectInstalledHarnesses();
   const notImplemented = ALL_HARNESSES.filter((h) => !isHarnessImplemented(h));
@@ -161,7 +161,7 @@ export async function runConfigure(
     clack.log.success("Tavily web search enabled.");
   } else {
     clack.log.info(
-      "Tavily key skipped - agents run fine without it, just with no live web search. Add one anytime with `nemocode configure`.",
+      "Tavily key skipped - agents run fine without it, just with no live web search. Add one anytime with `nemo configure`.",
     );
   }
 
@@ -172,7 +172,7 @@ export async function runConfigure(
     clack.log.info(
       `Ready to launch: ${launchable
         .map((h) => HARNESS_LABEL[h])
-        .join(", ")}. Run \`nemocode <harness>\` to start - nothing is written to disk.`,
+        .join(", ")}. Run \`nemo <harness>\` to start - nothing is written to disk.`,
     );
   }
 

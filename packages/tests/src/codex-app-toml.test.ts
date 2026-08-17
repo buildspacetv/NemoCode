@@ -8,8 +8,8 @@ import {
   tomlString,
 } from "@nemocode/cli/dist/lib/codex-app/toml.js";
 
-const START = "# >>> nemocode codex-app alpha >>>";
-const END = "# <<< nemocode codex-app alpha <<<";
+const START = "# >>> nemo codex-app alpha >>>";
+const END = "# <<< nemo codex-app alpha <<<";
 
 describe("codex-app/toml.ts - pure TOML preamble manipulation (#4)", () => {
   test("removeManagedBlock strips a marked block cleanly", () => {

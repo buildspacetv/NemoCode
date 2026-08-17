@@ -2,74 +2,74 @@
 
 > Use Nebius Token Factory models in the coding-agent CLIs you already run - OpenCode, Claude Code, Codex CLI, and Pi Code. nemocode injects Nebius settings for a single run so your normal tool configs stay untouched.
 
-nemocode is an MIT-licensed CLI router. Install once, then launch your agent with short commands (`ncodex`, `nclaude`, `nopencode`, `npi`). For Claude Code and Codex CLI it routes the agent's API traffic to Nebius Token Factory through a local translation proxy; for OpenCode and Pi Code it injects ephemeral per-run config. The installed binary keeps itself up to date automatically from nemocode.com. nemocode is a friendly fork of nebius-tf-relay (https://github.com/shivaylamba/nebius-tf-relay, MIT), whose daemon, wire-format translation, and installer this project builds on.
+nemocode is an MIT-licensed CLI router. Install once, then launch your agent with short commands (`codemo`, `claudemo`, `opencodemo`, `pimo`). For Claude Code and Codex CLI it routes the agent's API traffic to Nebius Token Factory through a local translation proxy; for OpenCode and Pi Code it injects ephemeral per-run config. The installed binary keeps itself up to date automatically from nemocode.org. nemocode is a friendly fork of nebius-tf-relay (https://github.com/shivaylamba/nebius-tf-relay, MIT), whose daemon, wire-format translation, and installer this project builds on.
 
 This is the LLM-readable documentation file for the project. If you are an AI agent asked to install, configure, or use nemocode (headless or interactive), read this file first. It covers installation, configuration, every command, the available models, headless/agentic usage patterns, how to keep the tool up to date, and the routing architecture.
 
 - Project: https://github.com/buildspacetv/NemoCode
-- Website: https://nemocode.com
-- Installer: https://nemocode.com/install.sh
-- Version manifest: https://nemocode.com/latest.json
+- Website: https://nemocode.org
+- Installer: https://nemocode.org/install.sh
+- Version manifest: https://nemocode.org/latest.json
 - README: https://github.com/buildspacetv/NemoCode/blob/main/README.md
-- This file: https://nemocode.com/llms.txt
+- This file: https://nemocode.org/llms.txt
 
 ## Install
 
-One command installs the `nemocode`, `nclaude`, `nopencode`, `ncodex`, and `npi` commands to `~/.nemocode/bin/` and installs Bun for you if it isn't already present:
+One command installs the `nemo`, `claudemo`, `opencodemo`, `codemo`, and `pimo` commands to `~/.nemocode/bin/` and installs Bun for you if it isn't already present:
 
 ```
-curl -fsSL https://nemocode.com/install.sh | sh
+curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
 After install, restart your shell (or run the `export PATH=...` line it prints) so the commands are on PATH. The install:
 
 - Downloads the self-contained JS bundle to `~/.nemocode/bin/nemocode.js`.
-- Writes shell wrappers (`nemocode`, `ncodex`, `nclaude`, `nopencode`, `npi`) that run the bundle with `bun`.
+- Writes shell wrappers (`nemo`, `codemo`, `claudemo`, `opencodemo`, `pimo`) that run the bundle with `bun`.
 - Links them into a writable directory on your PATH.
 - Does NOT install the underlying agent CLIs. If a tool is missing, nemocode prints its official install command and exits.
 
-To verify: `nemocode --version`.
+To verify: `nemo --version`.
 
 ## Configure
 
 Before the first launch you need a Nebius API key (get one at https://tokenfactory.nebius.com/?modals=create-api-key):
 
 ```
-nemocode configure
+nemo configure
 ```
 
-This stores your Nebius API key in `~/.nemocode/` and optionally a Tavily API key (https://app.tavily.com) that powers web-search emulation in Claude Code and Codex. Web search is optional - without it, searches return a clear "TAVILY_API_KEY not set" error instead of failing silently. When a Tavily key is configured, `nclaude`, `ncodex`, and `nopencode` auto-inject Tavily's remote MCP server per session (ephemeral, nothing durable written; skipped with `--strict-mcp-config` on nclaude or `--no-mcp` on ncodex; disable everywhere with `NEMOCODE_DISABLE_TAVILY_MCP=1`), adding explicit `tavily_search` / `tavily_extract` tools. For nopencode this is the only live-web path. npi is excluded: pi has no MCP support by design.
+This stores your Nebius API key in `~/.nemocode/` and optionally a Tavily API key (https://app.tavily.com) that powers web-search emulation in Claude Code and Codex. Web search is optional - without it, searches return a clear "TAVILY_API_KEY not set" error instead of failing silently. When a Tavily key is configured, `claudemo`, `codemo`, and `opencodemo` auto-inject Tavily's remote MCP server per session (ephemeral, nothing durable written; skipped with `--strict-mcp-config` on claudemo or `--no-mcp` on codemo; disable everywhere with `NEMOCODE_DISABLE_TAVILY_MCP=1`), adding explicit `tavily_search` / `tavily_extract` tools. For opencodemo this is the only live-web path. pimo is excluded: pi has no MCP support by design.
 
 You can also set the key non-interactively:
 
 ```
 export NEBIUS_API_KEY=...
-nemocode configure        # stores it (skip prompts with the env present)
+nemo configure        # stores it (skip prompts with the env present)
 ```
 
 The API key is required to actually route traffic; the installer lets you skip it (press Enter) and add it later.
 
 ## Commands
 
-Running `nemocode` with no arguments opens an interactive launcher (requires a TTY) that lets you pick a tool. Run a tool directly with a subcommand:
+Running `nemo` with no arguments opens an interactive launcher (requires a TTY) that lets you pick a tool. Run a tool directly with a subcommand:
 
 ```
-nemocode configure                      # set API keys
-nemocode whoami                         # print your anonymous install id
-nemocode --version | -v                 # print the version
-nemocode help | --help | -h             # print this usage
+nemo configure                      # set API keys
+nemo whoami                         # print your anonymous install id
+nemo --version | -v                 # print the version
+nemo help | --help | -h             # print this usage
 
-nemocode codex [...]        # alias: ncodex   (Codex CLI)
-nemocode claude [...]       # alias: nclaude  (Claude Code)
-nemocode pi [...]           # alias: npi      (Pi Code)
-nemocode opencode [...]     # alias: nopencode (OpenCode)
+nemo codex [...]        # alias: codemo   (Codex CLI)
+nemo claude [...]       # alias: claudemo  (Claude Code)
+nemo pi [...]           # alias: pimo      (Pi Code)
+nemo opencode [...]     # alias: opencodemo (OpenCode)
 
-nemocode chatgpt [--model <model>] [--restore]   # alpha: ChatGPT Desktop (alias: codex-app)
+nemo chatgpt [--model <model>] [--restore]   # alpha: ChatGPT Desktop (alias: codex-app)
 
-nemocode daemon stop                   # stop the background proxy daemon
+nemo daemon stop                   # stop the background proxy daemon
 ```
 
-Any arguments after the harness name are passed straight through to the underlying agent CLI. For example, `ncodex exec "fix the typo"` runs `codex exec` with nemocode routing.
+Any arguments after the harness name are passed straight through to the underlying agent CLI. For example, `codemo exec "fix the typo"` runs `codex exec` with nemocode routing.
 
 Recognized nemocode flags (parsed before the passthrough):
 
@@ -82,12 +82,12 @@ Recognized nemocode flags (parsed before the passthrough):
 
 ### ChatGPT Desktop App (alpha)
 
-`nemocode chatgpt` persistently patches the ChatGPT Desktop config so the desktop app routes through Nebius. Unlike the CLI wrappers, this change stays active until you restore it:
+`nemo chatgpt` persistently patches the ChatGPT Desktop config so the desktop app routes through Nebius. Unlike the CLI wrappers, this change stays active until you restore it:
 
 ```
-nemocode chatgpt                     # configure (patches config)
-nemocode chatgpt --restore           # restore your OpenAI profile
-nemocode chatgpt --model <model>     # use a specific model
+nemo chatgpt                     # configure (patches config)
+nemo chatgpt --restore           # restore your OpenAI profile
+nemo chatgpt --model <model>     # use a specific model
 ```
 
 Backups of your original config live under `~/.nemocode/backup/codex-app/`.
@@ -101,12 +101,12 @@ The model list is fetched live from Nebius (`GET /v1/models?verbose=true`) at st
 Put `--model` (or `--main` for Claude) BEFORE the harness subcommand - nemocode consumes it there and routes to that model:
 
 ```
-nemocode --model nvidia/Cosmos3-Super-Reasoner codex exec "task"
-nemocode --model nvidia/Cosmos3-Super-Reasoner claude -p "task"
-nemocode --main nebius-nemotron-3-nano claude -p "task"   # Claude matches alias OR id
+nemo --model nvidia/Cosmos3-Super-Reasoner codex exec "task"
+nemo --model nvidia/Cosmos3-Super-Reasoner claude -p "task"
+nemo --main nebius-nemotron-3-nano claude -p "task"   # Claude matches alias OR id
 ```
 
-Do NOT put `--model` after the harness (e.g. `ncodex --model X` or `nclaude --model X`). The short aliases expand to `nemocode <harness> ...`, so the flag lands after the harness name, goes to the agent's passthrough, and is then stripped - it is silently ignored and the run uses the default (Nemotron 3 Ultra 550B), not the model you asked for. Always use the long form with the flag first.
+Do NOT put `--model` after the harness (e.g. `codemo --model X` or `claudemo --model X`). The short aliases expand to `nemo <harness> ...`, so the flag lands after the harness name, goes to the agent's passthrough, and is then stripped - it is silently ignored and the run uses the default (Nemotron 3 Ultra 550B), not the model you asked for. Always use the long form with the flag first.
 
 Featured flagship models (any live Nebius id also works with `--model`):
 
@@ -125,7 +125,7 @@ Vision-capable models (those whose API modality includes image input, e.g. Cosmo
 
 ## Headless & agentic usage
 
-Both Claude Code and Codex CLI run headlessly (no TTY), so you can delegate code changes to an AI agent from scripts, CI, or another orchestrating agent. The patterns below were verified against the installed `ncodex` and `nclaude` (v0.5.26) and apply to both. They differ in the headless subcommand and in how permissions are handled; the stdin, banner, and model-selection behavior is identical.
+Both Claude Code and Codex CLI run headlessly (no TTY), so you can delegate code changes to an AI agent from scripts, CI, or another orchestrating agent. The patterns below were verified against the installed `codemo` and `claudemo` (v0.5.26) and apply to both. They differ in the headless subcommand and in how permissions are handled; the stdin, banner, and model-selection behavior is identical.
 
 ### The working invocation pattern
 
@@ -136,15 +136,15 @@ Both wrappers spawn the agent pointed at the local Nebius proxy and pass your fl
 If you are an orchestrating agent running inside Claude Code, Codex, or another CLI that has its own native subagent/delegation tool, prefer this pattern for non-trivial nemocode work:
 
 1. Spawn a native subagent first.
-2. Tell that subagent to run the needed `nemocode` command itself (`ncodex`, `nclaude`, `nopencode`, or `npi`) with a tight task, explicit files, `< /dev/null`, and the guardrails below.
+2. Tell that subagent to run the needed `nemo` command itself (`codemo`, `claudemo`, `opencodemo`, or `pimo`) with a tight task, explicit files, `< /dev/null`, and the guardrails below.
 3. Have the subagent wait for the delegated nemocode run, inspect its result/diff, and report only the useful summary back to you.
 
-Do this instead of having the main orchestrating agent call `ncodex`/`nclaude` directly for every delegated edit. It keeps the main agent's context and inference budget focused on coordination/review, lets the native subagent own the details of launching and monitoring nemocode, and works especially well when Claude Code delegates to a subagent that then uses Codex through `ncodex`.
+Do this instead of having the main orchestrating agent call `codemo`/`claudemo` directly for every delegated edit. It keeps the main agent's context and inference budget focused on coordination/review, lets the native subagent own the details of launching and monitoring nemocode, and works especially well when Claude Code delegates to a subagent that then uses Codex through `codemo`.
 
 Codex CLI - non-interactive `exec` (the `-s workspace-write` sandbox grants write access; `exec` never prompts interactively):
 
 ```
-nemocode codex exec -s workspace-write -C /abs/repo "<tight, single-concern task with explicit files + guardrails>" < /dev/null 2>&1
+nemo codex exec -s workspace-write -C /abs/repo "<tight, single-concern task with explicit files + guardrails>" < /dev/null 2>&1
 ```
 
 If the working directory isn't a git repo, codex refuses to start ("Not inside a trusted directory"); add `--skip-git-repo-check`, or run inside a git repo.
@@ -152,7 +152,7 @@ If the working directory isn't a git repo, codex refuses to start ("Not inside a
 Claude Code - print mode `-p` (runs once and exits). Add `--dangerously-skip-permissions` so a headless subagent never blocks on a permission prompt:
 
 ```
-nemocode claude -p "<tight, single-concern task with explicit files + guardrails>" --dangerously-skip-permissions --output-format json < /dev/null 2>&1
+nemo claude -p "<tight, single-concern task with explicit files + guardrails>" --dangerously-skip-permissions --output-format json < /dev/null 2>&1
 ```
 
 Run it in the background, health-check at ~60s, review the diff, run lint, then commit. One file or one concern per task gives the cleanest reviews.
@@ -200,22 +200,22 @@ Per-task cost varies a lot with how verbose the agent is. Mechanical, well-scope
 5. Review the diff + re-run lint yourself before committing.
 6. To select a model, put `--model` (or `--main` for Claude) before the harness subcommand - after the harness it is silently ignored and the default runs.
 7. For Claude `-p`, pass `--dangerously-skip-permissions` so a headless subagent never blocks on a permission prompt. Codex `exec` is non-interactive by design; use `-s workspace-write` for edits and `--skip-git-repo-check` outside a git repo.
-8. If your current CLI has native subagents, delegate nemocode launches to one of those subagents and let it return the result, instead of spending the main orchestrator's context on the full `ncodex`/`nclaude` run.
+8. If your current CLI has native subagents, delegate nemocode launches to one of those subagents and let it return the result, instead of spending the main orchestrator's context on the full `codemo`/`claudemo` run.
 
 ## Sandboxes (beta)
 
-Two providers: tenki.cloud (the default; open signup, `TENKI_API_KEY`) and Nebius Token Factory Sandboxes (gated beta, `NEBIUS_API_KEY`; select with `--provider contree` or `NEMOCODE_SANDBOX_PROVIDER=contree`; some accounts also need `nemocode sandbox project <id>`).
+Two providers: tenki.cloud (the default; open signup, `TENKI_API_KEY`) and Nebius Token Factory Sandboxes (gated beta, `NEBIUS_API_KEY`; select with `--provider contree` or `NEMOCODE_SANDBOX_PROVIDER=contree`; some accounts also need `nemo sandbox project <id>`).
 
 Token Factory Sandboxes support (disposable microVMs on the same Nebius key):
 
 ```
-nemocode sandbox status            # check Sandboxes access for your key
-nemocode sandbox run <command...>  # one shell command in a disposable sandbox
-nemocode sandbox advisory --write  # append the sandbox-preference advisory to
+nemo sandbox status            # check Sandboxes access for your key
+nemo sandbox run <command...>  # one shell command in a disposable sandbox
+nemo sandbox advisory --write  # append the sandbox-preference advisory to
                                     # ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md
-nclaude --sandbox -p "<task>"        # headless Claude Code session in a sandbox,
+claudemo --sandbox -p "<task>"        # headless Claude Code session in a sandbox,
                                     # cloned from your repo's pushed origin state
-ncodex --sandbox exec "<task>"       # same for Codex
+codemo --sandbox exec "<task>"       # same for Codex
 ```
 
 Sandboxes is a Nebius beta behind an access request
@@ -226,48 +226,48 @@ uncommitted changes do not travel.
 
 ## Keeping nemocode up to date
 
-The installed binary self-updates automatically in the background. The check is throttled and bounded, never throws, and runs before argument parsing - so even `nemocode help` keeps an install current. The update is pulled from https://nemocode.com/latest.json, which contains `version`, `url`, and `publishedAt`.
+The installed binary self-updates automatically in the background. The check is throttled and bounded, never throws, and runs before argument parsing - so even `nemo help` keeps an install current. The update is pulled from https://nemocode.org/latest.json, which contains `version`, `url`, and `publishedAt`.
 
 To force a refresh, re-run the install one-liner:
 
 ```
-curl -fsSL https://nemocode.com/install.sh | sh
+curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
-You can check the installed version with `nemocode --version` and compare it against the published manifest at https://nemocode.com/latest.json.
+You can check the installed version with `nemo --version` and compare it against the published manifest at https://nemocode.org/latest.json.
 
 ## Architecture (how routing works)
 
 There are two harness families behind the four tools:
 
-- **Proxied harnesses - Claude Code, Codex CLI.** `nclaude` and `ncodex` spawn a shared local daemon and route the agent's `/v1/*` traffic through it. The daemon translates the agent's native wire format (Anthropic Messages for Claude, OpenAI Responses for Codex) to Nebius's chat-completions API and back. Per run: it resolves the model, ensures the daemon, registers a session with your token, prints a banner, spawns the agent pointed at the local proxy, tracks cost, and deregisters on exit. Nothing is written to your real agent config - close it and your setup is exactly as it was.
+- **Proxied harnesses - Claude Code, Codex CLI.** `claudemo` and `codemo` spawn a shared local daemon and route the agent's `/v1/*` traffic through it. The daemon translates the agent's native wire format (Anthropic Messages for Claude, OpenAI Responses for Codex) to Nebius's chat-completions API and back. Per run: it resolves the model, ensures the daemon, registers a session with your token, prints a banner, spawns the agent pointed at the local proxy, tracks cost, and deregisters on exit. Nothing is written to your real agent config - close it and your setup is exactly as it was.
 
-- **Spawned harnesses - OpenCode, Pi Code.** `nopencode` and `npi` spawn the agent binary directly. The binary talks to Nebius itself, using ephemeral config injected only for that launch (OpenCode) or a temporary `models.json` on disk (Pi). No daemon, no proxy.
+- **Spawned harnesses - OpenCode, Pi Code.** `opencodemo` and `pimo` spawn the agent binary directly. The binary talks to Nebius itself, using ephemeral config injected only for that launch (OpenCode) or a temporary `models.json` on disk (Pi). No daemon, no proxy.
 
 The daemon is one persistent local process shared by all proxied sessions. If you ever need to stop it manually:
 
 ```
-nemocode daemon stop
+nemo daemon stop
 ```
 
-`nemocode chatgpt` (alpha) is the exception: it persistently patches ChatGPT Desktop config to route through Nebius (instead of per-run injection), with backups under `~/.nemocode/backup/codex-app/`. Restore with `nemocode chatgpt --restore`.
+`nemo chatgpt` (alpha) is the exception: it persistently patches ChatGPT Desktop config to route through Nebius (instead of per-run injection), with backups under `~/.nemocode/backup/codex-app/`. Restore with `nemo chatgpt --restore`.
 
 ## Troubleshooting
 
-- **"No Nebius API key found"** - run `nemocode configure` or set `NEBIUS_API_KEY`.
+- **"No Nebius API key found"** - run `nemo configure` or set `NEBIUS_API_KEY`.
 - **A tool command is not found** - nemocode does not install the agent CLIs for you. It prints the official install command (e.g. `npm install -g @openai/codex`) and the docs link when the tool is missing; install it, then re-run.
-- **Web search fails in Claude Code** - set a Tavily API key via `nemocode configure`. Without it, searches return a clear "TAVILY_API_KEY not set" error.
+- **Web search fails in Claude Code** - set a Tavily API key via `nemo configure`. Without it, searches return a clear "TAVILY_API_KEY not set" error.
 - **Headless run hangs and produces no edits** - you forgot `< /dev/null`. Close stdin and relaunch; see the Headless usage section.
 - **Cost seems high for a small change** - the agent over-documented. Scope the task tighter and add a "don't over-explain" instruction.
-- **Want your normal config back** - stop using the wrappers. No agent config was saved, so your OpenCode / Claude Code / Codex CLI / Pi Code setup is untouched. For ChatGPT Desktop, run `nemocode chatgpt --restore`.
+- **Want your normal config back** - stop using the wrappers. No agent config was saved, so your OpenCode / Claude Code / Codex CLI / Pi Code setup is untouched. For ChatGPT Desktop, run `nemo chatgpt --restore`.
 
 ## Links
 
 - [GitHub](https://github.com/buildspacetv/NemoCode): source repository and issues
 - [README](https://github.com/buildspacetv/NemoCode/blob/main/README.md): human-readable project overview
-- [Website](https://nemocode.com): landing page
-- [Install script](https://nemocode.com/install.sh): one-command installer (`curl -fsSL https://nemocode.com/install.sh | sh`)
-- [Version manifest](https://nemocode.com/latest.json): current published version and release timestamp
-- [This LLM docs file](https://nemocode.com/llms.txt): the file you are reading now
+- [Website](https://nemocode.org): landing page
+- [Install script](https://nemocode.org/install.sh): one-command installer (`curl -fsSL https://nemocode.org/install.sh | sh`)
+- [Version manifest](https://nemocode.org/latest.json): current published version and release timestamp
+- [This LLM docs file](https://nemocode.org/llms.txt): the file you are reading now
 - [Nebius Token Factory API keys](https://tokenfactory.nebius.com/?modals=create-api-key): get a key to route traffic
 - [llms.txt specification](https://llmstxt.org): the convention this file follows

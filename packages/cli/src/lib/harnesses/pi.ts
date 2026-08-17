@@ -120,12 +120,12 @@ export default defineHarness({
       ...piArgsWithoutNemoCodeOverrides(ctx.passthrough ?? []),
     ];
 
-    if (process.env.NEMOCODE_DEBUG === "1") {
-      process.stderr.write(`[nemocode pi] provider: ${PI_PROVIDER_ID}\n`);
-      process.stderr.write(`[nemocode pi] model: ${selectedModel.id}\n`);
-      process.stderr.write(`[nemocode pi] models: ${supportedModels}\n`);
-      process.stderr.write(`[nemocode pi] temp config dir: ${agentDir}\n`);
-      process.stderr.write(`[nemocode pi] session dir: ${sessionDir}\n`);
+    if (relayEnv("DEBUG") === "1") {
+      process.stderr.write(`[nemo pi] provider: ${PI_PROVIDER_ID}\n`);
+      process.stderr.write(`[nemo pi] model: ${selectedModel.id}\n`);
+      process.stderr.write(`[nemo pi] models: ${supportedModels}\n`);
+      process.stderr.write(`[nemo pi] temp config dir: ${agentDir}\n`);
+      process.stderr.write(`[nemo pi] session dir: ${sessionDir}\n`);
     }
 
     process.stderr.write(`NemoCode ▸ Launching Pi Code with Nebius Token Factory.\n`);

@@ -71,7 +71,7 @@ export function daemonPidPath(home = nemocodeHome()): string {
 }
 
 export function resolveDaemonPort(): number {
-  const raw = process.env.NEMOCODE_PORT;
+  const raw = relayEnv("PORT");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_DAEMON_PORT;
 }
@@ -107,7 +107,7 @@ async function listenOrExitOnRace(server: Server, port: number): Promise<void> {
           if (healthy) {
             process.exit(0);
           }
-          process.stderr.write(`[nemocode daemon] port ${port} in use by a non-daemon process.\n`);
+          process.stderr.write(`[nemo daemon] port ${port} in use by a non-daemon process.\n`);
           process.exit(1);
         });
         return;
@@ -167,14 +167,14 @@ export function renderDaemonError(
 
 /**
  * Run the shared, persistent proxy daemon. One process serves every
- * `nemocode claude` session: each registers its token + credentials at
+ * `nemo claude` session: each registers its token + credentials at
  * `POST /internal/sessions`, and the daemon resolves every `/v1/*` request to
  * that session (and its CostTracker) by the presented Bearer token. Runs
  * forever - the http server keeps the event loop alive - until SIGTERM/SIGINT.
  */
 export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   const port = resolveDaemonPort();
-  const debug = options.debug ?? process.env.NEMOCODE_DEBUG === "1";
+  const debug = options.debug ?? relayEnv("DEBUG") === "1";
   activeSessions = options.sessions ?? defaultSessions;
   const restored = await activeSessions.restorePersisted();
 
@@ -210,16 +210,16 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   // "error sending request for url". Best-effort: never throws.
   void initModelCatalog({ home: os.homedir() }).then(() => {
     if (debug) {
-      process.stderr.write(`[nemocode daemon] model catalog loaded.\n`);
+      process.stderr.write(`[nemo daemon] model catalog loaded.\n`);
     }
   });
 
   await mkdir(path.dirname(daemonPidPath()), { recursive: true });
   await writeFile(daemonPidPath(), `${process.pid}\n`, { encoding: "utf8" });
   if (debug) {
-    process.stderr.write(`[nemocode daemon] listening: ${daemonUrl(port)} (pid ${process.pid})\n`);
+    process.stderr.write(`[nemo daemon] listening: ${daemonUrl(port)} (pid ${process.pid})\n`);
     if (restored > 0) {
-      process.stderr.write(`[nemocode daemon] restored ${restored} active session(s).\n`);
+      process.stderr.write(`[nemo daemon] restored ${restored} active session(s).\n`);
     }
   }
 
@@ -230,7 +230,7 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   const reaper = setInterval(() => {
     const removed = activeSessions.reapDead();
     if (debug && removed > 0) {
-      process.stderr.write(`[nemocode daemon] reaped ${removed} dead session(s).\n`);
+      process.stderr.write(`[nemo daemon] reaped ${removed} dead session(s).\n`);
     }
   }, SESSION_REAP_INTERVAL_MS);
   reaper.unref();
@@ -242,7 +242,7 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
     closing = true;
     clearInterval(reaper);
     if (debug) {
-      process.stderr.write(`[nemocode daemon] ${signal} - shutting down.\n`);
+      process.stderr.write(`[nemo daemon] ${signal} - shutting down.\n`);
     }
     activeSessions.closeStore();
     server.close();
@@ -275,7 +275,7 @@ async function handleDaemonRequest(
 ): Promise<void> {
   const path_ = requestPath(req);
   if (opts.debug) {
-    process.stderr.write(`[nemocode daemon] ${req.method} ${path_}\n`);
+    process.stderr.write(`[nemo daemon] ${req.method} ${path_}\n`);
   }
 
   // Unauthenticated liveness + health (must work before any session exists).
@@ -301,7 +301,7 @@ async function handleDaemonRequest(
   if (req.method === "GET" && path_ === "/") {
     writeJson(res, 200, {
       ok: true,
-      service: "nemocode daemon",
+      service: "nemo daemon",
       version: VERSION,
       activeSessionCount: activeSessions.size,
     });
@@ -508,7 +508,7 @@ async function isInternalCallerAuthorized(req: IncomingMessage): Promise<boolean
  * The Codex desktop app holds the stable local-proxy token in its config with
  * no launcher process alive to re-register when this daemon loses the session
  * (restart, idle reap, kill -9). Without this fallback every request from the
- * app 401s until the user re-runs `nemocode codex-app`.
+ * app 401s until the user re-runs `nemo codex-app`.
  */
 async function restoreAppSession(token: string): Promise<SessionState | undefined> {
   const registration = await readAppRegistration();

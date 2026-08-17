@@ -55,7 +55,7 @@ export async function runCodexNebius(options: CodexLaunchOptions): Promise<Codex
   if (!codexArgsIgnoreUserConfig(args)) {
     await ensureCodexGenericUserDefaults(options.home);
   }
-  // Tavily MCP auto-inject, mirroring nclaude: hand the session Tavily's remote
+  // Tavily MCP auto-inject, mirroring claudemo: hand the session Tavily's remote
   // MCP server when a key is configured. Codex sends the key itself via
   // bearer_token_env_var, so the launch flags carry only the env var NAME -
   // never the key. Skipped under --no-mcp / --ignore-user-config (the user

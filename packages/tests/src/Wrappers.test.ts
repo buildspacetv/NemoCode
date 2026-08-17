@@ -26,7 +26,7 @@ describe("refreshLauncherWrappers", () => {
 
     // A pre-0.10 wrapper that assumed `bun` was on PATH.
     await writeFile(
-      path.join(binDir, "nclaude"),
+      path.join(binDir, "claudemo"),
       `#!/usr/bin/env sh\nexec bun "${binDir}/nemocode.js" claude "$@"\n`,
       { mode: 0o755 },
     );

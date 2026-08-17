@@ -4,6 +4,7 @@
   "description": "CLI for routing Claude Code, OpenCode, Codex, and Pi Code through Nebius Token Factory",
   "license": "MIT",
   "bin": {
+    "nemo": "./dist/bin/nemocode.js",
     "nemocode": "./dist/bin/nemocode.js"
   },
   "files": [

@@ -186,8 +186,8 @@ function DashboardRoute() {
 
       <div className="mb-6 rounded-md border border-line-strong bg-code px-4 py-3 text-sm text-muted">
         Scope: this dashboard only sees sessions launched through{" "}
-        <code className="font-mono text-ink">nemocode claude</code> /{" "}
-        <code className="font-mono text-ink">nemocode codex</code>, which route through our proxy.
+        <code className="font-mono text-ink">nemo claude</code> /{" "}
+        <code className="font-mono text-ink">nemo codex</code>, which route through our proxy.
         OpenCode sessions and any direct Nebius API key usage bypass the proxy entirely and are not
         counted here - so these numbers are a lower bound on total usage, not the whole picture.
       </div>

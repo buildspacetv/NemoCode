@@ -43,8 +43,8 @@ import {
 } from "./codex-app/process.js";
 
 const CODEX_APP_PROVIDER_ID = `${CODEX_PROVIDER_ID}_codex_app`;
-const CODEX_APP_CONFIG_MARKER_START = "# >>> nemocode codex-app alpha >>>";
-const CODEX_APP_CONFIG_MARKER_END = "# <<< nemocode codex-app alpha <<<";
+const CODEX_APP_CONFIG_MARKER_START = "# >>> nemo codex-app alpha >>>";
+const CODEX_APP_CONFIG_MARKER_END = "# <<< nemo codex-app alpha <<<";
 const CODEX_APP_REQUIRES_OPENAI_AUTH_WORKAROUND = true;
 const BACKUP_MANIFEST = "latest.json";
 
@@ -76,7 +76,7 @@ export async function runCodexAppCommand(ctx: HarnessContext): Promise<HarnessRe
   });
   if (!apiKey) {
     throw new Error(
-      "No Nebius API key found. Pass --api-key, run `nemocode configure`, or set NEBIUS_API_KEY.",
+      "No Nebius API key found. Pass --api-key, run `nemo configure`, or set NEBIUS_API_KEY.",
     );
   }
 
@@ -101,7 +101,7 @@ export async function runCodexAppCommand(ctx: HarnessContext): Promise<HarnessRe
     targetModelId: selectedModel.definition.id,
     modelName: selectedModel.definition.name,
     modelDefinition: selectedModel.definition,
-    ...(process.env.NEMOCODE_DEBUG === "1" ? { debug: true } : {}),
+    ...(relayEnv("DEBUG") === "1" ? { debug: true } : {}),
   };
   await registerDaemonSession(proxyUrl, registration);
   // This command exits after configuring, so no launcher stays alive to
@@ -160,7 +160,7 @@ export async function runCodexAppCommand(ctx: HarnessContext): Promise<HarnessRe
     "ChatGPT App profile changed to NemoCode. (alpha)",
     `Model: ${selectedModel.definition.name}`,
     "Start a task or open a repository in ChatGPT App as usual.",
-    "Restore your previous ChatGPT App profile with: nemocode chatgpt --restore",
+    "Restore your previous ChatGPT App profile with: nemo chatgpt --restore",
     `Backup: ${backup}`,
     codexAppLaunchMessage(launch),
   ]
@@ -217,7 +217,7 @@ export function buildCodexAppConfig(
   ]);
   const providerBlock = [
     CODEX_APP_CONFIG_MARKER_START,
-    "# nemocode codex-app configures a dedicated alpha provider for ChatGPT Desktop.",
+    "# nemo codex-app configures a dedicated alpha provider for ChatGPT Desktop.",
     `[model_providers.${options.providerId}]`,
     `name = ${tomlString(options.providerName)}`,
     `base_url = ${tomlString(options.baseUrl)}`,
@@ -365,11 +365,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 function backupDir(home: string): string {
-  return path.join(
-    process.env.NEMOCODE_HOME || path.join(home, ".nemocode"),
-    "backup",
-    "codex-app",
-  );
+  return path.join(relayEnv("HOME") || path.join(home, ".nemocode"), "backup", "codex-app");
 }
 
 function modelCatalogPath(home: string): string {

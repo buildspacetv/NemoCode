@@ -6,7 +6,7 @@
 #    write it into the two package.json files (the source of truth), then run
 #    scripts/build-bundle.sh so site/latest.json + site/nemocode.js ship
 #    the new version.
-#  - Fuzzy (delegated to a headless nclaude run): finding every stale CLI
+#  - Fuzzy (delegated to a headless claudemo run): finding every stale CLI
 #    version reference scattered across docs/examples (llms.txt, TESTING.md,
 #    READMEs, …) and telling it apart from dependency versions in pnpm-lock.yaml
 #    or historical notes in design docs. An agent reads context; a regex cannot,
@@ -24,7 +24,7 @@
 #   pnpm bump-version major         # 0.5.25 → 1.0.0
 #   pnpm bump-version 0.6.2         # explicit version
 #   pnpm bump-version --dry-run X   # preview; no writes, no agent, no bundle
-#   pnpm bump-version --print-prompt X  # print the exact prompt sent to nclaude
+#   pnpm bump-version --print-prompt X  # print the exact prompt sent to claudemo
 
 set -euo pipefail
 
@@ -97,7 +97,7 @@ PROMPT="${PROMPT//__NEXT__/$NEXT}"
 if [[ "$DRY_RUN" == 1 ]]; then
   echo "[dry-run] current: v${CURRENT}  →  target: v${NEXT}"
   echo "[dry-run] would rewrite: package.json, packages/cli/package.json"
-  echo "[dry-run] would run headless nclaude to sweep doc version refs → v${NEXT}"
+  echo "[dry-run] would run headless claudemo to sweep doc version refs → v${NEXT}"
   echo "          (e.g. site/public/llms.txt, TESTING.md, other *.md docs)"
   echo "[dry-run] would run: bash scripts/build-bundle.sh"
   exit 0
@@ -126,19 +126,19 @@ update_pkg "$ROOT/package.json"
 update_pkg "$ROOT/packages/cli/package.json"
 echo "✓ package.json + packages/cli/package.json → $NEXT"
 
-# 2. Sweep stale CLI-version references in docs/examples via headless nclaude.
+# 2. Sweep stale CLI-version references in docs/examples via headless claudemo.
 #    The agent reads context, so it can skip dependency versions in pnpm-lock
 #    and historical mentions in design docs - something a regex cannot do.
-if command -v nclaude >/dev/null 2>&1; then
-  TCLAUDE=(nclaude)
+if command -v claudemo >/dev/null 2>&1; then
+  TCLAUDE=(claudemo)
 elif command -v nemocode >/dev/null 2>&1; then
-  TCLAUDE=(nemocode claude)
+  TCLAUDE=(nemo claude)
 else
-  echo "error: nclaude/nemocode not on PATH - install the CLI first" >&2
+  echo "error: claudemo/nemocode not on PATH - install the CLI first" >&2
   exit 1
 fi
 
-echo "→ sweeping doc version refs to v${NEXT} via headless nclaude…"
+echo "→ sweeping doc version refs to v${NEXT} via headless claudemo…"
 "${TCLAUDE[@]}" -p "$PROMPT" --dangerously-skip-permissions --output-format text < /dev/null 2>&1
 
 # 3. Rebuild the bundle so site/nemocode.js and site/latest.json ship the

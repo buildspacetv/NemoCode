@@ -34,7 +34,7 @@ cp "$ROOT/scripts/install.sh" "$TRACKED_DIR/install.sh"
 # source script so the tracked copy does not churn per deployment.
 if [ -n "${NEMOCODE_ORIGIN:-}" ]; then
   ORIGIN_CLEAN="${NEMOCODE_ORIGIN%/}"
-  sed -i.bak "s|ORIGIN=\"\${NEMOCODE_ORIGIN:-https://nemocode.com}\"|ORIGIN=\"\${NEMOCODE_ORIGIN:-${ORIGIN_CLEAN}}\"|" "$PUBLIC_DIR/install.sh"
+  sed -i.bak "s|ORIGIN=\"\${NEMOCODE_ORIGIN:-https://nemocode.org}\"|ORIGIN=\"\${NEMOCODE_ORIGIN:-${ORIGIN_CLEAN}}\"|" "$PUBLIC_DIR/install.sh"
   rm -f "$PUBLIC_DIR/install.sh.bak"
   echo "✓ installer → site/public/install.sh (origin ${ORIGIN_CLEAN}) and site/install.sh"
 else
@@ -63,7 +63,7 @@ echo "✓ bundle → site/public/nemocode.js and site/nemocode.js ($(wc -c < "$P
 # `url` is RELATIVE by default, and that is deliberate. The updater requires
 # the bundle to live on the same origin as the manifest that named it, so a
 # hardcoded absolute URL is only correct on exactly one host - a manifest
-# baked with `https://nemocode.com/nemocode.js` but served from any other
+# baked with `https://nemocode.org/nemocode.js` but served from any other
 # deployment (a fork's Vercel project, a preview URL, a local mirror) names a
 # cross-origin bundle and is refused. A relative path is resolved against
 # whatever origin actually served the manifest, so one build artifact is

@@ -128,7 +128,7 @@ describe("runTenkiHarness", () => {
     });
     const script = calls.run[0]?.[2] ?? "";
     expect(script).toContain("git clone");
-    expect(script).toContain("nclaude");
+    expect(script).toContain("claudemo");
     expect(script).not.toContain("nebius-secret");
     expect(script).not.toContain("tvly-secret");
   });

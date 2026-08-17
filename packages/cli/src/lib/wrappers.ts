@@ -14,11 +14,14 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 export const LAUNCHERS: ReadonlyArray<{ name: string; subcommand: string }> = [
+  // `nemo` is the command; `nemocode` stays as an alias so installs that
+  // already have it on PATH keep working.
+  { name: "nemo", subcommand: "" },
   { name: "nemocode", subcommand: "" },
-  { name: "nclaude", subcommand: "claude" },
-  { name: "nopencode", subcommand: "opencode" },
-  { name: "ncodex", subcommand: "codex" },
-  { name: "npi", subcommand: "pi" },
+  { name: "claudemo", subcommand: "claude" },
+  { name: "opencodemo", subcommand: "opencode" },
+  { name: "codemo", subcommand: "codex" },
+  { name: "pimo", subcommand: "pi" },
 ];
 
 export function launcherScript(binDir: string, subcommand: string): string {

@@ -104,7 +104,7 @@ export type ProxiedSessionSpec = {
 };
 
 export async function runProxiedSession(spec: ProxiedSessionSpec): Promise<ProxiedSessionResult> {
-  const debug = process.env.NEMOCODE_DEBUG === "1";
+  const debug = relayEnv("DEBUG") === "1";
   const sessionId = randomLocalProxyToken();
   const authToken = await localProxyAuthToken();
   const telemetrySessionId = randomSessionId();
@@ -130,7 +130,7 @@ export async function runProxiedSession(spec: ProxiedSessionSpec): Promise<Proxi
     await registerDaemonSession(proxyUrl, registration);
   } catch (err) {
     throw new Error(
-      `Could not register this ${spec.agent === "claude" ? "Claude" : "Codex"} session with the nemocode daemon: ${err instanceof Error ? err.message : String(err)}`,
+      `Could not register this ${spec.agent === "claude" ? "Claude" : "Codex"} session with the nemo daemon: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 

@@ -30,7 +30,8 @@ const CODEX_IDENTITY_PROMPT =
   "The upstream model is a Nebius Token Factory model, not an OpenAI model. " +
   "If asked what model you are, identify yourself as the selected Nebius Token Factory backend routed by nemocode.";
 
-const CODEX_MEMORY_MODEL_ENV = "NEMOCODE_CODEX_MEMORY_MODEL";
+/** Namespace suffix; relayEnv applies the NEMOCODE_/legacy prefixes. */
+const CODEX_MEMORY_MODEL_ENV = "CODEX_MEMORY_MODEL";
 const CODEX_MEMORY_REQUESTED_MODELS = new Set(["gpt-5.4-mini"]);
 const CODEX_CONTEXT_OUTPUT_SAFETY_TOKENS = 512;
 
@@ -478,7 +479,7 @@ export async function runCodexWebSearch(
     tavilyApiKey: process.env.TAVILY_API_KEY,
     debugLog: (label, value) => debugLog(options, label, value),
     missingApiKeyMessage:
-      "Web search error: TAVILY_API_KEY is not set. Run `nemocode configure` or export TAVILY_API_KEY and retry.",
+      "Web search error: TAVILY_API_KEY is not set. Run `nemo configure` or export TAVILY_API_KEY and retry.",
     includePublishedDate: true,
     snippetLength: 700,
   });
@@ -679,7 +680,7 @@ function reasoningEffort(body: ResponsesRequest, model: ModelDefinition): string
 
 /** Env-overridable default reasoning effort for GLM-5.2 (fast "none" by default). */
 function glmDefaultReasoningEffort(): string {
-  const raw = process.env.NEMOCODE_REASONING_EFFORT?.toLowerCase();
+  const raw = relayEnv("REASONING_EFFORT")?.toLowerCase();
   switch (raw) {
     case "low":
     case "medium":
@@ -722,5 +723,5 @@ function defaultMaxOutputTokens(
 }
 
 function debugLog(options: DebugOptions, label: string, payload: unknown | (() => unknown)): void {
-  writeProxyDebugLog("nemocode codex proxy", options, label, payload);
+  writeProxyDebugLog("nemo codex proxy", options, label, payload);
 }

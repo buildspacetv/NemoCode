@@ -32,7 +32,7 @@ maybeDescribe("live Codex cross-provider resume", () => {
     }
   });
 
-  test("normal Codex → ncodex → normal Codex preserves reasoning and local actions", async () => {
+  test("normal Codex → codemo → normal Codex preserves reasoning and local actions", async () => {
     const cwd = path.join(context.tmpDir, "normal-nebius-normal");
     await mkdir(cwd, { recursive: true });
     const normalMarker = "NORMAL_ACTION_5261";
@@ -85,7 +85,7 @@ maybeDescribe("live Codex cross-provider resume", () => {
     expect(normalResume.stdout + normalResume.stderr).not.toContain("array_above_max_length");
   });
 
-  test("ncodex → normal Codex → ncodex preserves shell and patch history", async () => {
+  test("codemo → normal Codex → codemo preserves shell and patch history", async () => {
     const cwd = path.join(context.tmpDir, "nebius-normal-nebius");
     await mkdir(cwd, { recursive: true });
     const nebiusMarker = "NEBIUS_ORIGIN_3185";

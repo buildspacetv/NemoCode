@@ -755,9 +755,7 @@ function mergeUsage(
 }
 
 function codexStreamIdleTimeoutMs(): number {
-  const raw =
-    process.env.NEMOCODE_STREAM_IDLE_TIMEOUT_MS ??
-    process.env.NEMOCODE_CODEX_STREAM_IDLE_TIMEOUT_MS;
+  const raw = relayEnv("STREAM_IDLE_TIMEOUT_MS") ?? relayEnv("CODEX_STREAM_IDLE_TIMEOUT_MS");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0
     ? Math.max(100, parsed)
@@ -765,7 +763,7 @@ function codexStreamIdleTimeoutMs(): number {
 }
 
 function codexStreamTurnTimeoutMs(): number {
-  const raw = process.env.NEMOCODE_CODEX_STREAM_TURN_TIMEOUT_MS;
+  const raw = relayEnv("CODEX_STREAM_TURN_TIMEOUT_MS");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0
     ? Math.max(100, parsed)
@@ -773,7 +771,7 @@ function codexStreamTurnTimeoutMs(): number {
 }
 
 function codexStreamIdleRetries(): number {
-  const raw = process.env.NEMOCODE_CODEX_STREAM_IDLE_RETRIES;
+  const raw = relayEnv("CODEX_STREAM_IDLE_RETRIES");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 0
     ? Math.floor(parsed)
@@ -785,5 +783,5 @@ function debugLog(
   label: string,
   payload: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("nemocode codex proxy", options, label, payload);
+  writeProxyDebugLog("nemo codex proxy", options, label, payload);
 }

@@ -32,7 +32,7 @@ export type NebiusRequestDiagnostic = {
 export async function persistRequestDiagnostic(
   diagnostic: Omit<NebiusRequestDiagnostic, "at">,
 ): Promise<void> {
-  if (process.env.NEMOCODE_REQUEST_DIAGNOSTICS === "0") {
+  if (relayEnv("REQUEST_DIAGNOSTICS") === "0") {
     return;
   }
   const file = resolveRequestDiagnosticsPath();

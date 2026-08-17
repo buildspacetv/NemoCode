@@ -11,7 +11,7 @@ import {
   tavilyKeysUrl,
 } from "../components/SiteChrome";
 
-const installCommand = "curl -fsSL https://nemocode.com/install.sh | sh";
+const installCommand = "curl -fsSL https://nemocode.org/install.sh | sh";
 
 type Agent = {
   name: string;
@@ -25,7 +25,7 @@ type Agent = {
 const agents: Agent[] = [
   {
     name: "Claude Code",
-    command: "nclaude",
+    command: "claudemo",
     pill: "claude",
     status: "Stable",
     mark: <ClaudeMark />,
@@ -34,7 +34,7 @@ const agents: Agent[] = [
   },
   {
     name: "Codex CLI",
-    command: "ncodex",
+    command: "codemo",
     pill: "codex",
     status: "Stable",
     mark: <CodexMark />,
@@ -43,7 +43,7 @@ const agents: Agent[] = [
   },
   {
     name: "OpenCode",
-    command: "nopencode",
+    command: "opencodemo",
     pill: "opencode",
     status: "Stable",
     mark: <OpenCodeMark />,
@@ -52,7 +52,7 @@ const agents: Agent[] = [
   },
   {
     name: "Pi Code",
-    command: "npi",
+    command: "pimo",
     pill: "pi",
     status: "Stable",
     mark: <PiMark />,
@@ -66,8 +66,8 @@ const steps = [
     title: "Install once",
     body: (
       <>
-        Run the one-liner. It drops <code>nemocode</code> plus <code>nclaude</code>,{" "}
-        <code>ncodex</code>, <code>nopencode</code>, and <code>npi</code> onto your PATH and
+        Run the one-liner. It drops <code>nemocode</code> plus <code>claudemo</code>,{" "}
+        <code>codemo</code>, <code>opencodemo</code>, and <code>pimo</code> onto your PATH and
         installs Bun if you don&apos;t have it.
       </>
     ),
@@ -76,7 +76,7 @@ const steps = [
     title: "Add your keys",
     body: (
       <>
-        On first run, <code>nemocode configure</code> asks for your{" "}
+        On first run, <code>nemo configure</code> asks for your{" "}
         <a className="link" href={nebiusApiKeysUrl} target="_blank" rel="noopener noreferrer">
           Nebius Token Factory
         </a>{" "}
@@ -92,7 +92,7 @@ const steps = [
     title: "Launch an agent",
     body: (
       <>
-        Type <code>nclaude</code> or <code>ncodex</code> and keep working. The Relay injects Nebius
+        Type <code>claudemo</code> or <code>codemo</code> and keep working. The Relay injects Nebius
         settings for that run only. Nothing is written to your real agent config.
       </>
     ),
@@ -165,8 +165,7 @@ const nemotronHighlights = [
   {
     icon: "🇪🇺",
     label: "Served in the EU",
-    detail:
-      "Every token runs on Nebius Token Factory in Paris, with zero data retention supported.",
+    detail: "Every token runs on Nebius Token Factory, with zero data retention supported.",
   },
 ];
 
@@ -362,9 +361,6 @@ function Home() {
               <span aria-hidden="true">🔒</span>SOC 2-compliant data centers
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true">🇫🇷</span>Hosted in Paris, France
-            </span>
-            <span className="inline-flex items-center gap-1.5">
               <span aria-hidden="true">🚫</span>Zero data retention supported
             </span>
           </div>
@@ -381,7 +377,7 @@ function Home() {
             and agentic coding, with a reasoning mode you can turn on per turn. Alongside it, Cosmos
             Reason adds vision — so image-heavy work has somewhere to go even when your primary
             model is text-only. Through Nebius Token Factory every token is served from SOC
-            2-compliant data centers in Paris, France, with zero data retention supported.
+            2-compliant data centers, with zero data retention supported.
           </p>
           <div className="mt-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
             {nemotronHighlights.map((b) => (
@@ -571,7 +567,7 @@ function Home() {
             className="inline-flex items-center gap-2.5 rounded-xl bg-ink px-5 py-3 font-mono text-[13.5px] text-surface shadow-[0_1px_2px_rgba(10,10,10,.14),0_16px_40px_-20px_rgba(10,15,30,.6)] transition hover:brightness-110 active:scale-[.98]"
           >
             <span className="text-lime-ink">$</span>
-            <span className="max-[520px]:hidden">curl -fsSL nemocode.com/install.sh | sh</span>
+            <span className="max-[520px]:hidden">curl -fsSL nemocode.org/install.sh | sh</span>
             <span className="hidden max-[520px]:inline">curl … | sh</span>
             <span className="ml-1 text-surface/60">{copyState === "copied" ? "✓" : "⧉"}</span>
           </button>

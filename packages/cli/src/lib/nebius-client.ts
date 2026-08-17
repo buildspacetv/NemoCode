@@ -64,7 +64,7 @@ const DEFAULT_FALLBACK_COOLDOWN_MS = 60_000;
 const unhealthySince = new Map<string, number>();
 
 function fallbackModel(): string | undefined {
-  const raw = process.env.NEMOCODE_FALLBACK_MODEL;
+  const raw = relayEnv("FALLBACK_MODEL");
   if (raw === undefined) {
     return DEFAULT_FALLBACK_MODEL;
   }
@@ -77,7 +77,7 @@ function fallbackModel(): string | undefined {
 }
 
 function fallbackCooldownMs(): number {
-  const raw = Number.parseInt(process.env.NEMOCODE_FALLBACK_COOLDOWN_MS ?? "", 10);
+  const raw = Number.parseInt(relayEnv("FALLBACK_COOLDOWN_MS") ?? "", 10);
   return Number.isFinite(raw) && raw >= 0 ? raw : DEFAULT_FALLBACK_COOLDOWN_MS;
 }
 
@@ -463,7 +463,7 @@ async function fetchNebiusResponse(
 }
 
 function responseHeaderTimeoutMs(): number {
-  const raw = process.env.NEMOCODE_RESPONSE_HEADER_TIMEOUT_MS;
+  const raw = relayEnv("RESPONSE_HEADER_TIMEOUT_MS");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0
     ? Math.max(100, parsed)
@@ -471,13 +471,13 @@ function responseHeaderTimeoutMs(): number {
 }
 
 function streamRetries(): number {
-  const raw = process.env.NEMOCODE_STREAM_RETRIES;
+  const raw = relayEnv("STREAM_RETRIES");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 0 ? Math.floor(parsed) : DEFAULT_STREAM_RETRIES;
 }
 
 function responseHeaderRetries(): number {
-  const raw = process.env.NEMOCODE_RESPONSE_HEADER_RETRIES ?? process.env.NEMOCODE_STREAM_RETRIES;
+  const raw = relayEnv("RESPONSE_HEADER_RETRIES") ?? relayEnv("STREAM_RETRIES");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed >= 0 ? Math.floor(parsed) : DEFAULT_STREAM_RETRIES;
 }

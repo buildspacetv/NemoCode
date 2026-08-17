@@ -62,7 +62,7 @@ describe("Codex App alpha config", () => {
       catalogPath: "/tmp/new.json",
     });
 
-    expect(second.match(/>>> nemocode codex-app alpha >>>/g)).toHaveLength(1);
+    expect(second.match(/>>> nemo codex-app alpha >>>/g)).toHaveLength(1);
     expect(second).not.toContain("/tmp/old.json");
     expect(second).not.toContain("/session/old/v1");
     expect(second).toContain('model = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"');

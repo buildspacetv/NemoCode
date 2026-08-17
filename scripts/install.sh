@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # nemocode installer.
 #
-#   curl -fsSL https://nemocode.com/install.sh | sh
+#   curl -fsSL https://nemocode.org/install.sh | sh
 #
 # Installs the nemocode CLI as a Bun-target JS bundle at
-# ~/.nemocode/bin/nemocode.js, with a `nemocode` wrapper script on
+# ~/.nemocode/bin/nemocode.js, with a `nemo` wrapper script on
 # PATH that runs it with `bun`. Installs Bun for the user if `bun` isn't on
-# PATH. Also installs `nclaude`, `nopencode`, `ncodex`, and `npi` convenience wrappers.
+# PATH. Also installs `claudemo`, `opencodemo`, `codemo`, and `pimo` convenience wrappers.
 #
 # After install, the CLI prompts once for a Nebius API key on first use
 # (Enter skips - the key is optional). The CLI self-updates in the background.
@@ -16,7 +16,7 @@ set -eu
 # dash on Debian/Ubuntu. Enable it only where the shell supports it.
 if (set -o pipefail) 2>/dev/null; then set -o pipefail; fi
 
-ORIGIN="${NEMOCODE_ORIGIN:-https://nemocode.com}"
+ORIGIN="${NEMOCODE_ORIGIN:-https://nemocode.org}"
 INSTALL_DIR="${NEMOCODE_HOME:-$HOME/.nemocode}"
 BIN_DIR="$INSTALL_DIR/bin"
 
@@ -51,7 +51,7 @@ else
 fi
 
 # --- 2. Download the latest bundle + manifest --------------------------------
-# The bundle is executed by every later nclaude/ncodex/… run, so it is verified
+# The bundle is executed by every later claudemo/codemo/… run, so it is verified
 # against the sha256 published in latest.json before it is moved into place.
 # Download to a temp path, hash, compare, and only then install - a bundle we
 # cannot verify is discarded rather than run.
@@ -126,17 +126,18 @@ EOF
   chmod +x "$BIN_DIR/$launcher_name"
 }
 
+write_launcher nemo ""
 write_launcher nemocode ""
-write_launcher nclaude claude
-write_launcher nopencode opencode
-write_launcher ncodex codex
-write_launcher npi pi
+write_launcher claudemo claude
+write_launcher opencodemo opencode
+write_launcher codemo codex
+write_launcher pimo pi
 
-ok "Wrappers installed: nemocode, nclaude, nopencode, ncodex, npi → $BIN_DIR"
+ok "Wrappers installed: nemocode, claudemo, opencodemo, codemo, pimo → $BIN_DIR"
 
 # Remove old nemocode-owned wrappers that used the upstream agent names.
 # Current installs must never shadow `claude`, `codex`, or `opencode`; users
-# should get the real CLIs unless they explicitly run nclaude/ncodex/nopencode/npi.
+# should get the real CLIs unless they explicitly run claudemo/codemo/opencodemo/pimo.
 remove_legacy_shadow_wrapper() {
   name="$1"
   path="$BIN_DIR/$name"
@@ -146,7 +147,7 @@ remove_legacy_shadow_wrapper() {
   if [ -L "$path" ]; then
     target="$(readlink "$path" 2>/dev/null || true)"
     case "$target" in
-      "$BIN_DIR/nclaude"|"$BIN_DIR/ncodex"|"$BIN_DIR/nopencode"|"$BIN_DIR/npi"|"$BIN_DIR/nemocode"|"$BIN_DIR/nemocode.js")
+      "$BIN_DIR/claudemo"|"$BIN_DIR/codemo"|"$BIN_DIR/opencodemo"|"$BIN_DIR/pimo"|"$BIN_DIR/nemocode"|"$BIN_DIR/nemocode.js")
         rm -f "$path"
         ok "Removed old nemocode shadow command: $path"
         ;;
@@ -214,11 +215,12 @@ if LINK_DIR="$(find_writable_path_dir)"; then
     links_changed=$((links_changed + 1))
   }
 
+  install_link nemo "$BIN_DIR/nemo"
   install_link nemocode "$BIN_DIR/nemocode"
-  install_link nclaude "$BIN_DIR/nclaude"
-  install_link nopencode "$BIN_DIR/nopencode"
-  install_link ncodex "$BIN_DIR/ncodex"
-  install_link npi "$BIN_DIR/npi"
+  install_link claudemo "$BIN_DIR/claudemo"
+  install_link opencodemo "$BIN_DIR/opencodemo"
+  install_link codemo "$BIN_DIR/codemo"
+  install_link pimo "$BIN_DIR/pimo"
   if [ "$links_changed" -gt 0 ]; then
     ok "Linked $links_changed command(s) into current PATH → $LINK_DIR"
   fi
@@ -272,7 +274,7 @@ echo ""
 bold "✔ nemocode installed"
 info "Version:  ${INSTALLED_VERSION:-unknown (verify with: nemocode --version)}"
 info "Location: $BIN_DIR"
-info "Next:     run \`nclaude\` (Claude Code on Nemotron) or \`nemocode\` to pick a tool."
+info "Next:     run \`claudemo\` (Claude Code on Nemotron) or \`nemocode\` to pick a tool."
 info "          First run asks for your Nebius API key, plus an optional"
 info "          (recommended) Tavily key for live web search."
 

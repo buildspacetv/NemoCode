@@ -28,7 +28,7 @@ async function daemonStop(): Promise<void> {
     pid = undefined;
   }
   if (pid === undefined) {
-    console.log(`nemocode daemon: not running (no pid file at ${pidPath}).`);
+    console.log(`nemo daemon: not running (no pid file at ${pidPath}).`);
     return;
   }
   try {
@@ -41,7 +41,7 @@ async function daemonStop(): Promise<void> {
       } catch {
         // ignore
       }
-      console.log(`nemocode daemon: not running (stale pid file removed).`);
+      console.log(`nemo daemon: not running (stale pid file removed).`);
       return;
     }
     throw err;
@@ -54,7 +54,7 @@ async function daemonStop(): Promise<void> {
   } catch {
     // already cleaned by the daemon
   }
-  console.log(`nemocode daemon: stopped (pid ${pid}) on ${daemonUrl(port)}.`);
+  console.log(`nemo daemon: stopped (pid ${pid}) on ${daemonUrl(port)}.`);
 }
 
 async function loadStoredTavilyKey(): Promise<void> {
@@ -112,10 +112,10 @@ async function runInteractiveLauncher(): Promise<void> {
   const choice = await clack.select({
     message: "What do you want to run?",
     options: [
-      { value: "codex", label: "Codex", hint: "ncodex" },
-      { value: "claude", label: "Claude Code", hint: "nclaude" },
-      { value: "pi", label: "Pi Code", hint: "npi" },
-      { value: "opencode", label: "OpenCode", hint: "nopencode" },
+      { value: "codex", label: "Codex", hint: "codemo" },
+      { value: "claude", label: "Claude Code", hint: "claudemo" },
+      { value: "pi", label: "Pi Code", hint: "pimo" },
+      { value: "opencode", label: "OpenCode", hint: "opencodemo" },
       { value: "chatgpt", label: "ChatGPT Desktop", hint: "chatgpt" },
       { value: "configure", label: "Configure", hint: "API keys and detected tools" },
     ],
@@ -130,7 +130,7 @@ async function runInteractiveLauncher(): Promise<void> {
   }
   if (choice === "chatgpt") {
     // ChatGPT Desktop (the former Codex desktop app, merged in 2026). Routes
-    // to the same codex-app flow as `nemocode chatgpt` / `codex-app`.
+    // to the same codex-app flow as `nemo chatgpt` / `codex-app`.
     const { runCodexAppCommand } = await import("../lib/codex-app.js");
     const result = await runCodexAppCommand({ home: os.homedir() });
     if (result.message) {
@@ -151,7 +151,7 @@ function isInteractive(): boolean {
 
 async function main() {
   // Self-update first (throttled, bounded, never throws). Placed before arg
-  // parsing so even `nemocode help` keeps an install current, but it's a
+  // parsing so even `nemo help` keeps an install current, but it's a
   // no-op unless this is the installed bundle and the throttle window passed.
   // Keep this before loading project .env files so a repo cannot redirect the
   // updater with NEMOCODE_MANIFEST_URL / NEMOCODE_HOME.
@@ -162,7 +162,7 @@ async function main() {
   loadEnvFile();
 
   // If TAVILY_API_KEY still isn't set (not in the env or .env), fall back to the
-  // key stored by `nemocode configure`, so the proxy's web search works
+  // key stored by `nemo configure`, so the proxy's web search works
   // without the user re-sourcing .env every session.
   await loadStoredTavilyKey();
 
@@ -244,7 +244,7 @@ async function main() {
     throw new Error(`Unknown "daemon ${verb}" command. Expected: stop.`);
   }
 
-  // Token Factory Sandboxes: `nemocode sandbox <status|run|advisory>`.
+  // Token Factory Sandboxes: `nemo sandbox <status|run|advisory>`.
   if (command === "sandbox") {
     const { runSandboxCli } = await import("../lib/commands/sandbox.js");
     const index = process.argv.indexOf("sandbox");
@@ -254,7 +254,7 @@ async function main() {
 
   if (command === "codex-app") {
     if (!parsed.flags.restore && !(await ensureConfiguredForInteractiveLaunch())) {
-      throw new Error("No Nebius API key found. Run `nemocode configure` or set NEBIUS_API_KEY.");
+      throw new Error("No Nebius API key found. Run `nemo configure` or set NEBIUS_API_KEY.");
     }
     const { runCodexAppCommand } = await import("../lib/codex-app.js");
     const result = await runCodexAppCommand({ home: os.homedir(), ...parsed.flags });
@@ -269,7 +269,7 @@ async function main() {
 
   const invocation = resolveHarnessInvocation(parsed.positional, parsed.flags);
 
-  // `nclaude --sandbox ...` / `ncodex --sandbox ...`: the wrapper scripts put
+  // `claudemo --sandbox ...` / `codemo --sandbox ...`: the wrapper scripts put
   // everything after the harness token into passthrough, so a leading
   // --sandbox there selects the remote Token Factory Sandbox session instead
   // of a local launch. Remaining passthrough goes to the harness inside the
@@ -310,7 +310,7 @@ async function main() {
       rest = rest.slice(1);
     }
     if (!(await ensureConfiguredForInteractiveLaunch())) {
-      throw new Error("No Nebius API key found. Run `nemocode configure` or set NEBIUS_API_KEY.");
+      throw new Error("No Nebius API key found. Run `nemo configure` or set NEBIUS_API_KEY.");
     }
     void sendTelemetryEvent({ event: "cli_started", agent: `${invocation.command}-sandbox` });
     const { runHarnessSandbox } = await import("../lib/commands/sandbox.js");
@@ -333,7 +333,7 @@ async function main() {
     invocation.command !== undefined
   ) {
     if (!(await ensureConfiguredForInteractiveLaunch())) {
-      throw new Error("No Nebius API key found. Run `nemocode configure` or set NEBIUS_API_KEY.");
+      throw new Error("No Nebius API key found. Run `nemo configure` or set NEBIUS_API_KEY.");
     }
   }
 

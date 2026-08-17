@@ -6,7 +6,7 @@ let warnedAboutDebugLogWrite = false;
 export function writeDebugLogLine(line: string): void {
   process.stderr.write(line);
 
-  const logPath = process.env.NEMOCODE_DEBUG_LOG;
+  const logPath = relayEnv("DEBUG_LOG");
   if (!logPath) {
     return;
   }

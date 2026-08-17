@@ -1,3 +1,6 @@
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { nemocodeHome, isProcessAlive } from "@nemocode/cli/dist/lib/paths.js";
 
@@ -13,12 +16,16 @@ describe("paths.ts - single source of truth for home + liveness (#7)", () => {
     }
   });
 
-  test("nemocodeHome falls back to ~/.nemocode when env unset", () => {
+  test("nemocodeHome falls back to .nemocode when env unset", () => {
     const original = process.env.NEMOCODE_HOME;
     delete process.env.NEMOCODE_HOME;
     try {
-      const home = nemocodeHome();
-      expect(home.endsWith("/.nemocode")).toBe(true);
+      // Explicit base: the real home may carry a legacy .kimirelay directory,
+      // which nemocodeHome deliberately prefers so an existing install keeps
+      // its stored keys (see the migration note in paths.ts). Asserting
+      // against a clean base keeps this about the no-legacy default.
+      const base = mkdtempSync(join(tmpdir(), "paths-home-"));
+      expect(nemocodeHome(base)).toBe(join(base, ".nemocode"));
     } finally {
       if (original !== undefined) process.env.NEMOCODE_HOME = original;
     }

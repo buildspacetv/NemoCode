@@ -1,5 +1,5 @@
 /**
- * Tavily MCP auto-inject for nclaude. The proxy already emulates Claude Code's
+ * Tavily MCP auto-inject for claudemo. The proxy already emulates Claude Code's
  * native web_search via Tavily; this additionally hands the session Tavily's
  * remote MCP server (tavily_search / tavily_extract / ...) when a key is
  * configured. The config is written to an ephemeral 0600 temp file passed via

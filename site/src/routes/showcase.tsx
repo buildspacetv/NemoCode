@@ -24,7 +24,7 @@ const projects = Object.values(modules)
 export const Route = createFileRoute("/showcase")({
   head: () => ({
     meta: [
-      { title: "Showcase - Built with NemoCode | Nemo.Guide" },
+      { title: "Showcase - Built with NemoCode | NemoCode.org" },
       {
         name: "description",
         content:

@@ -41,7 +41,7 @@ export function createProxyPerfTracer(
   fields: ProxyPerfFields = {},
   sink?: ProxyPerfSink,
 ): ProxyPerfTracer {
-  if (process.env.NEMOCODE_PERF !== "1") {
+  if (relayEnv("PERF") !== "1") {
     return disabledProxyPerfTracer;
   }
   const startedAt = performance.now();

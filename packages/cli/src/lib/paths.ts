@@ -1,7 +1,8 @@
-import { relayEnv } from "./env.js";
+import { HOME_DIR_NAMES, relayEnv } from "./env.js";
 import os from "node:os";
 import path from "node:path";
 import { chmod, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 /**
  * Resolve the nemocode home directory - the one source of truth for where
@@ -27,9 +28,34 @@ import { chmod, mkdir } from "node:fs/promises";
  * their own signature (config, telemetry, codex-app, and their tests) can
  * reuse it. The environment override still wins, exactly as it does for the
  * zero-argument daemon callers.
+ *
+ * The rename to `.nemocode` needs a migration path, not just a new constant.
+ * An install that predates it keeps its Nebius and Tavily keys, its session
+ * database, and its local-proxy token in `~/.kimirelay`; pointing
+ * unconditionally at `~/.nemocode` would present those users with an empty
+ * home and an apparently-vanished API key on their next run. So when no
+ * override is set and the new directory does not exist yet, an existing
+ * legacy directory is used in place. A fresh machine has neither and gets
+ * `.nemocode`; a migrated user who creates `.nemocode` moves over on their
+ * own terms.
  */
 export function nemocodeHome(base = os.homedir()): string {
-  return process.env.NEMOCODE_HOME || path.join(base, ".nemocode");
+  const override = relayEnv("HOME");
+  if (override) {
+    return override;
+  }
+  const [current, ...legacy] = HOME_DIR_NAMES;
+  const currentPath = path.join(base, current as string);
+  if (existsSync(currentPath)) {
+    return currentPath;
+  }
+  for (const name of legacy) {
+    const legacyPath = path.join(base, name);
+    if (existsSync(legacyPath)) {
+      return legacyPath;
+    }
+  }
+  return currentPath;
 }
 
 /**

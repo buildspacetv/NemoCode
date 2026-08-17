@@ -2,29 +2,29 @@ import { describe, expect, test } from "vitest";
 import { resolveBundleUrl, sha256Hex } from "../../cli/src/lib/autoupdate.js";
 
 /**
- * The self-updater writes a file that every later `nclaude`/`ncodex` run
+ * The self-updater writes a file that every later `claudemo`/`codemo` run
  * executes, so these two gates are the whole security story for the update
  * path: the bundle must come from the manifest's own origin, and it must hash
  * to the digest the manifest published.
  */
 describe("update bundle URL origin pinning", () => {
-  const manifestUrl = "https://nemocode.com/latest.json";
+  const manifestUrl = "https://nemocode.org/latest.json";
 
   test("accepts an absolute url on the manifest's origin", () => {
     expect(
-      resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.com/x.js" }, manifestUrl),
-    ).toBe("https://nemocode.com/x.js");
+      resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.org/x.js" }, manifestUrl),
+    ).toBe("https://nemocode.org/x.js");
   });
 
   test("accepts a relative url and resolves it against the manifest", () => {
     expect(resolveBundleUrl({ version: "1.0.0", url: "/build/x.js" }, manifestUrl)).toBe(
-      "https://nemocode.com/build/x.js",
+      "https://nemocode.org/build/x.js",
     );
   });
 
   test("defaults to the standard bundle path when the manifest omits url", () => {
     expect(resolveBundleUrl({ version: "1.0.0" }, manifestUrl)).toBe(
-      "https://nemocode.com/nemocode.js",
+      "https://nemocode.org/nemocode.js",
     );
   });
 
@@ -36,7 +36,7 @@ describe("update bundle URL origin pinning", () => {
 
   test("refuses a downgrade to plaintext on the same host", () => {
     expect(() =>
-      resolveBundleUrl({ version: "1.0.0", url: "http://nemocode.com/x.js" }, manifestUrl),
+      resolveBundleUrl({ version: "1.0.0", url: "http://nemocode.org/x.js" }, manifestUrl),
     ).toThrow(/origin/);
   });
 
@@ -48,7 +48,7 @@ describe("update bundle URL origin pinning", () => {
       "http://127.0.0.1:8080/nemocode.js",
     );
     expect(() =>
-      resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.com/x.js" }, mirror),
+      resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.org/x.js" }, mirror),
     ).toThrow(/origin/);
   });
 });

@@ -7,7 +7,7 @@ This folder tracks the Claude Code compatibility work for the local Nebius proxy
 Claude Code sends two broad kinds of tools to the model:
 
 - Client tools: Claude Code executes these locally, then sends `tool_result` back.
-- Native/server tools: Anthropic normally executes these inside the Anthropic Messages API backend. Because `nemocode` replaces Anthropic with a local proxy, we must emulate these ourselves or explicitly mark them unsupported.
+- Native/server tools: Anthropic normally executes these inside the Anthropic Messages API backend. Because `nemo` replaces Anthropic with a local proxy, we must emulate these ourselves or explicitly mark them unsupported.
 
 Client tools are already mostly supported by converting Anthropic tool schemas to Nebius/OpenAI function tools, then converting Nebius `tool_calls` back to Anthropic `tool_use` blocks.
 

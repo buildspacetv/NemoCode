@@ -1,10 +1,10 @@
 import { relayEnv } from "./env.js";
 /**
  * Shared bits of the per-harness Tavily MCP auto-inject. Each harness injects
- * Tavily's remote MCP server its own way (nclaude: ephemeral --mcp-config file;
- * ncodex: `-c mcp_servers.*` launch flags; nopencode: generated config block),
+ * Tavily's remote MCP server its own way (claudemo: ephemeral --mcp-config file;
+ * codemo: `-c mcp_servers.*` launch flags; opencodemo: generated config block),
  * but they share the endpoint and the decision of whether a usable key exists.
- * Pi is deliberately excluded: pi has no MCP support by design, and npi
+ * Pi is deliberately excluded: pi has no MCP support by design, and pimo
  * launches it with --no-extensions.
  */
 

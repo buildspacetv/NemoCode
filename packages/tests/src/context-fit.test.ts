@@ -57,7 +57,7 @@ describe("contextLengthOverflow", () => {
   });
 
   test("parses the 'prompt contains at least' phrasing (live-observed 2026-08-07)", () => {
-    // Verbatim shape of the 400 that leaked to a real nclaude session: the
+    // Verbatim shape of the 400 that leaked to a real claudemo session: the
     // request was exactly one token over the window and none of the earlier
     // matchers recognized this message, so the raw error reached Claude Code.
     const liveMessage =

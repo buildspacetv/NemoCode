@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { acceptsReasoningEffort, type ModelDefinition } from "@nemocode/models";
 import {
   nativeToolMaxUses as sharedNativeToolMaxUses,
@@ -71,7 +72,7 @@ function identitySystemPart(targetModel?: ModelDefinition, extras?: IdentityExtr
  * by default (at the cost of speed).
  */
 function defaultReasoningEffort(): NebiusReasoningEffort {
-  return normalizeNebiusReasoningEffort(process.env.NEMOCODE_REASONING_EFFORT) ?? "none";
+  return normalizeNebiusReasoningEffort(relayEnv("REASONING_EFFORT")) ?? "none";
 }
 
 export function nebiusReasoningEffort(

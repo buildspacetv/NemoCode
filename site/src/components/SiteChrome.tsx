@@ -71,7 +71,7 @@ export function SiteFooter() {
     <footer className="mt-4 flex flex-col gap-4 border-t border-line py-8 text-[13px] text-muted sm:flex-row sm:items-center">
       <div className="flex items-center gap-2.5">
         <BrandMark />
-        <span className="font-semibold text-ink">Nemo.Guide</span>
+        <span className="font-semibold text-ink">NemoCode.org</span>
       </div>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 sm:ml-auto">
         <Link className="transition hover:text-ink" to="/showcase">

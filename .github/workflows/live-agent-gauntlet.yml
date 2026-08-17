@@ -192,7 +192,7 @@ jobs:
             *) echo "tenki smoke: expected marker missing from output." >&2; exit 1 ;;
           esac
 
-      - name: Stop nemocode daemon
+      - name: Stop nemo daemon
         if: always()
         run: node packages/cli/dist/bin/nemocode.js daemon stop || true
 

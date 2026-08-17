@@ -58,9 +58,9 @@ export default defineHarness({
       );
     }
 
-    if (process.env.NEMOCODE_DEBUG === "1") {
-      process.stderr.write(`[nemocode opencode] custom model: ${modelId}\n`);
-      process.stderr.write(`[nemocode opencode] config: ${JSON.stringify(configJson)}\n`);
+    if (relayEnv("DEBUG") === "1") {
+      process.stderr.write(`[nemo opencode] custom model: ${modelId}\n`);
+      process.stderr.write(`[nemo opencode] config: ${JSON.stringify(configJson)}\n`);
     }
 
     // Force our model via the CLI flag (highest precedence). Relying on the

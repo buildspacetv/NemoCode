@@ -125,11 +125,11 @@ describe("harness bootstrap", () => {
       branch: "main",
       apiKey: "secret-key",
     });
-    expect(script).toContain("curl -fsSL https://nemocode.com/install.sh | sh");
+    expect(script).toContain("curl -fsSL https://nemocode.org/install.sh | sh");
     expect(script).toContain(
       "git clone --depth 1 -b 'main' -- 'https://github.com/example/repo.git' /work",
     );
-    expect(script).toContain(`nclaude '-p' 'fix the "auth" bug; don'\\''t break tests'`);
+    expect(script).toContain(`claudemo '-p' 'fix the "auth" bug; don'\\''t break tests'`);
     expect(script).not.toContain("secret-key");
   });
 
@@ -141,7 +141,7 @@ describe("harness bootstrap", () => {
       apiKey: "k",
     });
     expect(script).toContain("npm install -g @openai/codex");
-    expect(script).toContain("ncodex 'exec' 'task'");
+    expect(script).toContain("codemo 'exec' 'task'");
   });
 });
 

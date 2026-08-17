@@ -91,7 +91,7 @@ export async function ensureDaemon(): Promise<{ url: string }> {
     }
   }
   throw new Error(
-    `nemocode daemon did not become healthy on ${url} within ${HEALTH_POLL_TIMEOUT_MS / 1000}s. ` +
+    `nemo daemon did not become healthy on ${url} within ${HEALTH_POLL_TIMEOUT_MS / 1000}s. ` +
       `Set NEMOCODE_PORT to use a different port.`,
   );
 }
@@ -244,7 +244,7 @@ export async function daemonFetch(url: string, init?: RequestInit): Promise<Resp
     authHeader = { [INTERNAL_AUTH_HEADER]: await localProxyAuthToken() };
   } catch {
     // No token available: send the request unauthenticated and let the daemon
-    // decide. Keeps `nemocode daemon status` working on a broken home.
+    // decide. Keeps `nemo daemon status` working on a broken home.
   }
   try {
     return await fetch(url, {
@@ -311,7 +311,7 @@ export function startDaemonSessionKeepalive(
     });
     if (options.debug) {
       process.stderr.write(
-        `[nemocode daemon] restored ${options.label ?? registration.agent ?? "session"} after ${reason}.\n`,
+        `[nemo daemon] restored ${options.label ?? registration.agent ?? "session"} after ${reason}.\n`,
       );
     }
   };
@@ -322,7 +322,7 @@ export function startDaemonSessionKeepalive(
     } catch (err) {
       if (options.debug) {
         process.stderr.write(
-          `[nemocode daemon] could not restore ${options.label ?? registration.agent ?? "session"}: ${
+          `[nemo daemon] could not restore ${options.label ?? registration.agent ?? "session"}: ${
             err instanceof Error ? err.message : String(err)
           }\n`,
         );

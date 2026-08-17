@@ -23,7 +23,7 @@ export class RequestBodyTooLargeError extends Error {
 }
 
 function maxRequestBytes(): number {
-  const raw = process.env.NEMOCODE_MAX_REQUEST_BYTES;
+  const raw = relayEnv("MAX_REQUEST_BYTES");
   const parsed = raw ? Number.parseInt(raw, 10) : NaN;
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_MAX_REQUEST_BYTES;
 }

@@ -15,7 +15,7 @@ afterEach(async () => {
   );
 });
 
-describe("nemocode configure", () => {
+describe("nemo configure", () => {
   test("persists an Exa key across a cold start even when configure reads it from the environment", async () => {
     const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-configure-"));
     temporaryHomes.push(home);

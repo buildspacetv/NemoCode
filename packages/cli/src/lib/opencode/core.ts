@@ -108,7 +108,7 @@ export function buildOpencodeConfigJson({
     provider: {
       [OPENCODE_PROVIDER_ID]: provider,
     },
-    // Tavily MCP auto-inject, mirroring nclaude/ncodex. OpenCode is a spawned
+    // Tavily MCP auto-inject, mirroring claudemo/codemo. OpenCode is a spawned
     // harness that talks straight to Nebius - there is no relay proxy to
     // emulate web_search - so this is its only live-web path. The key stays in
     // the environment: `{env:TAVILY_API_KEY}` resolves inside opencode

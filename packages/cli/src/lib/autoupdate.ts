@@ -1,6 +1,6 @@
 /**
  * Self-update. The installed CLI lives as a single Bun-target JS bundle at
- * `<home>/.nemocode/bin/nemocode.js`, launched by a tiny `nemocode`
+ * `<home>/.nemocode/bin/nemocode.js`, launched by a tiny `nemo`
  * shell wrapper that calls `bun run` on it. To update, we fetch a small
  * `latest.json` manifest from the project site, compare versions, and if newer
  * download the new bundle and atomically rename it over the installed file.
@@ -10,7 +10,7 @@
  * an update problem must never block or crash the user's actual command.
  *
  * Integrity is the load-bearing part. The downloaded bundle is executed by
- * every subsequent `nclaude`/`ncodex`/… invocation, so a manifest that could
+ * every subsequent `claudemo`/`codemo`/… invocation, so a manifest that could
  * name an arbitrary URL, or a bundle nobody checksums, turns any compromise
  * of the release site (or of whatever `NEMOCODE_MANIFEST_URL` points at)
  * into code execution on the user's machine. Two gates close that:
@@ -34,10 +34,10 @@ import { VERSION } from "./version.js";
 import { refreshLauncherWrappers } from "./wrappers.js";
 
 /** Single origin for the landing page, manifest, and downloadable bundle. */
-const UPDATE_ORIGIN = "https://nemocode.com";
+const UPDATE_ORIGIN = "https://nemocode.org";
 /** Override for testing/local mirrors; normally unset. */
 function resolveManifestUrl(): string {
-  return process.env.NEMOCODE_MANIFEST_URL ?? `${UPDATE_ORIGIN}/latest.json`;
+  return relayEnv("MANIFEST_URL") ?? `${UPDATE_ORIGIN}/latest.json`;
 }
 
 const THROTTLE_MS = 60 * 60 * 1000; // re-check at most once per hour
@@ -53,10 +53,10 @@ type Manifest = { version: string; url?: string; sha256?: string };
  * `~/.nemocode`.
  */
 function resolveInstallDir(): string {
-  return process.env.NEMOCODE_HOME || path.join(os.homedir(), ".nemocode");
+  return relayEnv("HOME") || path.join(os.homedir(), ".nemocode");
 }
 
-/** Installed bundle path. `nemocode` wrapper runs `bun run` on this. */
+/** Installed bundle path. `nemo` wrapper runs `bun run` on this. */
 function installedBundlePath(): string {
   return path.join(resolveInstallDir(), "bin", "nemocode.js");
 }
@@ -248,7 +248,7 @@ export async function maybeSelfUpdate(): Promise<void> {
   // release site the bundle was installed from - so this is a safe default-on:
   // dev/source runs no-op, and every failure below is swallowed. Set
   // NEMOCODE_DISABLE_AUTOUPDATE=1 to opt out.
-  if (process.env.NEMOCODE_DISABLE_AUTOUPDATE === "1") {
+  if (relayEnv("DISABLE_AUTOUPDATE") === "1") {
     return;
   }
   if (!isInstalledBundle()) {

@@ -52,7 +52,7 @@ export async function assertNoLiveCodexAppSession(home: string): Promise<void> {
     return;
   }
   throw new Error(
-    `Another nemocode chatgpt session appears to be running (pid ${lock.pid}). Stop it with Ctrl+C, or run \`nemocode chatgpt --restore\` after it exits.`,
+    `Another nemo chatgpt session appears to be running (pid ${lock.pid}). Stop it with Ctrl+C, or run \`nemo chatgpt --restore\` after it exits.`,
   );
 }
 

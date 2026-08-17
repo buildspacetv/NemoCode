@@ -220,7 +220,7 @@ function claudeEffortArgs(args: string[]): string[] {
       return [];
     }
   }
-  const env = process.env.NEMOCODE_REASONING_EFFORT?.toLowerCase();
+  const env = relayEnv("REASONING_EFFORT")?.toLowerCase();
   const level =
     env === "medium" || env === "high" || env === "xhigh" || env === "max" || env === "low"
       ? env

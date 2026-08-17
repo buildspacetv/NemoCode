@@ -5,8 +5,8 @@ document; milestones 2-3 land after review.
 
 ## Background & problem
 
-nemocode's sandbox layer (`nemocode sandbox …`, `nclaude --sandbox`,
-`ncodex --sandbox`) is built exclusively on Nebius Token Factory Sandboxes
+nemocode's sandbox layer (`nemo sandbox …`, `claudemo --sandbox`,
+`codemo --sandbox`) is built exclusively on Nebius Token Factory Sandboxes
 (ConTree). That product is a **gated private beta**, and live verification
 surfaced a second gate behind the first: even with beta access granted at the
 account level, the API key needs per-project permissions (`spawn`,
@@ -23,7 +23,7 @@ URLs, an official TypeScript SDK (`@tenkicloud/sandbox`), a CLI, and an
 
 ## Goals
 
-1. `nemocode sandbox …` and `--sandbox` harness sessions work **today** for
+1. `nemo sandbox …` and `--sandbox` harness sessions work **today** for
    any user with a `tk_…` Tenki key — no beta approval loop.
 2. Token Factory Sandboxes remains a first-class provider; when Nebius's
    gates open, nothing regresses. Users choose, or the CLI picks sensibly.
@@ -45,15 +45,15 @@ URLs, an official TypeScript SDK (`@tenkicloud/sandbox`), a CLI, and an
 
 ## Users & stories
 
-- **Blocked TF user (today's reality)**: "I ran `nemocode sandbox status`,
+- **Blocked TF user (today's reality)**: "I ran `nemo sandbox status`,
   saw every permission denied, and stopped. With a Tenki key,
-  `nclaude --sandbox -p 'fix the test'` just works."
+  `claudemo --sandbox -p 'fix the test'` just works."
 - **Safety-first user**: "I want yolo-mode agents in a disposable VM, not on
   my laptop. Whichever provider is configured, `--sandbox` is the one flag I
   remember."
-- **Interactive user (M2)**: "`nclaude --sandbox` without `-p` drops me into
+- **Interactive user (M2)**: "`claudemo --sandbox` without `-p` drops me into
   a real remote TUI session instead of erroring 'headless only'."
-- **Agent-driven sandboxes (M3)**: "My nclaude session can spawn its own
+- **Agent-driven sandboxes (M3)**: "My claudemo session can spawn its own
   scratch VMs via the Tenki MCP tools when a task needs risky execution."
 
 ## Design
@@ -75,7 +75,7 @@ Selection (first match wins):
    No credential sniffing — credentials in the env never switch providers
    on their own; `--provider contree` selects Nebius explicitly.
 
-`nemocode sandbox status` reports both providers' auth/permission state and
+`nemo sandbox status` reports both providers' auth/permission state and
 which one the current flags/env select.
 
 ### Why the SDK (not the CLI, not the MCP server)
@@ -110,7 +110,7 @@ which one the current flags/env select.
   body over TLS, mirrored from how ConTree receives them (instance env in
   the POST body). Never argv, never written locally.
 - The Tenki credential itself is read from env only (`TENKI_API_KEY` /
-  `TENKI_AUTH_TOKEN`); `nemocode configure` storage can follow later if
+  `TENKI_AUTH_TOKEN`); `nemo configure` storage can follow later if
   users ask.
 - Sessions are always `close()`d in a `finally`; `maxDurationMs` is set from
   `--timeout` so orphans self-expire server-side.
@@ -122,12 +122,12 @@ which one the current flags/env select.
 - **M1 (this PR)**: provider selection (`--provider` /
   `NEMOCODE_SANDBOX_PROVIDER` / auto), Tenki backend for `sandbox status`,
   `sandbox run` (incl. `--fetch` via live-session `readFile`), and headless
-  `nclaude --sandbox` / `ncodex --sandbox`. Offline tests with an injected SDK
+  `claudemo --sandbox` / `codemo --sandbox`. Offline tests with an injected SDK
   stub; live verification the moment a `tk_…` key is available.
 - **M2**: interactive sessions via `tenki sandbox ssh` handoff (detect CLI,
   print install pointer when missing); snapshots for post-hoc `sandbox
 fetch` and `sandbox prebake` on tenki; pause/resume surfacing.
-- **M3**: `@tenkicloud/mcp` auto-inject for nclaude/ncodex/nopencode when a
+- **M3**: `@tenkicloud/mcp` auto-inject for claudemo/codemo/opencodemo when a
   Tenki credential is configured (mirrors the Tavily MCP inject:
   ephemeral, opt-out env, banner + identity-prompt note).
 

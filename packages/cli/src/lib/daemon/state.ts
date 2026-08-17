@@ -141,7 +141,7 @@ export type RegisterSessionRequest = {
   claudeCodeMaxOutputTokens?: number;
   /** True when the user had CLAUDE_CODE_MAX_OUTPUT_TOKENS set before launch. */
   claudeCodeMaxOutputTokensUserSet?: boolean;
-  /** True when the launcher injected the ephemeral Tavily MCP server (nclaude). */
+  /** True when the launcher injected the ephemeral Tavily MCP server (claudemo). */
   tavilyMcpInjected?: boolean;
   debug?: boolean;
 };
@@ -403,7 +403,7 @@ export function buildSession(req: RegisterSessionRequest): SessionState {
       ...(req.tavilyMcpInjected !== undefined ? { tavilyMcpInjected: req.tavilyMcpInjected } : {}),
       ...(req.debug !== undefined ? { debug: req.debug } : {}),
       costTracker,
-      ...(process.env.NEMOCODE_PERF === "1"
+      ...(relayEnv("PERF") === "1"
         ? { perfSink: (payload: ProxyPerfPayload) => recordSessionProxyPerf(state, payload) }
         : {}),
     };
