@@ -23,7 +23,7 @@ export async function createFixtureRepo(context: TestContext, owner: string): Pr
     path.join(root, "package.json"),
     `${JSON.stringify(
       {
-        name: `kimirelay-fixture-${owner}`,
+        name: `nemocode-fixture-${owner}`,
         private: true,
         type: "module",
         scripts: { test: "node --test" },
@@ -37,7 +37,7 @@ export async function createFixtureRepo(context: TestContext, owner: string): Pr
     [
       "# Stats Fixture",
       "",
-      "This tiny repo is used by kimirelay live agent tests.",
+      "This tiny repo is used by nemocode live agent tests.",
       "",
       "Implemented functions:",
       "- sum(numbers)",
@@ -84,10 +84,10 @@ export async function createFixtureRepo(context: TestContext, owner: string): Pr
     cwd: root,
     env: {
       ...process.env,
-      GIT_AUTHOR_NAME: "kimirelay tests",
-      GIT_AUTHOR_EMAIL: "tests@kimirelay.local",
-      GIT_COMMITTER_NAME: "kimirelay tests",
-      GIT_COMMITTER_EMAIL: "tests@kimirelay.local",
+      GIT_AUTHOR_NAME: "nemocode tests",
+      GIT_AUTHOR_EMAIL: "tests@nemocode.local",
+      GIT_COMMITTER_NAME: "nemocode tests",
+      GIT_COMMITTER_EMAIL: "tests@nemocode.local",
     },
   });
 

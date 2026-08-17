@@ -1,7 +1,7 @@
 import { relayEnv } from "./env.js";
 import { appendFile, chmod, mkdir } from "node:fs/promises";
 import path from "node:path";
-import { kimirelayHome } from "./paths.js";
+import { nemocodeHome } from "./paths.js";
 
 const REQUEST_DIAGNOSTICS_FILE = "request-diagnostics.jsonl";
 
@@ -43,6 +43,6 @@ export async function persistRequestDiagnostic(
   await chmod(file, 0o600).catch(() => undefined);
 }
 
-export function resolveRequestDiagnosticsPath(home = kimirelayHome()): string {
+export function resolveRequestDiagnosticsPath(home = nemocodeHome()): string {
   return path.join(home, REQUEST_DIAGNOSTICS_FILE);
 }

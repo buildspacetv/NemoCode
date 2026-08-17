@@ -1,21 +1,21 @@
-# kimirelay
+# nemocode
 
-> Use Nebius Token Factory models in the coding-agent CLIs you already run - OpenCode, Claude Code, Codex CLI, and Pi Code. kimirelay injects Nebius settings for a single run so your normal tool configs stay untouched.
+> Use Nebius Token Factory models in the coding-agent CLIs you already run - OpenCode, Claude Code, Codex CLI, and Pi Code. nemocode injects Nebius settings for a single run so your normal tool configs stay untouched.
 
-kimirelay is an MIT-licensed CLI router. Install once, then launch your agent with short commands (`kodex`, `klaude`, `openkode`, `kpi`). For Claude Code and Codex CLI it routes the agent's API traffic to Nebius Token Factory through a local translation proxy; for OpenCode and Pi Code it injects ephemeral per-run config. The installed binary keeps itself up to date automatically from nemocode.org. kimirelay is a friendly fork of nebius-tf-relay (https://github.com/shivaylamba/nebius-tf-relay, MIT), whose daemon, wire-format translation, and installer this project builds on.
+nemocode is an MIT-licensed CLI router. Install once, then launch your agent with short commands (`codemo`, `claudemo`, `opencodemo`, `pimo`). For Claude Code and Codex CLI it routes the agent's API traffic to Nebius Token Factory through a local translation proxy; for OpenCode and Pi Code it injects ephemeral per-run config. The installed binary keeps itself up to date automatically from nemocode.org. nemocode is a friendly fork of nebius-tf-relay (https://github.com/shivaylamba/nebius-tf-relay, MIT), whose daemon, wire-format translation, and installer this project builds on.
 
-This is the LLM-readable documentation file for the project. If you are an AI agent asked to install, configure, or use kimirelay (headless or interactive), read this file first. It covers installation, configuration, every command, the available models, headless/agentic usage patterns, how to keep the tool up to date, and the routing architecture.
+This is the LLM-readable documentation file for the project. If you are an AI agent asked to install, configure, or use nemocode (headless or interactive), read this file first. It covers installation, configuration, every command, the available models, headless/agentic usage patterns, how to keep the tool up to date, and the routing architecture.
 
-- Project: https://github.com/opencolin/kimi-relay
+- Project: https://github.com/buildspacetv/NemoCode
 - Website: https://nemocode.org
 - Installer: https://nemocode.org/install.sh
 - Version manifest: https://nemocode.org/latest.json
-- README: https://github.com/opencolin/kimi-relay/blob/main/README.md
+- README: https://github.com/buildspacetv/NemoCode/blob/main/README.md
 - This file: https://nemocode.org/llms.txt
 
 ## Install
 
-One command installs the `kimirelay`, `klaude`, `openkode`, `kodex`, and `kpi` commands to `~/.kimirelay/bin/` and installs Bun for you if it isn't already present:
+One command installs the `nemo`, `claudemo`, `opencodemo`, `codemo`, and `pimo` commands to `~/.nemocode/bin/` and installs Bun for you if it isn't already present:
 
 ```
 curl -fsSL https://nemocode.org/install.sh | sh
@@ -23,55 +23,55 @@ curl -fsSL https://nemocode.org/install.sh | sh
 
 After install, restart your shell (or run the `export PATH=...` line it prints) so the commands are on PATH. The install:
 
-- Downloads the self-contained JS bundle to `~/.kimirelay/bin/kimirelay.js`.
-- Writes shell wrappers (`kimirelay`, `kodex`, `klaude`, `openkode`, `kpi`) that run the bundle with `bun`.
+- Downloads the self-contained JS bundle to `~/.nemocode/bin/nemocode.js`.
+- Writes shell wrappers (`nemo`, `codemo`, `claudemo`, `opencodemo`, `pimo`) that run the bundle with `bun`.
 - Links them into a writable directory on your PATH.
-- Does NOT install the underlying agent CLIs. If a tool is missing, kimirelay prints its official install command and exits.
+- Does NOT install the underlying agent CLIs. If a tool is missing, nemocode prints its official install command and exits.
 
-To verify: `kimirelay --version`.
+To verify: `nemo --version`.
 
 ## Configure
 
 Before the first launch you need a Nebius API key (get one at https://tokenfactory.nebius.com/?modals=create-api-key):
 
 ```
-kimirelay configure
+nemo configure
 ```
 
-This stores your Nebius API key in `~/.kimirelay/` and optionally a Tavily API key (https://app.tavily.com) that powers web-search emulation in Claude Code and Codex. Web search is optional - without it, searches return a clear "TAVILY_API_KEY not set" error instead of failing silently. When a Tavily key is configured, `klaude`, `kodex`, and `openkode` auto-inject Tavily's remote MCP server per session (ephemeral, nothing durable written; skipped with `--strict-mcp-config` on klaude or `--no-mcp` on kodex; disable everywhere with `NEMORELAY_DISABLE_TAVILY_MCP=1`), adding explicit `tavily_search` / `tavily_extract` tools. For openkode this is the only live-web path. kpi is excluded: pi has no MCP support by design.
+This stores your Nebius API key in `~/.nemocode/` and optionally a Tavily API key (https://app.tavily.com) that powers web-search emulation in Claude Code and Codex. Web search is optional - without it, searches return a clear "TAVILY_API_KEY not set" error instead of failing silently. When a Tavily key is configured, `claudemo`, `codemo`, and `opencodemo` auto-inject Tavily's remote MCP server per session (ephemeral, nothing durable written; skipped with `--strict-mcp-config` on claudemo or `--no-mcp` on codemo; disable everywhere with `NEMOCODE_DISABLE_TAVILY_MCP=1`), adding explicit `tavily_search` / `tavily_extract` tools. For opencodemo this is the only live-web path. pimo is excluded: pi has no MCP support by design.
 
 You can also set the key non-interactively:
 
 ```
 export NEBIUS_API_KEY=...
-kimirelay configure        # stores it (skip prompts with the env present)
+nemo configure        # stores it (skip prompts with the env present)
 ```
 
 The API key is required to actually route traffic; the installer lets you skip it (press Enter) and add it later.
 
 ## Commands
 
-Running `kimirelay` with no arguments opens an interactive launcher (requires a TTY) that lets you pick a tool. Run a tool directly with a subcommand:
+Running `nemo` with no arguments opens an interactive launcher (requires a TTY) that lets you pick a tool. Run a tool directly with a subcommand:
 
 ```
-kimirelay configure                      # set API keys
-kimirelay whoami                         # print your anonymous install id
-kimirelay --version | -v                 # print the version
-kimirelay help | --help | -h             # print this usage
+nemo configure                      # set API keys
+nemo whoami                         # print your anonymous install id
+nemo --version | -v                 # print the version
+nemo help | --help | -h             # print this usage
 
-kimirelay codex [...]        # alias: kodex   (Codex CLI)
-kimirelay claude [...]       # alias: klaude  (Claude Code)
-kimirelay pi [...]           # alias: kpi      (Pi Code)
-kimirelay opencode [...]     # alias: openkode (OpenCode)
+nemo codex [...]        # alias: codemo   (Codex CLI)
+nemo claude [...]       # alias: claudemo  (Claude Code)
+nemo pi [...]           # alias: pimo      (Pi Code)
+nemo opencode [...]     # alias: opencodemo (OpenCode)
 
-kimirelay chatgpt [--model <model>] [--restore]   # alpha: ChatGPT Desktop (alias: codex-app)
+nemo chatgpt [--model <model>] [--restore]   # alpha: ChatGPT Desktop (alias: codex-app)
 
-kimirelay daemon stop                   # stop the background proxy daemon
+nemo daemon stop                   # stop the background proxy daemon
 ```
 
-Any arguments after the harness name are passed straight through to the underlying agent CLI. For example, `kodex exec "fix the typo"` runs `codex exec` with kimirelay routing.
+Any arguments after the harness name are passed straight through to the underlying agent CLI. For example, `codemo exec "fix the typo"` runs `codex exec` with nemocode routing.
 
-Recognized kimirelay flags (parsed before the passthrough):
+Recognized nemocode flags (parsed before the passthrough):
 
 - `--api-key <key>` - use this Nebius API key for the run.
 - `--main <model>` / `--model <model>` - select the model for this run.
@@ -82,37 +82,38 @@ Recognized kimirelay flags (parsed before the passthrough):
 
 ### ChatGPT Desktop App (alpha)
 
-`kimirelay chatgpt` persistently patches the ChatGPT Desktop config so the desktop app routes through Nebius. Unlike the CLI wrappers, this change stays active until you restore it:
+`nemo chatgpt` persistently patches the ChatGPT Desktop config so the desktop app routes through Nebius. Unlike the CLI wrappers, this change stays active until you restore it:
 
 ```
-kimirelay chatgpt                     # configure (patches config)
-kimirelay chatgpt --restore           # restore your OpenAI profile
-kimirelay chatgpt --model <model>     # use a specific model
+nemo chatgpt                     # configure (patches config)
+nemo chatgpt --restore           # restore your OpenAI profile
+nemo chatgpt --model <model>     # use a specific model
 ```
 
-Backups of your original config live under `~/.kimirelay/backup/codex-app/`.
+Backups of your original config live under `~/.nemocode/backup/codex-app/`.
 
 ## Models
 
-The model list is fetched live from Nebius (`GET /v1/models?verbose=true`) at startup, so every model Nebius serves is available and each model's vision support (modality) comes straight from the API, not a hand-maintained list. Results are cached in `~/.kimirelay/model-catalog.json` and fall back to a bundled snapshot when offline. The default for Codex and Claude Code is Kimi K3.
+The model list is fetched live from Nebius (`GET /v1/models?verbose=true`) at startup, so every model Nebius serves is available and each model's vision support (modality) comes straight from the API, not a hand-maintained list. Results are cached in `~/.nemocode/model-catalog.json` and fall back to a bundled snapshot when offline. The default for Codex and Claude Code is Nemotron 3 Ultra 550B.
 
 ### Selecting a model (flag order matters)
 
-Put `--model` (or `--main` for Claude) BEFORE the harness subcommand - kimirelay consumes it there and routes to that model:
+Put `--model` (or `--main` for Claude) BEFORE the harness subcommand - nemocode consumes it there and routes to that model:
 
 ```
-kimirelay --model moonshotai/Kimi-K2.6 codex exec "task"
-kimirelay --model moonshotai/Kimi-K2.6 claude -p "task"
-kimirelay --main nebius-kimi-k2-7-code claude -p "task"   # Claude matches alias OR id
+nemo --model nvidia/Cosmos3-Super-Reasoner codex exec "task"
+nemo --model nvidia/Cosmos3-Super-Reasoner claude -p "task"
+nemo --main nebius-nemotron-3-nano claude -p "task"   # Claude matches alias OR id
 ```
 
-Do NOT put `--model` after the harness (e.g. `kodex --model X` or `klaude --model X`). The short aliases expand to `kimirelay <harness> ...`, so the flag lands after the harness name, goes to the agent's passthrough, and is then stripped - it is silently ignored and the run uses the default (Kimi K3), not the model you asked for. Always use the long form with the flag first.
+Do NOT put `--model` after the harness (e.g. `codemo --model X` or `claudemo --model X`). The short aliases expand to `nemo <harness> ...`, so the flag lands after the harness name, goes to the agent's passthrough, and is then stripped - it is silently ignored and the run uses the default (Nemotron 3 Ultra 550B), not the model you asked for. Always use the long form with the flag first.
 
 Featured flagship models (any live Nebius id also works with `--model`):
 
-- `moonshotai/Kimi-K3` - Kimi K3. Text-only, reasoning + agentic coding. The default coding model (note: Nebius capacity for K3 can be flaky).
-- `moonshotai/Kimi-K2.6` - Kimi K2.6. Vision + reasoning, 262K context. The vision flagship.
-- `moonshotai/Kimi-K2.7-Code` - Kimi K2.7 Code. Text-only coding model, 262K context.
+- `nvidia/Nemotron-3-Ultra-550b-a55b` - Nemotron 3 Ultra 550B (55B active). Text-only, reasoning + agentic coding, 256K context. The default coding model.
+- `nvidia/Cosmos3-Super-Reasoner` - Cosmos 3 Super Reasoner. Vision + reasoning, 128K context. The vision flagship, and the only NVIDIA model on Nebius that accepts images.
+- `nvidia/nemotron-3-super-120b-a12b` - Nemotron 3 Super 120B (12B active). Text-only, 256K context, mid-tier reasoning and tool use.
+- `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` - Nemotron 3 Nano 30B (3B active). Text-only, 256K context, fast and cheap background turns.
 - `MiniMaxAI/MiniMax-M3` - MiniMax M3. Text-only, 196K context, fast and cheap.
 - `Qwen/Qwen3.5-397B-A17B` - Qwen 3.5 397B. Text-only, 262K context, general/coding flagship.
 - `deepseek-ai/DeepSeek-V4-Pro` - DeepSeek V4 Pro. Text-only, 1M context, long-context reasoning.
@@ -120,30 +121,30 @@ Featured flagship models (any live Nebius id also works with `--model`):
 
 Note: `zai-org/GLM-5.2` was the previous default but Nebius removed it from the live catalog (2026-07-27); `zai-org/GLM-5.1` is available in its place.
 
-Vision-capable models (those whose API modality includes image input, e.g. Kimi K2.6 and Qwen2.5-VL) accept image attachments directly; text-only models route images to a vision-capable model automatically (Claude/Codex proxy) or to the `@vision` subagent (OpenCode).
+Vision-capable models (those whose API modality includes image input, e.g. Cosmos 3 Super Reasoner and Qwen2.5-VL) accept image attachments directly; text-only models route images to a vision-capable model automatically (Claude/Codex proxy) or to the `@vision` subagent (OpenCode).
 
 ## Headless & agentic usage
 
-Both Claude Code and Codex CLI run headlessly (no TTY), so you can delegate code changes to an AI agent from scripts, CI, or another orchestrating agent. The patterns below were verified against the installed `kodex` and `klaude` (v0.5.26) and apply to both. They differ in the headless subcommand and in how permissions are handled; the stdin, banner, and model-selection behavior is identical.
+Both Claude Code and Codex CLI run headlessly (no TTY), so you can delegate code changes to an AI agent from scripts, CI, or another orchestrating agent. The patterns below were verified against the installed `codemo` and `claudemo` (v0.5.26) and apply to both. They differ in the headless subcommand and in how permissions are handled; the stdin, banner, and model-selection behavior is identical.
 
 ### The working invocation pattern
 
 Both wrappers spawn the agent pointed at the local Nebius proxy and pass your flags through to the underlying binary. Always close stdin and capture stderr. To run a non-default model, put `--model <id>` before the harness (see Models above).
 
-### Prefer native subagents for delegated kimirelay runs
+### Prefer native subagents for delegated nemocode runs
 
-If you are an orchestrating agent running inside Claude Code, Codex, or another CLI that has its own native subagent/delegation tool, prefer this pattern for non-trivial kimirelay work:
+If you are an orchestrating agent running inside Claude Code, Codex, or another CLI that has its own native subagent/delegation tool, prefer this pattern for non-trivial nemocode work:
 
 1. Spawn a native subagent first.
-2. Tell that subagent to run the needed `kimirelay` command itself (`kodex`, `klaude`, `openkode`, or `kpi`) with a tight task, explicit files, `< /dev/null`, and the guardrails below.
-3. Have the subagent wait for the delegated kimirelay run, inspect its result/diff, and report only the useful summary back to you.
+2. Tell that subagent to run the needed `nemo` command itself (`codemo`, `claudemo`, `opencodemo`, or `pimo`) with a tight task, explicit files, `< /dev/null`, and the guardrails below.
+3. Have the subagent wait for the delegated nemocode run, inspect its result/diff, and report only the useful summary back to you.
 
-Do this instead of having the main orchestrating agent call `kodex`/`klaude` directly for every delegated edit. It keeps the main agent's context and inference budget focused on coordination/review, lets the native subagent own the details of launching and monitoring kimirelay, and works especially well when Claude Code delegates to a subagent that then uses Codex through `kodex`.
+Do this instead of having the main orchestrating agent call `codemo`/`claudemo` directly for every delegated edit. It keeps the main agent's context and inference budget focused on coordination/review, lets the native subagent own the details of launching and monitoring nemocode, and works especially well when Claude Code delegates to a subagent that then uses Codex through `codemo`.
 
 Codex CLI - non-interactive `exec` (the `-s workspace-write` sandbox grants write access; `exec` never prompts interactively):
 
 ```
-kimirelay codex exec -s workspace-write -C /abs/repo "<tight, single-concern task with explicit files + guardrails>" < /dev/null 2>&1
+nemo codex exec -s workspace-write -C /abs/repo "<tight, single-concern task with explicit files + guardrails>" < /dev/null 2>&1
 ```
 
 If the working directory isn't a git repo, codex refuses to start ("Not inside a trusted directory"); add `--skip-git-repo-check`, or run inside a git repo.
@@ -151,7 +152,7 @@ If the working directory isn't a git repo, codex refuses to start ("Not inside a
 Claude Code - print mode `-p` (runs once and exits). Add `--dangerously-skip-permissions` so a headless subagent never blocks on a permission prompt:
 
 ```
-kimirelay claude -p "<tight, single-concern task with explicit files + guardrails>" --dangerously-skip-permissions --output-format json < /dev/null 2>&1
+nemo claude -p "<tight, single-concern task with explicit files + guardrails>" --dangerously-skip-permissions --output-format json < /dev/null 2>&1
 ```
 
 Run it in the background, health-check at ~60s, review the diff, run lint, then commit. One file or one concern per task gives the cleanest reviews.
@@ -199,22 +200,22 @@ Per-task cost varies a lot with how verbose the agent is. Mechanical, well-scope
 5. Review the diff + re-run lint yourself before committing.
 6. To select a model, put `--model` (or `--main` for Claude) before the harness subcommand - after the harness it is silently ignored and the default runs.
 7. For Claude `-p`, pass `--dangerously-skip-permissions` so a headless subagent never blocks on a permission prompt. Codex `exec` is non-interactive by design; use `-s workspace-write` for edits and `--skip-git-repo-check` outside a git repo.
-8. If your current CLI has native subagents, delegate kimirelay launches to one of those subagents and let it return the result, instead of spending the main orchestrator's context on the full `kodex`/`klaude` run.
+8. If your current CLI has native subagents, delegate nemocode launches to one of those subagents and let it return the result, instead of spending the main orchestrator's context on the full `codemo`/`claudemo` run.
 
 ## Sandboxes (beta)
 
-Two providers: tenki.cloud (the default; open signup, `TENKI_API_KEY`) and Nebius Token Factory Sandboxes (gated beta, `NEBIUS_API_KEY`; select with `--provider contree` or `NEMORELAY_SANDBOX_PROVIDER=contree`; some accounts also need `kimirelay sandbox project <id>`).
+Two providers: tenki.cloud (the default; open signup, `TENKI_API_KEY`) and Nebius Token Factory Sandboxes (gated beta, `NEBIUS_API_KEY`; select with `--provider contree` or `NEMOCODE_SANDBOX_PROVIDER=contree`; some accounts also need `nemo sandbox project <id>`).
 
 Token Factory Sandboxes support (disposable microVMs on the same Nebius key):
 
 ```
-kimirelay sandbox status            # check Sandboxes access for your key
-kimirelay sandbox run <command...>  # one shell command in a disposable sandbox
-kimirelay sandbox advisory --write  # append the sandbox-preference advisory to
+nemo sandbox status            # check Sandboxes access for your key
+nemo sandbox run <command...>  # one shell command in a disposable sandbox
+nemo sandbox advisory --write  # append the sandbox-preference advisory to
                                     # ~/.claude/CLAUDE.md and ~/.codex/AGENTS.md
-klaude --sandbox -p "<task>"        # headless Claude Code session in a sandbox,
+claudemo --sandbox -p "<task>"        # headless Claude Code session in a sandbox,
                                     # cloned from your repo's pushed origin state
-kodex --sandbox exec "<task>"       # same for Codex
+codemo --sandbox exec "<task>"       # same for Codex
 ```
 
 Sandboxes is a Nebius beta behind an access request
@@ -223,9 +224,9 @@ commands fail with a message pointing at the request form. Sandbox harness
 sessions are headless-only and run against pushed git state - local
 uncommitted changes do not travel.
 
-## Keeping kimirelay up to date
+## Keeping nemocode up to date
 
-The installed binary self-updates automatically in the background. The check is throttled and bounded, never throws, and runs before argument parsing - so even `kimirelay help` keeps an install current. The update is pulled from https://nemocode.org/latest.json, which contains `version`, `url`, and `publishedAt`.
+The installed binary self-updates automatically in the background. The check is throttled and bounded, never throws, and runs before argument parsing - so even `nemo help` keeps an install current. The update is pulled from https://nemocode.org/latest.json, which contains `version`, `url`, and `publishedAt`.
 
 To force a refresh, re-run the install one-liner:
 
@@ -233,37 +234,37 @@ To force a refresh, re-run the install one-liner:
 curl -fsSL https://nemocode.org/install.sh | sh
 ```
 
-You can check the installed version with `kimirelay --version` and compare it against the published manifest at https://nemocode.org/latest.json.
+You can check the installed version with `nemo --version` and compare it against the published manifest at https://nemocode.org/latest.json.
 
 ## Architecture (how routing works)
 
 There are two harness families behind the four tools:
 
-- **Proxied harnesses - Claude Code, Codex CLI.** `klaude` and `kodex` spawn a shared local daemon and route the agent's `/v1/*` traffic through it. The daemon translates the agent's native wire format (Anthropic Messages for Claude, OpenAI Responses for Codex) to Nebius's chat-completions API and back. Per run: it resolves the model, ensures the daemon, registers a session with your token, prints a banner, spawns the agent pointed at the local proxy, tracks cost, and deregisters on exit. Nothing is written to your real agent config - close it and your setup is exactly as it was.
+- **Proxied harnesses - Claude Code, Codex CLI.** `claudemo` and `codemo` spawn a shared local daemon and route the agent's `/v1/*` traffic through it. The daemon translates the agent's native wire format (Anthropic Messages for Claude, OpenAI Responses for Codex) to Nebius's chat-completions API and back. Per run: it resolves the model, ensures the daemon, registers a session with your token, prints a banner, spawns the agent pointed at the local proxy, tracks cost, and deregisters on exit. Nothing is written to your real agent config - close it and your setup is exactly as it was.
 
-- **Spawned harnesses - OpenCode, Pi Code.** `openkode` and `kpi` spawn the agent binary directly. The binary talks to Nebius itself, using ephemeral config injected only for that launch (OpenCode) or a temporary `models.json` on disk (Pi). No daemon, no proxy.
+- **Spawned harnesses - OpenCode, Pi Code.** `opencodemo` and `pimo` spawn the agent binary directly. The binary talks to Nebius itself, using ephemeral config injected only for that launch (OpenCode) or a temporary `models.json` on disk (Pi). No daemon, no proxy.
 
 The daemon is one persistent local process shared by all proxied sessions. If you ever need to stop it manually:
 
 ```
-kimirelay daemon stop
+nemo daemon stop
 ```
 
-`kimirelay chatgpt` (alpha) is the exception: it persistently patches ChatGPT Desktop config to route through Nebius (instead of per-run injection), with backups under `~/.kimirelay/backup/codex-app/`. Restore with `kimirelay chatgpt --restore`.
+`nemo chatgpt` (alpha) is the exception: it persistently patches ChatGPT Desktop config to route through Nebius (instead of per-run injection), with backups under `~/.nemocode/backup/codex-app/`. Restore with `nemo chatgpt --restore`.
 
 ## Troubleshooting
 
-- **"No Nebius API key found"** - run `kimirelay configure` or set `NEBIUS_API_KEY`.
-- **A tool command is not found** - kimirelay does not install the agent CLIs for you. It prints the official install command (e.g. `npm install -g @openai/codex`) and the docs link when the tool is missing; install it, then re-run.
-- **Web search fails in Claude Code** - set a Tavily API key via `kimirelay configure`. Without it, searches return a clear "TAVILY_API_KEY not set" error.
+- **"No Nebius API key found"** - run `nemo configure` or set `NEBIUS_API_KEY`.
+- **A tool command is not found** - nemocode does not install the agent CLIs for you. It prints the official install command (e.g. `npm install -g @openai/codex`) and the docs link when the tool is missing; install it, then re-run.
+- **Web search fails in Claude Code** - set a Tavily API key via `nemo configure`. Without it, searches return a clear "TAVILY_API_KEY not set" error.
 - **Headless run hangs and produces no edits** - you forgot `< /dev/null`. Close stdin and relaunch; see the Headless usage section.
 - **Cost seems high for a small change** - the agent over-documented. Scope the task tighter and add a "don't over-explain" instruction.
-- **Want your normal config back** - stop using the wrappers. No agent config was saved, so your OpenCode / Claude Code / Codex CLI / Pi Code setup is untouched. For ChatGPT Desktop, run `kimirelay chatgpt --restore`.
+- **Want your normal config back** - stop using the wrappers. No agent config was saved, so your OpenCode / Claude Code / Codex CLI / Pi Code setup is untouched. For ChatGPT Desktop, run `nemo chatgpt --restore`.
 
 ## Links
 
-- [GitHub](https://github.com/opencolin/kimi-relay): source repository and issues
-- [README](https://github.com/opencolin/kimi-relay/blob/main/README.md): human-readable project overview
+- [GitHub](https://github.com/buildspacetv/NemoCode): source repository and issues
+- [README](https://github.com/buildspacetv/NemoCode/blob/main/README.md): human-readable project overview
 - [Website](https://nemocode.org): landing page
 - [Install script](https://nemocode.org/install.sh): one-command installer (`curl -fsSL https://nemocode.org/install.sh | sh`)
 - [Version manifest](https://nemocode.org/latest.json): current published version and release timestamp

@@ -1,4 +1,4 @@
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import type { CostTracker } from "../cost.js";
 import type { ChatResponse } from "./wire-types.js";
 

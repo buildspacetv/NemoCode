@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 import {
   SessionRegistry,
   buildSession,
   type AgentId,
   type RegisterSessionRequest,
-} from "@kimirelay/cli/dist/lib/daemon/state.js";
+} from "@nemocode/cli/dist/lib/daemon/state.js";
 
 /**
  * Unit tests for the now-exported SessionRegistry (#5: the interface is the test

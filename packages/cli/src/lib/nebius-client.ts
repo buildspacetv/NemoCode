@@ -1,6 +1,6 @@
 import { relayEnv } from "./env.js";
 import { randomUUID } from "node:crypto";
-import { findModelById, type ModelDefinition } from "@kimirelay/models";
+import { findModelById, type ModelDefinition } from "@nemocode/models";
 import { resolveNebiusBaseUrl } from "./nebius-core.js";
 import { backoffMs, parseRetryAfter, sleep } from "./nebius-retry.js";
 import { persistRequestDiagnostic } from "./request-diagnostics.js";
@@ -46,18 +46,18 @@ const DEFAULT_STREAM_RETRIES = 1;
 // down. On failover the request is retried on the fallback model (see
 // withModelFallback), and the circuit breaker then routes subsequent turns
 // straight to the fallback, so this timeout is only paid once per outage.
-// Override with KIMIRELAY_RESPONSE_HEADER_TIMEOUT_MS.
+// Override with NEMOCODE_RESPONSE_HEADER_TIMEOUT_MS.
 const DEFAULT_RESPONSE_HEADER_TIMEOUT_MS = 45_000;
 
 // Automatic model fallback: when a request's target model returns no response
 // headers (its Nebius endpoint is down/overloaded), the relay transparently
 // re-issues the SAME request on a healthy fallback model instead of surfacing
-// an error - so a provider-side outage of one model (e.g. Kimi-K3) doesn't
+// an error - so a provider-side outage of one model (e.g. Nemotron 3 Ultra) doesn't
 // break sessions mid-flight. A short-lived per-model circuit breaker then skips
 // the dead model entirely for a cooldown window, so only the first failing turn
-// pays the timeout. Configure with KIMIRELAY_FALLBACK_MODEL (set to
-// "off"/"none" to disable) and KIMIRELAY_FALLBACK_COOLDOWN_MS.
-const DEFAULT_FALLBACK_MODEL = "moonshotai/Kimi-K2.6";
+// pays the timeout. Configure with NEMOCODE_FALLBACK_MODEL (set to
+// "off"/"none" to disable) and NEMOCODE_FALLBACK_COOLDOWN_MS.
+const DEFAULT_FALLBACK_MODEL = "nvidia/nemotron-3-super-120b-a12b";
 const DEFAULT_FALLBACK_COOLDOWN_MS = 60_000;
 
 /** model id -> epoch ms of its last response-header timeout (circuit breaker). */
@@ -535,7 +535,7 @@ async function fetchWithContextFit(
     }
     if (fit.debug) {
       process.stderr.write(
-        `[kimirelay proxy] context-fit retry (${outcome.action}): ` +
+        `[nemocode proxy] context-fit retry (${outcome.action}): ` +
           `input ${outcome.inputTokens} tokens vs window ${outcome.contextWindow}\n`,
       );
     }

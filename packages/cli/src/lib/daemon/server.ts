@@ -21,7 +21,7 @@ import { handleProxyRequest } from "../claude/proxy.js";
 import { writeAnthropicError, isNebiusApiError } from "../claude/nebius-call.js";
 import { handleCodexProxyRequest, writeOpenAIError } from "../codex/proxy.js";
 import { readAppRegistration } from "./app-registration.js";
-import { kimirelayHome } from "../paths.js";
+import { nemocodeHome } from "../paths.js";
 import { initModelCatalog } from "../model-catalog-init.js";
 import {
   sessions as defaultSessions,
@@ -63,10 +63,10 @@ export type DaemonHealth = {
 
 /**
  * Where the launcher and daemon agree the daemon's pid file lives. Honors
- * `KIMIRELAY_HOME` (matching autoupdate.ts/install.sh's install dir) so a
+ * `NEMOCODE_HOME` (matching autoupdate.ts/install.sh's install dir) so a
  * user with a custom install home keeps the pid file alongside the bundle.
  */
-export function daemonPidPath(home = kimirelayHome()): string {
+export function daemonPidPath(home = nemocodeHome()): string {
   return path.join(home, "daemon.pid");
 }
 
@@ -107,7 +107,7 @@ async function listenOrExitOnRace(server: Server, port: number): Promise<void> {
           if (healthy) {
             process.exit(0);
           }
-          process.stderr.write(`[kimirelay daemon] port ${port} in use by a non-daemon process.\n`);
+          process.stderr.write(`[nemo daemon] port ${port} in use by a non-daemon process.\n`);
           process.exit(1);
         });
         return;
@@ -167,7 +167,7 @@ export function renderDaemonError(
 
 /**
  * Run the shared, persistent proxy daemon. One process serves every
- * `kimirelay claude` session: each registers its token + credentials at
+ * `nemo claude` session: each registers its token + credentials at
  * `POST /internal/sessions`, and the daemon resolves every `/v1/*` request to
  * that session (and its CostTracker) by the presented Bearer token. Runs
  * forever - the http server keeps the event loop alive - until SIGTERM/SIGINT.
@@ -210,16 +210,16 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   // "error sending request for url". Best-effort: never throws.
   void initModelCatalog({ home: os.homedir() }).then(() => {
     if (debug) {
-      process.stderr.write(`[kimirelay daemon] model catalog loaded.\n`);
+      process.stderr.write(`[nemo daemon] model catalog loaded.\n`);
     }
   });
 
   await mkdir(path.dirname(daemonPidPath()), { recursive: true });
   await writeFile(daemonPidPath(), `${process.pid}\n`, { encoding: "utf8" });
   if (debug) {
-    process.stderr.write(`[kimirelay daemon] listening: ${daemonUrl(port)} (pid ${process.pid})\n`);
+    process.stderr.write(`[nemo daemon] listening: ${daemonUrl(port)} (pid ${process.pid})\n`);
     if (restored > 0) {
-      process.stderr.write(`[kimirelay daemon] restored ${restored} active session(s).\n`);
+      process.stderr.write(`[nemo daemon] restored ${restored} active session(s).\n`);
     }
   }
 
@@ -230,7 +230,7 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
   const reaper = setInterval(() => {
     const removed = activeSessions.reapDead();
     if (debug && removed > 0) {
-      process.stderr.write(`[kimirelay daemon] reaped ${removed} dead session(s).\n`);
+      process.stderr.write(`[nemo daemon] reaped ${removed} dead session(s).\n`);
     }
   }, SESSION_REAP_INTERVAL_MS);
   reaper.unref();
@@ -242,7 +242,7 @@ export async function runDaemon(options: DaemonOptions = {}): Promise<void> {
     closing = true;
     clearInterval(reaper);
     if (debug) {
-      process.stderr.write(`[kimirelay daemon] ${signal} - shutting down.\n`);
+      process.stderr.write(`[nemo daemon] ${signal} - shutting down.\n`);
     }
     activeSessions.closeStore();
     server.close();
@@ -275,7 +275,7 @@ async function handleDaemonRequest(
 ): Promise<void> {
   const path_ = requestPath(req);
   if (opts.debug) {
-    process.stderr.write(`[kimirelay daemon] ${req.method} ${path_}\n`);
+    process.stderr.write(`[nemo daemon] ${req.method} ${path_}\n`);
   }
 
   // Unauthenticated liveness + health (must work before any session exists).
@@ -289,7 +289,7 @@ async function handleDaemonRequest(
       ok: true,
       pid: process.pid,
       version: VERSION,
-      home: kimirelayHome(),
+      home: nemocodeHome(),
       scriptPath: RUNNING_DAEMON_IDENTITY.scriptPath,
       scriptSize: RUNNING_DAEMON_IDENTITY.scriptSize,
       scriptMtimeMs: RUNNING_DAEMON_IDENTITY.scriptMtimeMs,
@@ -301,7 +301,7 @@ async function handleDaemonRequest(
   if (req.method === "GET" && path_ === "/") {
     writeJson(res, 200, {
       ok: true,
-      service: "kimirelay daemon",
+      service: "nemo daemon",
       version: VERSION,
       activeSessionCount: activeSessions.size,
     });
@@ -478,7 +478,7 @@ async function handleDaemonRequest(
  * Whether a caller may use the `/internal/*` control plane.
  *
  * The credential is the same local-proxy token the launcher already mints in
- * a 0600 file under the kimirelay home, so "authorized" means "can read that
+ * a 0600 file under the nemocode home, so "authorized" means "can read that
  * file" - the install's owner. Compared in constant time via `isAuthorized`,
  * which also accepts it as a Bearer/x-api-key value.
  *
@@ -508,7 +508,7 @@ async function isInternalCallerAuthorized(req: IncomingMessage): Promise<boolean
  * The Codex desktop app holds the stable local-proxy token in its config with
  * no launcher process alive to re-register when this daemon loses the session
  * (restart, idle reap, kill -9). Without this fallback every request from the
- * app 401s until the user re-runs `kimirelay codex-app`.
+ * app 401s until the user re-runs `nemo codex-app`.
  */
 async function restoreAppSession(token: string): Promise<SessionState | undefined> {
   const registration = await readAppRegistration();

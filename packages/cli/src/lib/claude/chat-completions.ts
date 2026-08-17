@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import type { WebSearchOutcome } from "../tavily-search.js";
 import { runNativeWebSearchCall } from "../native-web-search.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
@@ -139,8 +139,8 @@ export async function callNebiusChatCompletions(
     const json = response.json;
     if (typeof payload.max_tokens === "number") {
       (
-        json as OpenAIChatResponse & { _kimirelayRequestedMaxTokens?: number }
-      )._kimirelayRequestedMaxTokens = payload.max_tokens;
+        json as OpenAIChatResponse & { _nemocodeRequestedMaxTokens?: number }
+      )._nemocodeRequestedMaxTokens = payload.max_tokens;
     }
     const usage = json.usage;
     const promptTokens = usage?.prompt_tokens ?? 0;
@@ -173,7 +173,7 @@ export async function callNebiusChatCompletions(
     );
     if (nativeToolCalls.length === 0) {
       if (nativeWebSearches.length > 0) {
-        json._kimirelayNativeWebSearches = nativeWebSearches;
+        json._nemocodeNativeWebSearches = nativeWebSearches;
       }
       return json;
     }
@@ -241,7 +241,7 @@ export async function callNebiusChatCompletions(
     ],
   };
   if (nativeWebSearches.length > 0) {
-    exhaustedResponse._kimirelayNativeWebSearches = nativeWebSearches;
+    exhaustedResponse._nemocodeNativeWebSearches = nativeWebSearches;
   }
   return exhaustedResponse;
 }
@@ -251,7 +251,7 @@ function debugLog(
   label: string,
   value: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay proxy", options, label, value);
+  writeProxyDebugLog("nemocode proxy", options, label, value);
 }
 
 /**

@@ -1,8 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { toOpenAIMessages } from "../../cli/src/lib/claude/translate-request.js";
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 
-const KIMI_K3 = { id: "moonshotai/Kimi-K3", name: "Kimi K3" } as ModelDefinition;
+const NEMOTRON = {
+  id: "nvidia/Nemotron-3-Ultra-550b-a55b",
+  name: "Nemotron 3 Ultra 550B",
+} as ModelDefinition;
 
 function systemContent(messages: ReturnType<typeof toOpenAIMessages>): string {
   const first = messages[0];
@@ -15,10 +18,10 @@ function systemContent(messages: ReturnType<typeof toOpenAIMessages>): string {
 describe("claude model-identity prompt", () => {
   test("names the backend model and says how to answer identity questions", () => {
     const content = systemContent(
-      toOpenAIMessages({ messages: [{ role: "user", content: "what model are you?" }] }, KIMI_K3),
+      toOpenAIMessages({ messages: [{ role: "user", content: "what model are you?" }] }, NEMOTRON),
     );
-    expect(content).toContain("you are Kimi K3 (moonshotai/Kimi-K3)");
-    expect(content).toContain('answer "Kimi K3"');
+    expect(content).toContain("you are Nemotron 3 Ultra 550B (nvidia/Nemotron-3-Ultra-550b-a55b)");
+    expect(content).toContain('answer "Nemotron 3 Ultra 550B"');
     expect(content).toContain("never claim to be another vendor's model");
   });
 
@@ -32,7 +35,7 @@ describe("claude model-identity prompt", () => {
 
   test("mentions the ephemeral Tavily MCP server only when the launcher injected it", () => {
     const withInject = systemContent(
-      toOpenAIMessages({ messages: [{ role: "user", content: "is tavily set up?" }] }, KIMI_K3, {
+      toOpenAIMessages({ messages: [{ role: "user", content: "is tavily set up?" }] }, NEMOTRON, {
         tavilyMcpInjected: true,
       }),
     );
@@ -40,7 +43,7 @@ describe("claude model-identity prompt", () => {
     expect(withInject).toContain("does not appear in `claude mcp list`");
 
     const withoutInject = systemContent(
-      toOpenAIMessages({ messages: [{ role: "user", content: "hi" }] }, KIMI_K3),
+      toOpenAIMessages({ messages: [{ role: "user", content: "hi" }] }, NEMOTRON),
     );
     expect(withoutInject).not.toContain("Tavily MCP");
   });
@@ -52,7 +55,7 @@ describe("claude model-identity prompt", () => {
           system: "You are Claude Code, Anthropic's official CLI.",
           messages: [{ role: "user", content: "hi" }],
         },
-        KIMI_K3,
+        NEMOTRON,
       ),
     );
     expect(content.indexOf("Model identity:")).toBe(0);

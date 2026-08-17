@@ -79,31 +79,35 @@ const HARNESS_INSTALL: Record<
   HarnessSandboxSpec["harness"],
   { install: string; bin: string; binary: string }
 > = {
-  claude: { install: "npm install -g @anthropic-ai/claude-code", bin: "klaude", binary: "claude" },
-  codex: { install: "npm install -g @openai/codex", bin: "kodex", binary: "codex" },
+  claude: {
+    install: "npm install -g @anthropic-ai/claude-code",
+    bin: "claudemo",
+    binary: "claude",
+  },
+  codex: { install: "npm install -g @openai/codex", bin: "codemo", binary: "codex" },
 };
 
 /**
  * Shared tooling-install preamble. Every install is `command -v`-guarded so
  * a prebaked image (see buildPrebakeBootstrap) skips straight past the cold
  * bootstrap - the same script costs ~a minute on tag:ubuntu:latest and ~0s
- * on tag:kimirelay:prebaked.
+ * on tag:nemocode:prebaked.
  */
 function bootstrapPreamble(): string[] {
   return [
     "set -eu",
     "export DEBIAN_FRONTEND=noninteractive",
-    'export PATH="$HOME/.kimirelay/bin:$HOME/.bun/bin:$PATH"',
+    'export PATH="$HOME/.nemocode/bin:$HOME/.bun/bin:$PATH"',
     // ubuntu base ships without curl/git/node; install quietly when missing.
     "command -v curl >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq curl ca-certificates; }",
     "command -v git >/dev/null 2>&1 || { apt-get update -qq && apt-get install -y -qq git; }",
     "command -v npm >/dev/null 2>&1 || { curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null && apt-get install -y -qq nodejs; }",
-    "command -v kimirelay >/dev/null 2>&1 || curl -fsSL https://nemocode.org/install.sh | sh",
+    "command -v nemocode >/dev/null 2>&1 || curl -fsSL https://nemocode.org/install.sh | sh",
   ];
 }
 
 /**
- * Builds the bootstrap script for a remote harness session: install kimirelay
+ * Builds the bootstrap script for a remote harness session: install nemocode
  * via the public one-liner, install the agent CLI, clone the project, run the
  * harness headlessly with the caller's passthrough args. Keys travel via the
  * instance env (never embedded in the command string).
@@ -127,9 +131,9 @@ export function buildHarnessBootstrap(spec: HarnessSandboxSpec): string {
 }
 
 /**
- * Builds the one-time prebake script: install ALL the tooling (kimirelay and
+ * Builds the one-time prebake script: install ALL the tooling (nemocode and
  * both harness CLIs), verify, and exit. Run non-disposably, the result image
- * is a warm checkpoint; tagged (kimirelay:prebaked by default), later
+ * is a warm checkpoint; tagged (nemocode:prebaked by default), later
  * `--sandbox --image tag:<tag>` runs skip the cold bootstrap entirely thanks
  * to the command -v guards above.
  */
@@ -138,8 +142,8 @@ export function buildPrebakeBootstrap(): string {
     ...bootstrapPreamble(),
     HARNESS_INSTALL.claude.install,
     HARNESS_INSTALL.codex.install,
-    "kimirelay --version",
-    "echo kimirelay-prebake-complete",
+    "nemocode --version",
+    "echo nemocode-prebake-complete",
   ].join("\n");
 }
 
@@ -182,12 +186,12 @@ export function detectGitOrigin(cwd: string): { repoUrl: string; branch: string 
   };
 }
 
-const ADVISORY_MARKER = "<!-- kimirelay:sandbox-advisory -->";
+const ADVISORY_MARKER = "<!-- nemocode:sandbox-advisory -->";
 
 export const SANDBOX_ADVISORY_BLOCK = `${ADVISORY_MARKER}
 ## Sandboxed execution
 
-When a Nebius Token Factory Sandbox is available (kimirelay's \`--sandbox\`
+When a Nebius Token Factory Sandbox is available (nemocode's \`--sandbox\`
 mode or the \`contree\` tooling), prefer running risky or untrusted commands -
 installers, unreviewed scripts, destructive operations - inside a disposable
 sandbox instead of on the host. This is advisory: the sandbox wrapper, not

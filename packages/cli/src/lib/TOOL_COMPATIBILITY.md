@@ -1,12 +1,12 @@
 # Tool Compatibility
 
-Live captures were run with `KIMIRELAY_DEBUG=1` and a debug-log sink against the terminal Codex and Claude Code harnesses.
+Live captures were run with `NEMOCODE_DEBUG=1` and a debug-log sink against the terminal Codex and Claude Code harnesses.
 
 ## Pricing
 
 - Claude Code: accounted by the daemon-side `CostTracker`. Every proxied Nebius chat call records `prompt_tokens`, `cached_tokens`, and `completion_tokens` against the selected `ModelDefinition`. Vision description sub-calls are also recorded at the actual vision model's rates.
 - Codex: accounted by the same daemon-side `CostTracker`. Both non-streaming and streaming Responses proxy paths request Nebius usage and record it against the selected Codex model definition, so Codex pricing is handled on this branch.
-- OpenCode: model entries include the shared cost metadata, so OpenCode can price locally. kimirelay does not yet print a reliable per-session OpenCode cost summary because OpenCode talks directly to Nebius and the launcher does not currently self-report session usage into the daemon.
+- OpenCode: model entries include the shared cost metadata, so OpenCode can price locally. nemocode does not yet print a reliable per-session OpenCode cost summary because OpenCode talks directly to Nebius and the launcher does not currently self-report session usage into the daemon.
 
 ## Codex Terminal
 
@@ -100,7 +100,7 @@ Headless smoke results:
 - Basic `--print --output-format json` completed successfully.
 - README `Read` tool prompt completed successfully without `Invalid tool parameters`.
 - Forced `WebFetch` completed successfully and returned a streamed `tool_use` with valid `input_json_delta`.
-- Forced `WebSearch` completed successfully and returned a streamed client `WebSearch` call. During that run, Claude Code also sent an internal Kimi-tier request containing native `type: "web_search_20250305"`, confirming the native path is live in current Claude Code traffic.
+- Forced `WebSearch` completed successfully and returned a streamed client `WebSearch` call. During that run, Claude Code also sent an internal Haiku-tier request containing native `type: "web_search_20250305"`, confirming the native path is live in current Claude Code traffic.
 - Re-running through the workspace-built daemon after the streaming native-tool fix showed the internal `web_search_20250305` call being selected, executed inside the proxy via Tavily, and continued with a second Nebius stream request.
 - Forced subagent delegation completed successfully with `Agent` and `TaskOutput`; the launch result used rich `tool_result.content` arrays, which are now converted into readable upstream tool messages.
 

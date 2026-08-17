@@ -17,7 +17,7 @@ import { INTERNAL_AUTH_HEADER, localProxyAuthToken } from "./local-auth.js";
 
 export { INTERNAL_AUTH_HEADER, localProxyAuthToken };
 import type { RegisterSessionRequest } from "./state.js";
-import { kimirelayHome, isProcessAlive } from "../paths.js";
+import { nemocodeHome, isProcessAlive } from "../paths.js";
 
 const HEALTH_POLL_INTERVAL_MS = 50;
 const HEALTH_POLL_TIMEOUT_MS = 5000;
@@ -69,7 +69,7 @@ export async function ensureDaemon(): Promise<{ url: string }> {
   // `import.meta.url` points at `dist/lib/daemon/launch.js`, which only exports
   // symbols and has no top-level main, so a self-spawn of it would exit
   // immediately and ensureDaemon would always time out. `process.argv[1]` is
-  // the entry the user invoked (the bundle path, or `dist/bin/kimirelay.js`
+  // the entry the user invoked (the bundle path, or `dist/bin/nemocode.js`
   // in dev) in both builds.
   const scriptPath = currentScriptPath();
   const child = spawn(process.execPath, [scriptPath, "--daemon"], {
@@ -77,7 +77,7 @@ export async function ensureDaemon(): Promise<{ url: string }> {
     stdio: "ignore",
     env: {
       ...process.env,
-      NEMORELAY_PORT: String(port),
+      NEMOCODE_PORT: String(port),
     },
   });
   child.unref();
@@ -91,8 +91,8 @@ export async function ensureDaemon(): Promise<{ url: string }> {
     }
   }
   throw new Error(
-    `kimirelay daemon did not become healthy on ${url} within ${HEALTH_POLL_TIMEOUT_MS / 1000}s. ` +
-      `Set NEMORELAY_PORT to use a different port.`,
+    `nemo daemon did not become healthy on ${url} within ${HEALTH_POLL_TIMEOUT_MS / 1000}s. ` +
+      `Set NEMOCODE_PORT to use a different port.`,
   );
 }
 
@@ -113,7 +113,7 @@ async function currentScriptIdentity(): Promise<ScriptIdentity> {
 }
 
 function daemonMatchesCurrentScript(health: DaemonHealth, current: ScriptIdentity): boolean {
-  if (health.home !== null && health.home !== kimirelayHome()) {
+  if (health.home !== null && health.home !== nemocodeHome()) {
     return false;
   }
   if (health.scriptPath !== current.scriptPath) {
@@ -179,7 +179,7 @@ async function waitForDaemonToExit(port: number): Promise<void> {
 /**
  * Absolute path of the CLI entrypoint, for `bun/node <scriptPath> --daemon`.
  * Prefers `process.argv[1]` (the entry the user actually invoked - the bundle
- * under the install, or `dist/bin/kimirelay.js` under `pnpm dev`), resolved
+ * under the install, or `dist/bin/nemocode.js` under `pnpm dev`), resolved
  * to an absolute path. Falls back to this module's `import.meta.url` only if
  * argv[1] is unavailable; note that import.meta.url is the wrong target in the
  * multi-file tsc dist (see the call-site comment above).
@@ -244,7 +244,7 @@ export async function daemonFetch(url: string, init?: RequestInit): Promise<Resp
     authHeader = { [INTERNAL_AUTH_HEADER]: await localProxyAuthToken() };
   } catch {
     // No token available: send the request unauthenticated and let the daemon
-    // decide. Keeps `kimirelay daemon status` working on a broken home.
+    // decide. Keeps `nemo daemon status` working on a broken home.
   }
   try {
     return await fetch(url, {
@@ -311,7 +311,7 @@ export function startDaemonSessionKeepalive(
     });
     if (options.debug) {
       process.stderr.write(
-        `[kimirelay daemon] restored ${options.label ?? registration.agent ?? "session"} after ${reason}.\n`,
+        `[nemo daemon] restored ${options.label ?? registration.agent ?? "session"} after ${reason}.\n`,
       );
     }
   };
@@ -322,7 +322,7 @@ export function startDaemonSessionKeepalive(
     } catch (err) {
       if (options.debug) {
         process.stderr.write(
-          `[kimirelay daemon] could not restore ${options.label ?? registration.agent ?? "session"}: ${
+          `[nemo daemon] could not restore ${options.label ?? registration.agent ?? "session"}: ${
             err instanceof Error ? err.message : String(err)
           }\n`,
         );

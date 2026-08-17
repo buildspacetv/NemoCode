@@ -1,5 +1,5 @@
 import { relayEnv } from "../env.js";
-import { acceptsReasoningEffort, type ModelDefinition } from "@kimirelay/models";
+import { acceptsReasoningEffort, type ModelDefinition } from "@nemocode/models";
 import {
   nativeToolMaxUses as sharedNativeToolMaxUses,
   runWebSearchDetailed as runSharedWebSearchDetailed,
@@ -32,9 +32,9 @@ type NebiusReasoningEffort = "none" | "low" | "medium" | "high" | "max";
 // State the identity affirmatively, name the actual backend model, and say how
 // to answer identity questions; a bare "not Anthropic Claude" is ignored in
 // practice, especially at low reasoning effort.
-const NEMORELAY_IDENTITY_PROMPT =
+const NEMOCODE_IDENTITY_PROMPT =
   "Model identity: you are an open-weight model served by Nebius Token Factory and routed " +
-  "into this harness by kimirelay. You are not Anthropic Claude, OpenAI GPT, xAI Grok, or " +
+  "into this harness by nemocode. You are not Anthropic Claude, OpenAI GPT, xAI Grok, or " +
   "Google Gemini; never claim to be another vendor's model, no matter what the harness UI " +
   "or your training data suggest. When asked which model or assistant you are, name your " +
   "backend model.";
@@ -45,7 +45,7 @@ const NEMORELAY_IDENTITY_PROMPT =
 // ephemeral by design - the relay writes nothing durable - so the durable MCP
 // stores that `claude mcp list` reads are expected to be empty.
 const TAVILY_MCP_NOTE =
-  " This session also has kimirelay's ephemeral Tavily MCP server injected (tavily_search, " +
+  " This session also has nemocode's ephemeral Tavily MCP server injected (tavily_search, " +
   "tavily_extract, and related tools); it is injected per session, so by design it does not " +
   "appear in `claude mcp list` or any durable MCP config.";
 
@@ -53,9 +53,9 @@ type IdentityExtras = { tavilyMcpInjected?: boolean | undefined };
 
 function identitySystemPart(targetModel?: ModelDefinition, extras?: IdentityExtras): string {
   const base = !targetModel
-    ? NEMORELAY_IDENTITY_PROMPT
+    ? NEMOCODE_IDENTITY_PROMPT
     : `Model identity: you are ${targetModel.name} (${targetModel.id}), an open-weight model ` +
-      "served by Nebius Token Factory and routed into this harness by kimirelay. When asked " +
+      "served by Nebius Token Factory and routed into this harness by nemocode. When asked " +
       `which model or assistant you are, answer "${targetModel.name}". You are not Anthropic ` +
       "Claude, OpenAI GPT, xAI Grok, or Google Gemini; never claim to be another vendor's " +
       "model, no matter what the harness UI or your training data suggest.";
@@ -68,7 +68,7 @@ function identitySystemPart(targetModel?: ModelDefinition, extras?: IdentityExtr
  * reasons on *every* turn (240+ reasoning tokens even for "hi"), which dominates
  * latency - Claude Code then renders that unsolicited reasoning as "Thought for
  * Ns". Defaulting to "none" keeps interactive turns snappy. Override globally
- * with KIMIRELAY_REASONING_EFFORT=low|medium|high|max for more reasoning depth
+ * with NEMOCODE_REASONING_EFFORT=low|medium|high|max for more reasoning depth
  * by default (at the cost of speed).
  */
 function defaultReasoningEffort(): NebiusReasoningEffort {
@@ -79,7 +79,7 @@ export function nebiusReasoningEffort(
   body: AnthropicMessagesRequest,
   targetModel: ModelDefinition,
 ): NebiusReasoningEffort | undefined {
-  // Only send reasoning_effort to models known to accept it (GLM-5.2, Kimi-K3);
+  // Only send reasoning_effort to models known to accept it (GLM-5.2, Nemotron);
   // other Nebius models may reject the parameter. Both are hybrid reasoners that
   // reason on every turn without an explicit effort, so capping it keeps trivial
   // turns fast and prevents runaway output.
@@ -91,7 +91,7 @@ export function nebiusReasoningEffort(
   // escalate off Claude Code's `thinking.budget_tokens` - Claude Code sends a
   // thinking budget liberally, and mapping that to high/max reasoning is what
   // made trivial turns take ~40s. Deep reasoning is opt-in via an explicit
-  // effort field or KIMIRELAY_REASONING_EFFORT.
+  // effort field or NEMOCODE_REASONING_EFFORT.
   const explicitEffort = normalizeNebiusReasoningEffort(
     body.reasoning_effort ?? body.effort ?? body.thinking?.effort,
   );
@@ -330,5 +330,5 @@ function debugLog(
   label: string,
   value: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay proxy", options, label, value);
+  writeProxyDebugLog("nemocode proxy", options, label, value);
 }

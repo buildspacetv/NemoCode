@@ -253,5 +253,5 @@ function debugLog(
   label: string,
   value: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay proxy", options, label, value);
+  writeProxyDebugLog("nemocode proxy", options, label, value);
 }

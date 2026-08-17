@@ -17,7 +17,7 @@ export function writeDebugLogLine(line: string): void {
     }
     warnedAboutDebugLogWrite = true;
     process.stderr.write(
-      `[kimirelay debug] failed to append debug log: ${
+      `[nemocode debug] failed to append debug log: ${
         err instanceof Error ? err.message : String(err)
       }\n`,
     );

@@ -1,7 +1,7 @@
 # Showcase
 
-Projects displayed at [kimi.guide/showcase](https://kimi.guide/showcase). Built
-something with Kimi K3 (or an earlier Kimi model)? Add it here with a pull
+Projects displayed at [nemo.guide/showcase](https://nemo.guide/showcase). Built
+something with NemoCode? Add it here with a pull
 request.
 
 ## How to submit
@@ -12,7 +12,7 @@ request.
 ```json
 {
   "name": "Your Project",
-  "description": "One or two sentences about what it does and how Kimi powers it.",
+  "description": "One or two sentences about what it does and how NemoCode powers it.",
   "url": "https://github.com/you/your-project",
   "author": "you",
   "emoji": "🚀",
@@ -22,6 +22,6 @@ request.
 
 3. Open a pull request.
 
-Guidelines: real, working projects only; the description should say how Kimi
+Guidelines: real, working projects only; the description should say how NemoCode
 is involved; keep it to one emoji and at most four short lowercase tags. The
 page sorts alphabetically by name.

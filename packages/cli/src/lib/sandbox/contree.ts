@@ -16,7 +16,7 @@ export const SANDBOX_ACCESS_HINT =
 
 export const SANDBOX_PROJECT_HINT =
   "Pass your Nebius project via `--project <id>` or `NEBIUS_PROJECT=<id>`, or store " +
-  "it once with `kimirelay sandbox project <id>` (the id is shown in the Token " +
+  "it once with `nemo sandbox project <id>` (the id is shown in the Token " +
   "Factory console - there is no API to discover it).";
 
 export class SandboxAccessError extends Error {

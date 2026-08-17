@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { NEMOTRON_3_ULTRA } from "@nemocode/models";
 import { buildCodexAppConfig, codexAppModelCatalogJson } from "../../cli/src/lib/codex-app.js";
 
 describe("Codex App alpha config", () => {
@@ -16,8 +17,8 @@ describe("Codex App alpha config", () => {
       ].join("\n"),
       {
         modelId: "zai-org/GLM-5.2",
-        providerId: "kimirelay_codex_app",
-        providerName: "Kimi Relay",
+        providerId: "nemocode_codex_app",
+        providerName: "NemoCode",
         baseUrl: "http://127.0.0.1:7878/session/local-secret/v1",
         bearerToken: "local-secret",
         catalogPath: "/tmp/models.json",
@@ -25,7 +26,7 @@ describe("Codex App alpha config", () => {
     );
 
     expect(config).toContain('model = "zai-org/GLM-5.2"');
-    expect(config).toContain('model_provider = "kimirelay_codex_app"');
+    expect(config).toContain('model_provider = "nemocode_codex_app"');
     expect(config).toContain('model_catalog_json = "/tmp/models.json"');
     expect(config).not.toContain("approval_policy");
     expect(config).not.toContain("model_context_window");
@@ -33,39 +34,39 @@ describe("Codex App alpha config", () => {
     expect(config).not.toContain("model_reasoning_effort");
     expect(config).not.toContain("openai_base_url");
     expect(config).toContain('[projects."/repo"]');
-    expect(config).toContain("[model_providers.kimirelay_codex_app]");
-    expect(config).toContain('name = "Kimi Relay"');
+    expect(config).toContain("[model_providers.nemocode_codex_app]");
+    expect(config).toContain('name = "NemoCode"');
     expect(config).toContain('base_url = "http://127.0.0.1:7878/session/local-secret/v1"');
     expect(config).toContain('wire_api = "responses"');
     // Codex Desktop currently gates the model picker on provider auth state.
     // This keeps the picker visible for custom providers; actual model
-    // requests still go to Kimi Relay's local base_url.
+    // requests still go to NemoCode's local base_url.
     expect(config).toContain("requires_openai_auth = true");
   });
 
   test("replaces an existing managed block instead of appending duplicates", () => {
     const first = buildCodexAppConfig("", {
       modelId: "zai-org/GLM-5.2",
-      providerId: "kimirelay_codex_app",
-      providerName: "Kimi Relay",
+      providerId: "nemocode_codex_app",
+      providerName: "NemoCode",
       baseUrl: "http://127.0.0.1:7878/session/old/v1",
       bearerToken: "old",
       catalogPath: "/tmp/old.json",
     });
     const second = buildCodexAppConfig(first, {
-      modelId: "moonshotai/Kimi-K2.7-Code",
-      providerId: "kimirelay_codex_app",
-      providerName: "Kimi Relay",
+      modelId: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      providerId: "nemocode_codex_app",
+      providerName: "NemoCode",
       baseUrl: "http://127.0.0.1:7878/session/new/v1",
       bearerToken: "new",
       catalogPath: "/tmp/new.json",
     });
 
-    expect(second.match(/>>> kimirelay codex-app alpha >>>/g)).toHaveLength(1);
+    expect(second.match(/>>> nemo codex-app alpha >>>/g)).toHaveLength(1);
     expect(second).not.toContain("/tmp/old.json");
     expect(second).not.toContain("/session/old/v1");
-    expect(second).toContain('model = "moonshotai/Kimi-K2.7-Code"');
-    expect(second).toContain('model_provider = "kimirelay_codex_app"');
+    expect(second).toContain('model = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"');
+    expect(second).toContain('model_provider = "nemocode_codex_app"');
     expect(second.match(/approval_policy = "on-request"/g)).toHaveLength(1);
     expect(second.match(/sandbox_mode = "workspace-write"/g)).toHaveLength(1);
     expect(second.match(/approvals_reviewer = "auto_review"/g)).toHaveLength(1);
@@ -77,12 +78,12 @@ describe("Codex App alpha config", () => {
   test("removes legacy app profile and provider tables", () => {
     const config = buildCodexAppConfig(
       [
-        'profile = "kimirelay_codex_app"',
+        'profile = "nemocode_codex_app"',
         "",
-        "[profiles.kimirelay_codex_app]",
+        "[profiles.nemocode_codex_app]",
         'model = "stale"',
         "",
-        "[model_providers.kimirelay_codex_app]",
+        "[model_providers.nemocode_codex_app]",
         'base_url = "http://old.invalid/v1"',
         "",
         '[projects."/repo"]',
@@ -91,17 +92,17 @@ describe("Codex App alpha config", () => {
       ].join("\n"),
       {
         modelId: "zai-org/GLM-5.2",
-        providerId: "kimirelay_codex_app",
-        providerName: "Kimi Relay",
+        providerId: "nemocode_codex_app",
+        providerName: "NemoCode",
         baseUrl: "http://127.0.0.1:7878/session/local-secret/v1",
         bearerToken: "local-secret",
         catalogPath: "/tmp/models.json",
       },
     );
 
-    expect(config).not.toContain('profile = "kimirelay_codex_app"');
-    expect(config.match(/\[profiles\.kimirelay_codex_app\]/g)).toBeNull();
-    expect(config.match(/\[model_providers\.kimirelay_codex_app\]/g)).toHaveLength(1);
+    expect(config).not.toContain('profile = "nemocode_codex_app"');
+    expect(config.match(/\[profiles\.nemocode_codex_app\]/g)).toBeNull();
+    expect(config.match(/\[model_providers\.nemocode_codex_app\]/g)).toHaveLength(1);
     expect(config).not.toContain("http://old.invalid/v1");
     expect(config).toContain('[projects."/repo"]');
   });
@@ -113,8 +114,8 @@ describe("Codex App alpha config", () => {
       ),
       {
         modelId: "zai-org/GLM-5.2",
-        providerId: "kimirelay_codex_app",
-        providerName: "Kimi Relay",
+        providerId: "nemocode_codex_app",
+        providerName: "NemoCode",
         baseUrl: "http://127.0.0.1:7878/session/local-secret/v1",
         bearerToken: "local-secret",
         catalogPath: "/tmp/models.json",
@@ -133,7 +134,7 @@ describe("Codex App alpha config", () => {
     const first = catalog.models[0];
 
     expect(first).toBeDefined();
-    expect(first?.display_name).toBe("Kimi K3 · default");
+    expect(first?.display_name).toBe("Nemotron 3 Ultra 550B · default");
     expect(first?.shell_type).toBe("shell_command");
     // Reasoning models expose effort levels; non-reasoning models use "none".
     // Default to "minimal" (proxy maps it to no reasoning) so trivial turns stay
@@ -158,10 +159,13 @@ describe("Codex App alpha config", () => {
     expect(first?.use_responses_lite).toBe(false);
     expect(first?.apply_patch_tool_type).toBe("freeform");
     expect(first?.web_search_tool_type).toBe("text_and_image");
-    // Truncation limit is the context window divided by the Codex↔Nebius
-    // tokenizer-mismatch ratio (floor(262144 / 1.8)), so Codex compacts before
-    // Nebius's server-side tokenizer rejects. See codex/catalog.ts.
-    expect(first?.truncation_policy).toEqual({ mode: "tokens", limit: 145635 });
+    // Truncation limit is the default model's context window divided by the
+    // Codex↔Nebius tokenizer-mismatch ratio, so Codex compacts before Nebius's
+    // server-side tokenizer rejects. See codex/catalog.ts.
+    expect(first?.truncation_policy).toEqual({
+      mode: "tokens",
+      limit: Math.floor(NEMOTRON_3_ULTRA.limit.context / 1.8),
+    });
     expect(first?.comp_hash).toBeNull();
     // model_messages MUST be an object (not null) so Codex Desktop can resolve
     // the requested personality instead of warning and falling back.
@@ -179,11 +183,11 @@ describe("Codex App alpha config", () => {
     // Per-model capability flags must be derived from the model definition,
     // not hardcoded off, so vision/tool-calling models are advertised correctly.
     expect(first?.supports_parallel_tool_calls).toBe(true);
-    expect(first?.supports_image_detail_original).toBe(false); // Kimi-K3 is text-only
+    expect(first?.supports_image_detail_original).toBe(false); // Nemotron 3 Ultra is text-only
     expect(first?.input_modalities).toEqual(["text"]);
 
     // A vision-capable model in the catalog must advertise image input.
-    const vision = catalog.models.find((m) => m.slug === "moonshotai/Kimi-K2.6");
+    const vision = catalog.models.find((m) => m.slug === "nvidia/Cosmos3-Super-Reasoner");
     expect(vision?.supports_image_detail_original).toBe(true);
     expect(vision?.input_modalities).toEqual(["text", "image"]);
   });

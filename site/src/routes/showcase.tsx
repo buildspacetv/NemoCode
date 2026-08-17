@@ -24,11 +24,11 @@ const projects = Object.values(modules)
 export const Route = createFileRoute("/showcase")({
   head: () => ({
     meta: [
-      { title: "Showcase - Built with Kimi K3 | Kimi.Guide" },
+      { title: "Showcase - Built with NemoCode | NemoCode.org" },
       {
         name: "description",
         content:
-          "Community projects built with Kimi K3: coding agents, inference servers, research tools, benchmarks, and kernels. Submit yours with a pull request.",
+          "Community projects built with NemoCode: coding agents, research tools, benchmarks, and editor configs. Submit yours with a pull request.",
       },
     ],
   }),
@@ -60,12 +60,12 @@ function Showcase() {
                 aria-hidden="true"
                 className="absolute inset-x-0 -bottom-1 h-[9px] rounded-full bg-lime/40"
               />
-              <span className="relative">Kimi K3</span>
+              <span className="relative">NemoCode</span>
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-[560px] text-pretty text-[17px] leading-relaxed text-muted">
-            Coding agents, inference servers, research tools, benchmarks, and kernels from the
-            community. Your project belongs here too.
+            Coding agents, research tools, benchmarks, and editor configs from the community. Your
+            project belongs here too.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <a
@@ -146,7 +146,7 @@ function Showcase() {
               <span className="flex size-8 items-center justify-center rounded-lg border border-line-strong bg-code text-[16px] transition group-hover:border-faint">
                 +
               </span>
-              Built something with Kimi? Add it to the showcase with a PR.
+              Built something with NemoCode? Add it to the showcase with a PR.
             </a>
           </div>
         </section>

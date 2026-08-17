@@ -1,7 +1,13 @@
 import http from "node:http";
 import { asRecord } from "./json-lines.js";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { GLM_5_2, MINIMAX_M3, QWEN_2_5_VL_72B, QWEN_3_5_397B } from "@kimirelay/models";
+import {
+  GLM_5_2,
+  MINIMAX_M3,
+  NEMOTRON_3_ULTRA,
+  QWEN_2_5_VL_72B,
+  QWEN_3_5_397B,
+} from "@nemocode/models";
 import { handleCodexProxyRequest, type CodexProxyOptions } from "../../cli/src/lib/codex/proxy.js";
 
 const realFetch = globalThis.fetch.bind(globalThis);
@@ -223,9 +229,9 @@ describe("Codex Responses proxy tool compatibility", () => {
   });
 
   test("retries streamed Codex turns when Nebius never returns response headers", async () => {
-    vi.stubEnv("NEMORELAY_RESPONSE_HEADER_TIMEOUT_MS", "100");
-    vi.stubEnv("NEMORELAY_STREAM_RETRIES", "1");
-    vi.stubEnv("NEMORELAY_REQUEST_DIAGNOSTICS", "0");
+    vi.stubEnv("NEMOCODE_RESPONSE_HEADER_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_STREAM_RETRIES", "1");
+    vi.stubEnv("NEMOCODE_REQUEST_DIAGNOSTICS", "0");
     let upstreamCalls = 0;
     vi.stubGlobal(
       "fetch",
@@ -561,8 +567,8 @@ describe("Codex Responses proxy tool compatibility", () => {
     const catalog = await getModels();
     const first = catalog.models?.[0] as Record<string, unknown> | undefined;
 
-    expect(first?.slug).toBe("moonshotai/Kimi-K3");
-    expect(first?.display_name).toBe("Kimi K3 · default");
+    expect(first?.slug).toBe("nvidia/Nemotron-3-Ultra-550b-a55b");
+    expect(first?.display_name).toBe("Nemotron 3 Ultra 550B · default");
     expect(first?.default_reasoning_level).toBe("minimal");
     expect(first?.default_reasoning_summary).toBe("auto");
     expect(first?.model_messages).toEqual(
@@ -572,7 +578,9 @@ describe("Codex Responses proxy tool compatibility", () => {
     );
     expect(first?.apply_patch_tool_type).toBe("freeform");
     expect(first?.web_search_tool_type).toBe("text_and_image");
-    const expectedLimit = Math.floor(GLM_5_2.limit.context / 1.8);
+    // Derived from the default model (the catalog's first row), not a literal, so
+    // swapping the default model does not silently invalidate this assertion.
+    const expectedLimit = Math.floor(NEMOTRON_3_ULTRA.limit.context / 1.8);
     expect(first?.truncation_policy).toEqual({
       mode: "tokens",
       limit: expectedLimit,
@@ -1027,8 +1035,8 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("retries streamed Codex turns when upstream SSE goes idle before output", async () => {
     const requests: Array<{ body: any }> = [];
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_RETRIES", "1");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_IDLE_RETRIES", "1");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1402,8 +1410,8 @@ describe("Codex Responses proxy tool compatibility", () => {
   test("fails streamed native web_search completion when upstream SSE goes idle", async () => {
     const requests: Array<{ url: string; body: any }> = [];
     vi.stubEnv("TAVILY_API_KEY", "test-exa-key");
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_RETRIES", "1");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_IDLE_RETRIES", "1");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1447,8 +1455,8 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("fails when upstream SSE keepalives make no Codex progress", async () => {
     const requests: Array<{ url: string; body: any }> = [];
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_IDLE_RETRIES", "1");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_IDLE_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_IDLE_RETRIES", "1");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1480,7 +1488,7 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("fails when native stream emits reasoning but never final output", async () => {
     const requests: Array<{ url: string; body: any }> = [];
-    vi.stubEnv("NEMORELAY_CODEX_STREAM_TURN_TIMEOUT_MS", "100");
+    vi.stubEnv("NEMOCODE_CODEX_STREAM_TURN_TIMEOUT_MS", "100");
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -1808,7 +1816,7 @@ describe("Codex Responses proxy tool compatibility", () => {
     });
 
     // Nebius silently caps omitted max_tokens at 2048, which truncates
-    // long-reasoning models (Kimi K2.6/K2.7) mid-turn; the proxy must always
+    // long-reasoning models (Nemotron 3 Ultra/Super) mid-turn; the proxy must always
     // send an explicit budget. A tiny input leaves the full output limit free.
     expect(requests[0]?.max_tokens).toBe(GLM_5_2.limit.output);
 
@@ -1835,10 +1843,10 @@ describe("Codex Responses proxy tool compatibility", () => {
             {
               message: {
                 content: JSON.stringify({
-                  rollout_summary: "Captured Kimi Relay memory support investigation.",
-                  rollout_slug: "kimirelay_codex_memory_support",
+                  rollout_summary: "Captured NemoCode memory support investigation.",
+                  rollout_slug: "nemocode_codex_memory_support",
                   raw_memory:
-                    "Kimi Relay should route Codex memory extraction separately from the main coding model.",
+                    "NemoCode should route Codex memory extraction separately from the main coding model.",
                 }),
               },
             },
@@ -1902,7 +1910,7 @@ describe("Codex Responses proxy tool compatibility", () => {
 
   test("allows Codex memory extraction model override from env", async () => {
     const requests: unknown[] = [];
-    vi.stubEnv("NEMORELAY_CODEX_MEMORY_MODEL", QWEN_2_5_VL_72B.id);
+    vi.stubEnv("NEMOCODE_CODEX_MEMORY_MODEL", QWEN_2_5_VL_72B.id);
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string, init?: RequestInit) => {
@@ -2253,7 +2261,7 @@ describe("Codex Responses proxy tool compatibility", () => {
     const retryMessages = requests[1]?.body?.messages;
     expect(retryMessages).toBeDefined();
     const hasTrimMarker = retryMessages.some(
-      (m: any) => typeof m.content === "string" && m.content.includes("[kimirelay trimmed"),
+      (m: any) => typeof m.content === "string" && m.content.includes("[nemocode trimmed"),
     );
     expect(hasTrimMarker).toBe(true);
   });

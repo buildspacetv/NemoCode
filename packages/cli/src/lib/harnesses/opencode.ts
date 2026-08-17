@@ -54,13 +54,13 @@ export default defineHarness({
     const env = buildOpencodeEnv({ apiKey, configJson });
     if (tavilyMcp) {
       process.stderr.write(
-        "Kimi Relay ▸ Tavily MCP injected for this session (ephemeral - config is never written to disk).\n",
+        "NemoCode ▸ Tavily MCP injected for this session (ephemeral - config is never written to disk).\n",
       );
     }
 
     if (relayEnv("DEBUG") === "1") {
-      process.stderr.write(`[kimirelay opencode] custom model: ${modelId}\n`);
-      process.stderr.write(`[kimirelay opencode] config: ${JSON.stringify(configJson)}\n`);
+      process.stderr.write(`[nemo opencode] custom model: ${modelId}\n`);
+      process.stderr.write(`[nemo opencode] config: ${JSON.stringify(configJson)}\n`);
     }
 
     // Force our model via the CLI flag (highest precedence). Relying on the

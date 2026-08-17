@@ -1,26 +1,27 @@
 {
-  "name": "@kimirelay/cli",
+  "name": "@nemocode/cli",
   "version": "0.15.7",
   "description": "CLI for routing Claude Code, OpenCode, Codex, and Pi Code through Nebius Token Factory",
   "license": "MIT",
   "bin": {
-    "kimirelay": "./dist/bin/kimirelay.js"
+    "nemo": "./dist/bin/nemocode.js",
+    "nemocode": "./dist/bin/nemocode.js"
   },
   "files": [
     "dist"
   ],
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json && node -e \"require('node:fs').chmodSync('dist/bin/kimirelay.js', 0o755)\"",
+    "build": "tsc -p tsconfig.json && node -e \"require('node:fs').chmodSync('dist/bin/nemocode.js', 0o755)\"",
     "dev": "pnpm build && sh -c 'node scripts/watch-bin-mode.mjs & tsc -p tsconfig.json --watch --preserveWatchOutput'",
     "watch": "pnpm dev",
-    "typecheck": "pnpm --filter @kimirelay/models build && tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm --filter @nemocode/models build && tsc -p tsconfig.json --noEmit",
     "prepack": "pnpm build",
     "test": "pnpm typecheck"
   },
   "dependencies": {
     "@clack/prompts": "^0.8.2",
-    "@kimirelay/models": "workspace:*",
+    "@nemocode/models": "workspace:*",
     "@tenkicloud/sandbox": "^0.5.4"
   },
   "engines": {

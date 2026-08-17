@@ -6,28 +6,28 @@ import { LAUNCHERS, launcherScript, refreshLauncherWrappers } from "../../cli/sr
 
 describe("launcherScript", () => {
   test("locates bun itself and falls back to ~/.bun/bin", () => {
-    const script = launcherScript("/home/u/.kimirelay/bin", "");
+    const script = launcherScript("/home/u/.nemocode/bin", "");
     expect(script.startsWith("#!/usr/bin/env sh\n")).toBe(true);
     expect(script).toContain('BUN_BIN="$(command -v bun 2>/dev/null || true)"');
     expect(script).toContain('[ -n "$BUN_BIN" ] || BUN_BIN="$HOME/.bun/bin/bun"');
     expect(script).toContain("exit 127");
-    expect(script).toContain('exec "$BUN_BIN" "/home/u/.kimirelay/bin/kimirelay.js" "$@"');
+    expect(script).toContain('exec "$BUN_BIN" "/home/u/.nemocode/bin/nemocode.js" "$@"');
   });
 
   test("inserts the harness subcommand before passthrough args", () => {
-    const script = launcherScript("/home/u/.kimirelay/bin", "claude");
-    expect(script).toContain('exec "$BUN_BIN" "/home/u/.kimirelay/bin/kimirelay.js" claude "$@"');
+    const script = launcherScript("/home/u/.nemocode/bin", "claude");
+    expect(script).toContain('exec "$BUN_BIN" "/home/u/.nemocode/bin/nemocode.js" claude "$@"');
   });
 });
 
 describe("refreshLauncherWrappers", () => {
   test("rewrites stale wrappers, creates missing ones, and is idempotent", async () => {
-    const binDir = await mkdtemp(path.join(os.tmpdir(), "kimirelay-wrappers-"));
+    const binDir = await mkdtemp(path.join(os.tmpdir(), "nemocode-wrappers-"));
 
     // A pre-0.10 wrapper that assumed `bun` was on PATH.
     await writeFile(
-      path.join(binDir, "klaude"),
-      `#!/usr/bin/env sh\nexec bun "${binDir}/kimirelay.js" claude "$@"\n`,
+      path.join(binDir, "claudemo"),
+      `#!/usr/bin/env sh\nexec bun "${binDir}/nemocode.js" claude "$@"\n`,
       { mode: 0o755 },
     );
 

@@ -8,14 +8,14 @@ export async function createTestContext(): Promise<TestContext> {
   await mkdir(artifactsDir, { recursive: true });
   await mkdir(tmpDir, { recursive: true });
   const suiteTmpDir = await mkdtemp(path.join(tmpDir, "suite-"));
-  const kimirelayHome = path.join(suiteTmpDir, "kimirelay-home");
-  await mkdir(kimirelayHome, { recursive: true });
+  const nemocodeHome = path.join(suiteTmpDir, "nemocode-home");
+  await mkdir(nemocodeHome, { recursive: true });
   return {
     repoRoot,
     cliBin,
     artifactsDir,
     tmpDir: suiteTmpDir,
-    kimirelayHome,
+    nemocodeHome,
     daemonPort: await findOpenPort(),
     results: [],
   };
@@ -25,8 +25,8 @@ export async function resetTmpDir(context: TestContext): Promise<void> {
   await stopContextDaemon(context);
   await rm(context.tmpDir, { recursive: true, force: true });
   await mkdir(context.tmpDir, { recursive: true });
-  if (context.kimirelayHome) {
-    await mkdir(context.kimirelayHome, { recursive: true });
+  if (context.nemocodeHome) {
+    await mkdir(context.nemocodeHome, { recursive: true });
   }
 }
 
@@ -48,10 +48,10 @@ async function findOpenPort(): Promise<number> {
 }
 
 async function stopContextDaemon(context: TestContext): Promise<void> {
-  if (!context.kimirelayHome) {
+  if (!context.nemocodeHome) {
     return;
   }
-  const raw = await readFile(path.join(context.kimirelayHome, "daemon.pid"), "utf8").catch(
+  const raw = await readFile(path.join(context.nemocodeHome, "daemon.pid"), "utf8").catch(
     () => undefined,
   );
   const pid = raw ? Number.parseInt(raw.trim(), 10) : NaN;

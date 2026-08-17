@@ -10,7 +10,7 @@ export function requestPath(req: IncomingMessage): string {
  * Largest request body the daemon will buffer. A 1M-token context at ~4 bytes
  * per token is ~4 MB of text; 64 MB leaves generous room for base64 image
  * blocks on top of the biggest advertised window while still bounding memory.
- * Override with `KIMIRELAY_MAX_REQUEST_BYTES` if a future model needs more.
+ * Override with `NEMOCODE_MAX_REQUEST_BYTES` if a future model needs more.
  */
 const DEFAULT_MAX_REQUEST_BYTES = 64 * 1024 * 1024;
 

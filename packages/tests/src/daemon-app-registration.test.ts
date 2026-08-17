@@ -1,7 +1,7 @@
 import { mkdtemp, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { GLM_5_2 } from "@kimirelay/models";
+import { GLM_5_2 } from "@nemocode/models";
 import {
   appRegistrationPath,
   clearAppRegistration,
@@ -13,7 +13,7 @@ import { cleanupTmpDir, createTestContext } from "./context.js";
 import { startTestDaemon, type TestDaemon } from "./daemon-session.js";
 import type { TestContext } from "./types.js";
 
-const TOKEN = "kimirelay-local-app-registration-test";
+const TOKEN = "nemocode-local-app-registration-test";
 
 function registration(): RegisterSessionRequest {
   return {
@@ -83,7 +83,7 @@ describe("daemon lazy codex-app session restore", () => {
 
   test("re-registers the persisted codex-app session on a token miss instead of 401ing", async () => {
     // Simulate the state after a daemon restart / idle reap: the register
-    // body is on disk (written by `kimirelay codex-app`) but the daemon
+    // body is on disk (written by `nemo codex-app`) but the daemon
     // has no in-memory session for the token the Codex app keeps sending.
     await writeAppRegistration(registration(), daemon.home);
     const before = await sessionCount();
@@ -94,7 +94,7 @@ describe("daemon lazy codex-app session restore", () => {
     const response = await fetch(`${daemon.url}/session/${TOKEN}/v1/models`);
     expect(response.status).toBe(200);
     const catalog = (await response.json()) as { models?: Array<{ slug?: string }> };
-    expect(catalog.models?.[0]?.slug).toBe("moonshotai/Kimi-K3");
+    expect(catalog.models?.[0]?.slug).toBe("nvidia/Nemotron-3-Ultra-550b-a55b");
 
     const sessions = await listSessions();
     expect(sessions).toHaveLength(1);
@@ -123,7 +123,7 @@ describe("daemon lazy codex-app session restore", () => {
 
   test("401s internal calls presenting the wrong credential", async () => {
     const response = await fetch(`${daemon.url}/internal/sessions`, {
-      headers: { "x-kimirelay-internal": "kimirelay-local-not-the-real-token" },
+      headers: { "x-nemocode-internal": "nemocode-local-not-the-real-token" },
     });
     expect(response.status).toBe(401);
   });
@@ -135,7 +135,7 @@ describe("daemon lazy codex-app session restore", () => {
   });
 
   test("stops resurrecting the session after restore clears the registration", async () => {
-    // `kimirelay codex-app --restore` deletes both the daemon session and
+    // `nemo codex-app --restore` deletes both the daemon session and
     // the persisted registration; the token must go back to 401.
     await daemon.internalFetch(`${daemon.url}/internal/sessions/${encodeURIComponent(TOKEN)}`, {
       method: "DELETE",

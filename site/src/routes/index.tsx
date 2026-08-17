@@ -25,7 +25,7 @@ type Agent = {
 const agents: Agent[] = [
   {
     name: "Claude Code",
-    command: "klaude",
+    command: "claudemo",
     pill: "claude",
     status: "Stable",
     mark: <ClaudeMark />,
@@ -34,7 +34,7 @@ const agents: Agent[] = [
   },
   {
     name: "Codex CLI",
-    command: "kodex",
+    command: "codemo",
     pill: "codex",
     status: "Stable",
     mark: <CodexMark />,
@@ -43,7 +43,7 @@ const agents: Agent[] = [
   },
   {
     name: "OpenCode",
-    command: "openkode",
+    command: "opencodemo",
     pill: "opencode",
     status: "Stable",
     mark: <OpenCodeMark />,
@@ -52,7 +52,7 @@ const agents: Agent[] = [
   },
   {
     name: "Pi Code",
-    command: "kpi",
+    command: "pimo",
     pill: "pi",
     status: "Stable",
     mark: <PiMark />,
@@ -66,9 +66,9 @@ const steps = [
     title: "Install once",
     body: (
       <>
-        Run the one-liner. It drops <code>kimirelay</code> plus <code>klaude</code>,{" "}
-        <code>kodex</code>, <code>openkode</code>, and <code>kpi</code> onto your PATH and installs
-        Bun if you don&apos;t have it.
+        Run the one-liner. It drops <code>nemocode</code> plus <code>claudemo</code>,{" "}
+        <code>codemo</code>, <code>opencodemo</code>, and <code>pimo</code> onto your PATH and
+        installs Bun if you don&apos;t have it.
       </>
     ),
   },
@@ -76,7 +76,7 @@ const steps = [
     title: "Add your keys",
     body: (
       <>
-        On first run, <code>kimirelay configure</code> asks for your{" "}
+        On first run, <code>nemo configure</code> asks for your{" "}
         <a className="link" href={nebiusApiKeysUrl} target="_blank" rel="noopener noreferrer">
           Nebius Token Factory
         </a>{" "}
@@ -92,7 +92,7 @@ const steps = [
     title: "Launch an agent",
     body: (
       <>
-        Type <code>klaude</code> or <code>kodex</code> and keep working. The Relay injects Nebius
+        Type <code>claudemo</code> or <code>codemo</code> and keep working. The Relay injects Nebius
         settings for that run only. Nothing is written to your real agent config.
       </>
     ),
@@ -139,26 +139,33 @@ function HeroAgentLabel({ agent }: Readonly<{ agent: HeroAgent }>) {
   );
 }
 
-const kimiModelCardUrl = "https://huggingface.co/moonshotai/Kimi-K3";
+const nemotronModelCardUrl = "https://huggingface.co/nvidia";
 const artificialAnalysisUrl = "https://artificialanalysis.ai/models";
 
-const kimiBenchmarks = [
+// Capability statements only - no benchmark scores. The previous copy carried
+// specific Kimi K3 numbers with competitor comparisons; those are not Nemotron's
+// and must not be transplanted. Add real, sourced Nemotron/Cosmos figures here
+// before this page ships.
+const nemotronHighlights = [
   {
-    label: "SWE-Marathon",
-    detail: "Long-horizon software engineering: 42.0, ahead of Claude Opus 4.8 (40.0).",
+    icon: "🧠",
+    label: "Toggleable reasoning",
+    detail: "Nemotron reasons on demand, so trivial turns stay fast and hard ones go deep.",
   },
   {
-    label: "BrowseComp",
-    detail: "Agentic web research: 91.2, ahead of GPT-5.6 (90.4).",
+    icon: "🛠️",
+    label: "Built for tool use",
+    detail: "Tuned for agentic tool calling and long-horizon software engineering workflows.",
   },
   {
-    label: "DeepSWE",
-    detail:
-      "Deep repository engineering: 67.5, ahead of GPT-5.5 (67.0) and Claude Opus 4.8 (59.0).",
+    icon: "👁️",
+    label: "Cosmos 3 for vision",
+    detail: "Cosmos 3 handles screenshots, diagrams, and spatial layouts for text-only models.",
   },
   {
-    label: "Open-weight model",
-    detail: "Top open-weight model on the Artificial Analysis Intelligence Index at launch.",
+    icon: "🇪🇺",
+    label: "Served in the EU",
+    detail: "Every token runs on Nebius Token Factory, with zero data retention supported.",
   },
 ];
 
@@ -254,7 +261,7 @@ function Home() {
                 aria-hidden="true"
                 className="absolute inset-x-0 -bottom-1 h-[10px] rounded-full bg-lime/40"
               />
-              <span className="relative">Kimi K3</span>
+              <span className="relative">Nemotron</span>
             </span>{" "}
             for{" "}
             <span className="inline-grid justify-items-start text-left">
@@ -276,9 +283,9 @@ function Home() {
             </span>
           </h1>
           <p className="mx-auto mt-6 mb-9 max-w-[600px] text-pretty text-[18.5px] leading-relaxed text-muted">
-            A local relay that connects Claude Code, Codex, OpenCode, and Pi Code to Kimi K3 and
-            other open models on Nebius Token Factory — with live Tavily web search, short commands,
-            and zero edits to your real tool config.
+            A local relay that connects Claude Code, Codex, OpenCode, and Pi Code to NVIDIA Nemotron
+            and other open models on Nebius Token Factory — with live Tavily web search, short
+            commands, and zero edits to your real tool config.
           </p>
 
           {/* dark install card: the focal surface */}
@@ -354,33 +361,29 @@ function Home() {
               <span aria-hidden="true">🔒</span>SOC 2-compliant data centers
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true">🇫🇷</span>Hosted in Paris, France
-            </span>
-            <span className="inline-flex items-center gap-1.5">
               <span aria-hidden="true">🚫</span>Zero data retention supported
             </span>
           </div>
         </section>
 
-        {/* KIMI K3 */}
-        <section className="mt-20" id="kimi-k3">
+        {/* NEMOTRON */}
+        <section className="mt-20" id="nemotron">
           <SectionEyebrow>The model</SectionEyebrow>
           <h2 className="mt-3 max-w-[620px] text-[26px] font-semibold tracking-tight text-ink">
-            What is Kimi K3?
+            What is Nemotron?
           </h2>
           <p className="mt-3 max-w-[700px] text-[15px] leading-relaxed text-muted">
-            Kimi K3 is Moonshot AI&apos;s open-weight frontier model: a 2.8-trillion-parameter
-            mixture-of-experts (104B active per token) with a 1-million-token context window, built
-            for agentic coding. On Moonshot&apos;s published evals it beats leading proprietary
-            models on long-horizon software engineering and agentic search — and through Nebius
-            Token Factory every token is served from SOC 2-compliant data centers in Paris, France,
-            with zero data retention supported.
+            Nemotron is NVIDIA&apos;s family of open-weight models tuned for reasoning, tool use,
+            and agentic coding, with a reasoning mode you can turn on per turn. Alongside it, Cosmos
+            Reason adds vision — so image-heavy work has somewhere to go even when your primary
+            model is text-only. Through Nebius Token Factory every token is served from SOC
+            2-compliant data centers, with zero data retention supported.
           </p>
           <div className="mt-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-            {kimiBenchmarks.map((b) => (
+            {nemotronHighlights.map((b) => (
               <div key={b.label} className="rounded-2xl border border-line-strong bg-canvas p-5">
-                <div className="flex items-center gap-2 text-[26px] font-semibold leading-none text-lime tabular-nums">
-                  <span aria-hidden="true">🏆</span>#1
+                <div className="flex items-center gap-2 text-[26px] font-semibold leading-none text-lime">
+                  <span aria-hidden="true">{b.icon}</span>
                 </div>
                 <h3 className="mt-2.5 text-[15px] font-semibold text-ink">{b.label}</h3>
                 <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{b.detail}</p>
@@ -388,14 +391,14 @@ function Home() {
             ))}
           </div>
           <p className="mt-4 text-[13px] text-faint">
-            Scores from the official{" "}
+            More detail on the official{" "}
             <a
               className="font-medium underline decoration-faint/40 underline-offset-2 transition hover:text-ink"
-              href={kimiModelCardUrl}
+              href={nemotronModelCardUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Kimi K3 model card
+              Nemotron model card
             </a>{" "}
             and{" "}
             <a
@@ -481,14 +484,16 @@ function Home() {
                 citations.
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
-                {["Kimi K3", "Kimi K2.6", "Qwen 3.5", "DeepSeek V4", "MiniMax M3"].map((m) => (
-                  <span
-                    key={m}
-                    className="rounded-full bg-white/[.08] px-3 py-1.5 font-mono text-[12px] text-white/75 ring-1 ring-white/10"
-                  >
-                    {m}
-                  </span>
-                ))}
+                {["Nemotron 3 Ultra", "Cosmos 3", "Qwen 3.5", "DeepSeek V4", "MiniMax M3"].map(
+                  (m) => (
+                    <span
+                      key={m}
+                      className="rounded-full bg-white/[.08] px-3 py-1.5 font-mono text-[12px] text-white/75 ring-1 ring-white/10"
+                    >
+                      {m}
+                    </span>
+                  ),
+                )}
               </div>
               <a
                 href={nebiusApiKeysUrl}
@@ -532,8 +537,8 @@ function Home() {
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] leading-relaxed text-white/65">
               The Nebius builders program gives new accounts $25 in Token Factory credits and $25 in
-              Tavily credits — millions of Kimi K3 tokens plus the live web search the relay runs on
-              Tavily.
+              Tavily credits — millions of Nemotron tokens plus the live web search the relay runs
+              on Tavily.
             </p>
             <a
               href={freeCreditsUrl}
@@ -550,7 +555,7 @@ function Home() {
         {/* CLOSING CTA */}
         <section className="mt-20 mb-6 overflow-hidden rounded-2xl border border-line-strong bg-canvas px-8 py-12 text-center max-[520px]:px-5">
           <h2 className="mx-auto max-w-[560px] text-balance text-[28px] font-semibold tracking-tight text-ink">
-            Add Kimi K3 to your agents in one line.
+            Add Nemotron to your agents in one line.
           </h2>
           <p className="mx-auto mt-3 mb-7 max-w-[480px] text-[15px] leading-relaxed text-muted">
             Free to install, config-free, and reversible. Your subscriptions and logins stay exactly

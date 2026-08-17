@@ -53,10 +53,10 @@ describe("harness invocation parsing", () => {
     expect(invocation.flags.passthroughSeparator).toBeUndefined();
   });
 
-  test("keeps kimirelay flags before the harness", () => {
+  test("keeps nemocode flags before the harness", () => {
     const parsed = parseArgs([
       "--main",
-      "nebius-kimi-k2-7-code",
+      "nebius-nemotron-3-nano",
       "claude",
       "--resume",
       "session-id",
@@ -64,11 +64,11 @@ describe("harness invocation parsing", () => {
     const invocation = resolveHarnessInvocation(parsed.positional, parsed.flags);
 
     expect(invocation.command).toBe("claude");
-    expect(invocation.flags.main).toBe("nebius-kimi-k2-7-code");
+    expect(invocation.flags.main).toBe("nebius-nemotron-3-nano");
     expect(invocation.flags.passthrough).toEqual(["--resume", "session-id"]);
   });
 
-  test("passes known kimirelay flags through after the harness", () => {
+  test("passes known nemocode flags through after the harness", () => {
     const parsed = parseArgs(["claude", "--main", "real-claude-value"]);
     const invocation = resolveHarnessInvocation(parsed.positional, parsed.flags);
 
@@ -78,10 +78,15 @@ describe("harness invocation parsing", () => {
   });
 
   test("parses codex-app model and restore flags before dispatch", () => {
-    const parsed = parseArgs(["codex-app", "--model", "moonshotai/Kimi-K2.7-Code", "--restore"]);
+    const parsed = parseArgs([
+      "codex-app",
+      "--model",
+      "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "--restore",
+    ]);
 
     expect(parsed.positional).toEqual(["codex-app"]);
-    expect(parsed.flags.main).toBe("moonshotai/Kimi-K2.7-Code");
+    expect(parsed.flags.main).toBe("nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B");
     expect(parsed.flags.restore).toBe(true);
   });
 });

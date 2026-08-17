@@ -1,26 +1,33 @@
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { kimirelayHome, isProcessAlive } from "@kimirelay/cli/dist/lib/paths.js";
+import { nemocodeHome, isProcessAlive } from "@nemocode/cli/dist/lib/paths.js";
 
 describe("paths.ts - single source of truth for home + liveness (#7)", () => {
-  test("kimirelayHome honors NEMORELAY_HOME env", () => {
-    const original = process.env.NEMORELAY_HOME;
-    process.env.NEMORELAY_HOME = "/tmp/kimirelay-test-home-xyz";
+  test("nemocodeHome honors NEMOCODE_HOME env", () => {
+    const original = process.env.NEMOCODE_HOME;
+    process.env.NEMOCODE_HOME = "/tmp/nemocode-test-home-xyz";
     try {
-      expect(kimirelayHome()).toBe("/tmp/kimirelay-test-home-xyz");
+      expect(nemocodeHome()).toBe("/tmp/nemocode-test-home-xyz");
     } finally {
-      if (original === undefined) delete process.env.NEMORELAY_HOME;
-      else process.env.NEMORELAY_HOME = original;
+      if (original === undefined) delete process.env.NEMOCODE_HOME;
+      else process.env.NEMOCODE_HOME = original;
     }
   });
 
-  test("kimirelayHome falls back to ~/.kimirelay when env unset", () => {
-    const original = process.env.NEMORELAY_HOME;
-    delete process.env.NEMORELAY_HOME;
+  test("nemocodeHome falls back to .nemocode when env unset", () => {
+    const original = process.env.NEMOCODE_HOME;
+    delete process.env.NEMOCODE_HOME;
     try {
-      const home = kimirelayHome();
-      expect(home.endsWith("/.kimirelay")).toBe(true);
+      // Explicit base: the real home may carry a legacy .kimirelay directory,
+      // which nemocodeHome deliberately prefers so an existing install keeps
+      // its stored keys (see the migration note in paths.ts). Asserting
+      // against a clean base keeps this about the no-legacy default.
+      const base = mkdtempSync(join(tmpdir(), "paths-home-"));
+      expect(nemocodeHome(base)).toBe(join(base, ".nemocode"));
     } finally {
-      if (original !== undefined) process.env.NEMORELAY_HOME = original;
+      if (original !== undefined) process.env.NEMOCODE_HOME = original;
     }
   });
 

@@ -2,7 +2,7 @@
  * The shared local-proxy credential.
  *
  * One random token, minted on first use into a `0600` file under the
- * kimirelay home, is what proves a caller is the owner of this install. Two
+ * nemocode home, is what proves a caller is the owner of this install. Two
  * separate consumers need it, which is why it lives here rather than in
  * either of them:
  *
@@ -27,7 +27,7 @@
 import { randomBytes } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { ensurePrivateDir, kimirelayHome } from "../paths.js";
+import { ensurePrivateDir, nemocodeHome } from "../paths.js";
 
 const LOCAL_PROXY_TOKEN_FILE = "local-proxy-token";
 
@@ -36,7 +36,7 @@ const LOCAL_PROXY_TOKEN_FILE = "local-proxy-token";
  * `Authorization` so an internal control-plane call is never confused with an
  * agent's session traffic, which uses Bearer/x-api-key.
  */
-export const INTERNAL_AUTH_HEADER = "x-kimirelay-internal";
+export const INTERNAL_AUTH_HEADER = "x-nemocode-internal";
 
 /**
  * Read the local-proxy token, creating it on first use.
@@ -64,7 +64,7 @@ export async function localProxyAuthToken(): Promise<string> {
 }
 
 async function readOrCreateToken(): Promise<string> {
-  const file = path.join(kimirelayHome(), LOCAL_PROXY_TOKEN_FILE);
+  const file = path.join(nemocodeHome(), LOCAL_PROXY_TOKEN_FILE);
   try {
     const token = (await readFile(file, "utf8")).trim();
     if (token) {
@@ -73,7 +73,7 @@ async function readOrCreateToken(): Promise<string> {
   } catch {
     // Create below.
   }
-  const token = `kimirelay-local-${randomBytes(32).toString("base64url")}`;
+  const token = `nemocode-local-${randomBytes(32).toString("base64url")}`;
   await ensurePrivateDir(path.dirname(file));
   await writeFile(file, `${token}\n`, { encoding: "utf8", mode: 0o600 });
   return token;

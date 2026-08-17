@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { resolveBundleUrl, sha256Hex } from "../../cli/src/lib/autoupdate.js";
 
 /**
- * The self-updater writes a file that every later `klaude`/`kodex` run
+ * The self-updater writes a file that every later `claudemo`/`codemo` run
  * executes, so these two gates are the whole security story for the update
  * path: the bundle must come from the manifest's own origin, and it must hash
  * to the digest the manifest published.
@@ -24,7 +24,7 @@ describe("update bundle URL origin pinning", () => {
 
   test("defaults to the standard bundle path when the manifest omits url", () => {
     expect(resolveBundleUrl({ version: "1.0.0" }, manifestUrl)).toBe(
-      "https://nemocode.org/kimirelay.js",
+      "https://nemocode.org/nemocode.js",
     );
   });
 
@@ -41,11 +41,11 @@ describe("update bundle URL origin pinning", () => {
   });
 
   test("honors a local mirror's own origin rather than the hardcoded one", () => {
-    // NEMORELAY_MANIFEST_URL stays useful: a mirror can serve a
+    // NEMOCODE_MANIFEST_URL stays useful: a mirror can serve a
     // self-consistent manifest + bundle pair, but only from its own host.
     const mirror = "http://127.0.0.1:8080/latest.json";
-    expect(resolveBundleUrl({ version: "1.0.0", url: "/kimirelay.js" }, mirror)).toBe(
-      "http://127.0.0.1:8080/kimirelay.js",
+    expect(resolveBundleUrl({ version: "1.0.0", url: "/nemocode.js" }, mirror)).toBe(
+      "http://127.0.0.1:8080/nemocode.js",
     );
     expect(() =>
       resolveBundleUrl({ version: "1.0.0", url: "https://nemocode.org/x.js" }, mirror),

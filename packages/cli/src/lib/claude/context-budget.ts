@@ -1,4 +1,4 @@
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 import { type ContextTrimTelemetryInfo } from "../telemetry.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
 import {
@@ -205,5 +205,5 @@ function debugLog(
   label: string,
   value: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay proxy", options, label, value);
+  writeProxyDebugLog("nemocode proxy", options, label, value);
 }

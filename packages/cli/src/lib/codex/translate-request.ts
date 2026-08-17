@@ -5,7 +5,7 @@ import {
   findModelById,
   MINIMAX_M3,
   type ModelDefinition,
-} from "@kimirelay/models";
+} from "@nemocode/models";
 import { writeProxyDebugLog } from "../proxy-debug.js";
 import {
   nativeToolMaxUses as sharedNativeToolMaxUses,
@@ -26,10 +26,11 @@ import type {
 } from "./wire-types.js";
 
 const CODEX_IDENTITY_PROMPT =
-  "You are running inside Codex through kimirelay's local Responses-to-Nebius proxy. " +
+  "You are running inside Codex through nemocode's local Responses-to-Nebius proxy. " +
   "The upstream model is a Nebius Token Factory model, not an OpenAI model. " +
-  "If asked what model you are, identify yourself as the selected Nebius Token Factory backend routed by kimirelay.";
+  "If asked what model you are, identify yourself as the selected Nebius Token Factory backend routed by nemocode.";
 
+/** Namespace suffix; relayEnv applies the NEMOCODE_/legacy prefixes. */
 const CODEX_MEMORY_MODEL_ENV = "CODEX_MEMORY_MODEL";
 const CODEX_MEMORY_REQUESTED_MODELS = new Set(["gpt-5.4-mini"]);
 const CODEX_CONTEXT_OUTPUT_SAFETY_TOKENS = 512;
@@ -61,7 +62,7 @@ type CodexTranslateOptions = {
 // configured per session via launch flags, so durable stores (`codex mcp
 // list`, ~/.codex/config.toml) are expected not to show it.
 const CODEX_TAVILY_MCP_NOTE =
-  " This session also has kimirelay's ephemeral Tavily MCP server injected (tavily_search, " +
+  " This session also has nemocode's ephemeral Tavily MCP server injected (tavily_search, " +
   "tavily_extract, and related tools); it is configured per session via launch flags, so by " +
   "design it does not appear in `codex mcp list` or ~/.codex/config.toml.";
 
@@ -478,7 +479,7 @@ export async function runCodexWebSearch(
     tavilyApiKey: process.env.TAVILY_API_KEY,
     debugLog: (label, value) => debugLog(options, label, value),
     missingApiKeyMessage:
-      "Web search error: TAVILY_API_KEY is not set. Run `kimirelay configure` or export TAVILY_API_KEY and retry.",
+      "Web search error: TAVILY_API_KEY is not set. Run `nemo configure` or export TAVILY_API_KEY and retry.",
     includePublishedDate: true,
     snippetLength: 700,
   });
@@ -650,9 +651,9 @@ function reasoningEffort(body: ResponsesRequest, model: ModelDefinition): string
     return undefined;
   }
   if (acceptsReasoningEffort(model.id)) {
-    // Mirror the Claude proxy: GLM-5.2 and Kimi-K3 reason on every turn unless
+    // Mirror the Claude proxy: GLM-5.2 and Nemotron reason on every turn unless
     // told not to, which dominates latency. Honor an explicit effort, else
-    // default to a fast "none" (overridable with KIMIRELAY_REASONING_EFFORT).
+    // default to a fast "none" (overridable with NEMOCODE_REASONING_EFFORT).
     // See the note on defaultReasoningEffort in claude/translate-request.ts.
     if (effort === "high" || effort === "xhigh" || effort === "max") {
       return "max";
@@ -722,5 +723,5 @@ function defaultMaxOutputTokens(
 }
 
 function debugLog(options: DebugOptions, label: string, payload: unknown | (() => unknown)): void {
-  writeProxyDebugLog("kimirelay codex proxy", options, label, payload);
+  writeProxyDebugLog("nemo codex proxy", options, label, payload);
 }

@@ -1,7 +1,7 @@
 import { relayEnv } from "../env.js";
 import { randomUUID } from "node:crypto";
 import { type ServerResponse } from "node:http";
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import type { CostTracker } from "../cost.js";
 import { runNativeWebSearchCall } from "../native-web-search.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
@@ -783,5 +783,5 @@ function debugLog(
   label: string,
   payload: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay codex proxy", options, label, payload);
+  writeProxyDebugLog("nemo codex proxy", options, label, payload);
 }

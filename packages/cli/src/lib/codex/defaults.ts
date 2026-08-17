@@ -3,10 +3,10 @@ import {
   getSelectableModels,
   resolveModelByKeys,
   type ModelDefinition,
-} from "@kimirelay/models";
+} from "@nemocode/models";
 
-export const CODEX_PROVIDER_ID = "kimirelay";
-export const CODEX_AUTH_ENV = "CODEX_AUTH_TOKEN";
+export const CODEX_PROVIDER_ID = "nemocode";
+export const CODEX_AUTH_ENV = "NEMOCODE_CODEX_AUTH_TOKEN";
 
 /** The default Codex model id (the live catalog's default). */
 export function codexDefaultModelId(): string {

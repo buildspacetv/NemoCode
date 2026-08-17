@@ -3,7 +3,7 @@ import type { AgentId, RegisterSessionRequest } from "./state.js";
 import { chmod } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { ensurePrivateDir, kimirelayHome } from "../paths.js";
+import { ensurePrivateDir, nemocodeHome } from "../paths.js";
 
 const DATABASE_FILE = "daemon.sqlite";
 
@@ -58,7 +58,7 @@ export type SessionStore = {
   close(): void;
 };
 
-export async function createSessionStore(home = kimirelayHome()): Promise<SessionStore> {
+export async function createSessionStore(home = nemocodeHome()): Promise<SessionStore> {
   // 0700 on the directory, not just 0600 on the database: WAL mode (set in
   // migrate()) makes SQLite create `daemon.sqlite-wal` and `-shm` itself, at
   // the process umask, and those sidecars hold recently-written rows -
@@ -83,7 +83,7 @@ export async function createSessionStore(home = kimirelayHome()): Promise<Sessio
   return new ResilientSessionStore(new MemorySessionStore());
 }
 
-export function resolveSessionDatabasePath(home = kimirelayHome()): string {
+export function resolveSessionDatabasePath(home = nemocodeHome()): string {
   return path.join(home, DATABASE_FILE);
 }
 
@@ -227,7 +227,7 @@ class ResilientSessionStore implements SessionStore {
 
 function warnStoreError(action: string, err: unknown): void {
   const message = err instanceof Error ? err.message : String(err);
-  process.stderr.write(`[kimirelay daemon] Could not ${action}: ${message}\n`);
+  process.stderr.write(`[nemo daemon] Could not ${action}: ${message}\n`);
 }
 
 class SqliteSessionStore implements SessionStore {

@@ -1,7 +1,7 @@
 import { constants as fsConstants } from "node:fs";
 import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { isProcessAlive, kimirelayHome } from "../paths.js";
+import { isProcessAlive, nemocodeHome } from "../paths.js";
 
 /**
  * The codex-app session lock - the deep module behind "is another codex-app
@@ -23,7 +23,7 @@ export type CodexAppSessionLock = {
 };
 
 export function appSessionLockPath(home: string): string {
-  return path.join(kimirelayHome(home), "codex-app", "session.json");
+  return path.join(nemocodeHome(home), "codex-app", "session.json");
 }
 
 export async function readAppSessionLock(home: string): Promise<CodexAppSessionLock | undefined> {
@@ -52,12 +52,12 @@ export async function assertNoLiveCodexAppSession(home: string): Promise<void> {
     return;
   }
   throw new Error(
-    `Another kimirelay chatgpt session appears to be running (pid ${lock.pid}). Stop it with Ctrl+C, or run \`kimirelay chatgpt --restore\` after it exits.`,
+    `Another nemo chatgpt session appears to be running (pid ${lock.pid}). Stop it with Ctrl+C, or run \`nemo chatgpt --restore\` after it exits.`,
   );
 }
 
 /**
- * Is the codex config at ~/.codex/config.toml one that kimirelay wrote?
+ * Is the codex config at ~/.codex/config.toml one that nemocode wrote?
  * Detects both the current managed block (marker comments) and the legacy
  * openai-provider+local-proxy+catalog triplet. Used by the orchestrator to
  * decide whether an interrupted session is recoverable, and by backup to

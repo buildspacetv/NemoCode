@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   GLM_5_2,
-  KIMI_K2_7_CODE,
+  NEMOTRON_3_NANO,
   SELECTABLE_MODELS,
   resolveModelByKeys,
   type ModelDefinition,
-} from "@kimirelay/models";
+} from "@nemocode/models";
 
 // Unit tests for the shared model-selection mechanism. The per-harness
 // wrappers (resolveClaudeModel / resolveCodexModel) are thin policy over this
@@ -34,8 +34,8 @@ describe("resolveModelByKeys", () => {
 
   it("matches by id", () => {
     expect(
-      resolveModelByKeys(SELECTABLE_MODELS, KIMI_K2_7_CODE.id, aliasAndId, GLM_5_2.id)?.id,
-    ).toBe(KIMI_K2_7_CODE.id);
+      resolveModelByKeys(SELECTABLE_MODELS, NEMOTRON_3_NANO.id, aliasAndId, GLM_5_2.id)?.id,
+    ).toBe(NEMOTRON_3_NANO.id);
   });
 
   it("matches by alias", () => {

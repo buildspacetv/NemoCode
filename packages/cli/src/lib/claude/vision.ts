@@ -1,6 +1,6 @@
 import { relayEnv } from "../env.js";
 import { createHash } from "node:crypto";
-import { VISION_PROMPT, getVisionModels } from "@kimirelay/models";
+import { VISION_PROMPT, getVisionModels } from "@nemocode/models";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";
 
 /**
@@ -11,7 +11,7 @@ import { resolveNebiusBaseUrl } from "../nebius-core.js";
  * so GLM-5.2 reasons over the description rather than hallucinating about an
  * image it never saw.
  *
- * The vision model list and prompt come from @kimirelay/models (the shared
+ * The vision model list and prompt come from @nemocode/models (the shared
  * manifest) so they stay in sync with the OpenCode `@vision` subagent. The
  * models are fixed here - not user-configurable - with automatic failover if
  * the primary errors. Reasoning is disabled because image description is a
@@ -314,5 +314,5 @@ function debug(options: VisionRequestOptions, label: string, value: unknown): vo
   if (!options.debug) {
     return;
   }
-  process.stderr.write(`[kimirelay vision] ${label}: ${JSON.stringify(value)}\n`);
+  process.stderr.write(`[nemocode vision] ${label}: ${JSON.stringify(value)}\n`);
 }

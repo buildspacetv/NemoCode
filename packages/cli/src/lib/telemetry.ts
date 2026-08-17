@@ -3,11 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { readJsonIfExists, writeJsonAtomic } from "./nebius-core.js";
-import { kimirelayHome } from "./global-config.js";
+import { nemocodeHome } from "./global-config.js";
 import { VERSION } from "./version.js";
 
 // Telemetry is disabled by default in this fork until the collection endpoint
-// is deployed (see M6). It is only sent when KIMIRELAY_TELEMETRY_URL is set
+// is deployed (see M6). It is only sent when NEMOCODE_TELEMETRY_URL is set
 // explicitly, so the CLI has no network dependency on a telemetry backend.
 // Resolved at call time (not module load) so it stays overridable in tests.
 function telemetryEndpoint(): string | undefined {
@@ -83,7 +83,7 @@ export type TelemetryEvent = {
 };
 
 function installIdPath(home = os.homedir()): string {
-  return path.join(kimirelayHome(home), "install-id");
+  return path.join(nemocodeHome(home), "install-id");
 }
 
 const pendingInstallIds = new Map<string, Promise<string>>();
@@ -201,7 +201,7 @@ export function randomSessionId(): string {
  */
 export function derivedSessionId(sessionToken: string): string {
   return createHash("sha256")
-    .update(`kimirelay-telemetry:${sessionToken}`)
+    .update(`nemocode-telemetry:${sessionToken}`)
     .digest("hex")
     .slice(0, 32);
 }

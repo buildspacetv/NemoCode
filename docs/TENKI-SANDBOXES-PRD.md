@@ -1,12 +1,12 @@
-# PRD: Tenki Cloud sandbox provider for kimirelay
+# PRD: Tenki Cloud sandbox provider for nemocode
 
 Status: **for review** — authored 2026-08-02. Milestone 1 ships alongside this
 document; milestones 2-3 land after review.
 
 ## Background & problem
 
-kimirelay's sandbox layer (`kimirelay sandbox …`, `klaude --sandbox`,
-`kodex --sandbox`) is built exclusively on Nebius Token Factory Sandboxes
+nemocode's sandbox layer (`nemo sandbox …`, `claudemo --sandbox`,
+`codemo --sandbox`) is built exclusively on Nebius Token Factory Sandboxes
 (ConTree). That product is a **gated private beta**, and live verification
 surfaced a second gate behind the first: even with beta access granted at the
 account level, the API key needs per-project permissions (`spawn`,
@@ -23,7 +23,7 @@ URLs, an official TypeScript SDK (`@tenkicloud/sandbox`), a CLI, and an
 
 ## Goals
 
-1. `kimirelay sandbox …` and `--sandbox` harness sessions work **today** for
+1. `nemo sandbox …` and `--sandbox` harness sessions work **today** for
    any user with a `tk_…` Tenki key — no beta approval loop.
 2. Token Factory Sandboxes remains a first-class provider; when Nebius's
    gates open, nothing regresses. Users choose, or the CLI picks sensibly.
@@ -32,28 +32,28 @@ URLs, an official TypeScript SDK (`@tenkicloud/sandbox`), a CLI, and an
    PTY/attach surface at all) and **first-class file I/O** (read/write on a
    live session instead of post-hoc result-image inspection).
 4. Keys never appear in argv or on-disk config, matching every other
-   kimirelay credential path.
+   nemocode credential path.
 
 ## Non-goals
 
 - Replacing ConTree. Nebius is the inference home; its sandbox product
   shares the account/key with inference and stays the default _when usable_.
-- Wrapping all 85 Tenki MCP tools or the full CLI surface. kimirelay needs
+- Wrapping all 85 Tenki MCP tools or the full CLI surface. nemocode needs
   five verbs, not a Tenki client.
 - Vendor-neutral plugin API for arbitrary future sandbox providers. Two
   concrete providers; abstraction only as far as they force it.
 
 ## Users & stories
 
-- **Blocked TF user (today's reality)**: "I ran `kimirelay sandbox status`,
+- **Blocked TF user (today's reality)**: "I ran `nemo sandbox status`,
   saw every permission denied, and stopped. With a Tenki key,
-  `klaude --sandbox -p 'fix the test'` just works."
+  `claudemo --sandbox -p 'fix the test'` just works."
 - **Safety-first user**: "I want yolo-mode agents in a disposable VM, not on
   my laptop. Whichever provider is configured, `--sandbox` is the one flag I
   remember."
-- **Interactive user (M2)**: "`klaude --sandbox` without `-p` drops me into
+- **Interactive user (M2)**: "`claudemo --sandbox` without `-p` drops me into
   a real remote TUI session instead of erroring 'headless only'."
-- **Agent-driven sandboxes (M3)**: "My klaude session can spawn its own
+- **Agent-driven sandboxes (M3)**: "My claudemo session can spawn its own
   scratch VMs via the Tenki MCP tools when a task needs risky execution."
 
 ## Design
@@ -70,12 +70,12 @@ A `provider` axis on the existing sandbox layer, no rewrite:
 Selection (first match wins):
 
 1. `--provider tenki|contree` on any sandbox command / `--sandbox` hoist
-2. `NEMORELAY_SANDBOX_PROVIDER` env
+2. `NEMOCODE_SANDBOX_PROVIDER` env
 3. Default: `tenki` (Collin, 2026-08-02, superseding same-day `contree`).
    No credential sniffing — credentials in the env never switch providers
    on their own; `--provider contree` selects Nebius explicitly.
 
-`kimirelay sandbox status` reports both providers' auth/permission state and
+`nemo sandbox status` reports both providers' auth/permission state and
 which one the current flags/env select.
 
 ### Why the SDK (not the CLI, not the MCP server)
@@ -84,16 +84,16 @@ which one the current flags/env select.
   install; `create({ env })` carries secrets in the API request body over
   TLS — never argv (`ps`-safe), never on-disk; streamed stdout/stderr;
   files, snapshots, images, pause all exposed. Chosen.
-- **CLI** (`tenki`): would force every kimirelay user to install a second
+- **CLI** (`tenki`): would force every nemocode user to install a second
   tool, and `--env KEY=value` puts secrets in argv. Reserved for the M2
   interactive path only (`tenki sandbox ssh` for PTY + port forwarding),
   where a real terminal is the point.
-- **MCP server**: wrong shape for kimirelay-internal calls, right shape for
+- **MCP server**: wrong shape for nemocode-internal calls, right shape for
   _agents_ — that's M3's auto-inject, not the provider backend.
 
 ### Feature mapping
 
-| kimirelay surface              | contree (today)                        | tenki (M1 unless noted)                                                     |
+| nemocode surface               | contree (today)                        | tenki (M1 unless noted)                                                     |
 | ------------------------------ | -------------------------------------- | --------------------------------------------------------------------------- |
 | `sandbox status`               | `/v1/whoami` permission map            | credential presence + SDK reachability; both shown side by side             |
 | `sandbox run <cmd>`            | spawn instance, poll operation         | `create()` → `run(["sh","-lc",cmd])` streamed → `close()`                   |
@@ -110,32 +110,32 @@ which one the current flags/env select.
   body over TLS, mirrored from how ConTree receives them (instance env in
   the POST body). Never argv, never written locally.
 - The Tenki credential itself is read from env only (`TENKI_API_KEY` /
-  `TENKI_AUTH_TOKEN`); `kimirelay configure` storage can follow later if
+  `TENKI_AUTH_TOKEN`); `nemo configure` storage can follow later if
   users ask.
 - Sessions are always `close()`d in a `finally`; `maxDurationMs` is set from
   `--timeout` so orphans self-expire server-side.
 - M3 MCP inject ships with the audit knob documented and respects
-  `NEMORELAY_DISABLE_TAVILY_MCP`-style opt-out conventions.
+  `NEMOCODE_DISABLE_TAVILY_MCP`-style opt-out conventions.
 
 ## Milestones
 
 - **M1 (this PR)**: provider selection (`--provider` /
-  `NEMORELAY_SANDBOX_PROVIDER` / auto), Tenki backend for `sandbox status`,
+  `NEMOCODE_SANDBOX_PROVIDER` / auto), Tenki backend for `sandbox status`,
   `sandbox run` (incl. `--fetch` via live-session `readFile`), and headless
-  `klaude --sandbox` / `kodex --sandbox`. Offline tests with an injected SDK
+  `claudemo --sandbox` / `codemo --sandbox`. Offline tests with an injected SDK
   stub; live verification the moment a `tk_…` key is available.
 - **M2**: interactive sessions via `tenki sandbox ssh` handoff (detect CLI,
   print install pointer when missing); snapshots for post-hoc `sandbox
 fetch` and `sandbox prebake` on tenki; pause/resume surfacing.
-- **M3**: `@tenkicloud/mcp` auto-inject for klaude/kodex/openkode when a
+- **M3**: `@tenkicloud/mcp` auto-inject for claudemo/codemo/opencodemo when a
   Tenki credential is configured (mirrors the Tavily MCP inject:
   ephemeral, opt-out env, banner + identity-prompt note).
 
 ## Risks & mitigations
 
 - **SDK churn** (v0.5.x): pin the minor version; the provider wraps the SDK
-  behind kimirelay's own five-verb interface so upgrades stay contained.
-- **Bundle growth**: the SDK is bundled into the distributed `kimirelay.js`;
+  behind nemocode's own five-verb interface so upgrades stay contained.
+- **Bundle growth**: the SDK is bundled into the distributed `nemocode.js`;
   lazy `import()` keeps cold-start cost off non-sandbox commands; measure at
   build time.
 - **Two-provider drift**: the shared bootstrap script (`command -v`-guarded)
@@ -151,10 +151,10 @@ fetch` and `sandbox prebake` on tenki; pause/resume surfacing.
    environment; the live gauntlet runs a tenki smoke
    (`sandbox run --provider tenki`) whenever the secret resolves.
 2. **Answered.** No auto-selection at all: providers are explicit opt-in
-   (`--provider tenki` / `NEMORELAY_SANDBOX_PROVIDER=tenki`), default
+   (`--provider tenki` / `NEMOCODE_SANDBOX_PROVIDER=tenki`), default
    `contree`. The credential-based fallback M1 briefly shipped was removed.
 3. **Still open.** M3 MCP inject default-on vs opt-in
-   (`NEMORELAY_TENKI_MCP=1`): Collin is undecided; PRD keeps leaning
+   (`NEMOCODE_TENKI_MCP=1`): Collin is undecided; PRD keeps leaning
    **opt-in** for cost safety, to be settled before M3 starts.
 
 ## Decision-log update
@@ -169,6 +169,6 @@ provider.** Rationale: tenki is open-signup and live-verified in CI on
 every gauntlet run, while ConTree remains double-gated and unverified for
 this account; the default should be the path that works out of the box.
 ConTree stays fully supported behind `--provider contree` /
-`NEMORELAY_SANDBOX_PROVIDER=contree` and becomes a candidate for default
+`NEMOCODE_SANDBOX_PROVIDER=contree` and becomes a candidate for default
 again if/when its gates open up. Revision recorded in
 `docs/ROADMAP.md`'s decision log with this PRD as rationale.

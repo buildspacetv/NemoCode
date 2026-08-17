@@ -1,6 +1,6 @@
 /**
  * Self-update. The installed CLI lives as a single Bun-target JS bundle at
- * `<home>/.kimirelay/bin/kimirelay.js`, launched by a tiny `kimirelay`
+ * `<home>/.nemocode/bin/nemocode.js`, launched by a tiny `nemo`
  * shell wrapper that calls `bun run` on it. To update, we fetch a small
  * `latest.json` manifest from the project site, compare versions, and if newer
  * download the new bundle and atomically rename it over the installed file.
@@ -10,9 +10,9 @@
  * an update problem must never block or crash the user's actual command.
  *
  * Integrity is the load-bearing part. The downloaded bundle is executed by
- * every subsequent `klaude`/`kodex`/… invocation, so a manifest that could
+ * every subsequent `claudemo`/`codemo`/… invocation, so a manifest that could
  * name an arbitrary URL, or a bundle nobody checksums, turns any compromise
- * of the release site (or of whatever `NEMORELAY_MANIFEST_URL` points at)
+ * of the release site (or of whatever `NEMOCODE_MANIFEST_URL` points at)
  * into code execution on the user's machine. Two gates close that:
  *
  *  1. The download URL must live on the SAME origin as the manifest it came
@@ -21,7 +21,7 @@
  *  2. The manifest must carry a `sha256` of the bundle, and the bytes must
  *     hash to it before anything is renamed into place. No digest, no update.
  *
- * `NEMORELAY_MANIFEST_URL` therefore stays useful for local mirrors while no
+ * `NEMOCODE_MANIFEST_URL` therefore stays useful for local mirrors while no
  * longer being a one-variable path to running someone else's code.
  */
 
@@ -47,18 +47,18 @@ const FETCH_TIMEOUT_MS = 5_000;
 type Manifest = { version: string; url?: string; sha256?: string };
 
 /**
- * Where the install lives. `NEMORELAY_HOME` (when set) is the `.kimirelay`
+ * Where the install lives. `NEMOCODE_HOME` (when set) is the `.nemocode`
  * directory itself - matching `scripts/install.sh`, which installs the bundle
- * at `$NEMORELAY_HOME/bin/kimirelay.js`. When unset, default to
- * `~/.kimirelay`.
+ * at `$NEMOCODE_HOME/bin/nemocode.js`. When unset, default to
+ * `~/.nemocode`.
  */
 function resolveInstallDir(): string {
-  return relayEnv("HOME") || path.join(os.homedir(), ".kimirelay");
+  return relayEnv("HOME") || path.join(os.homedir(), ".nemocode");
 }
 
-/** Installed bundle path. `kimirelay` wrapper runs `bun run` on this. */
+/** Installed bundle path. `nemo` wrapper runs `bun run` on this. */
 function installedBundlePath(): string {
-  return path.join(resolveInstallDir(), "bin", "kimirelay.js");
+  return path.join(resolveInstallDir(), "bin", "nemocode.js");
 }
 
 /**
@@ -151,7 +151,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 async function fetchManifest(): Promise<Manifest> {
   const res = await withTimeout(
     fetch(resolveManifestUrl(), {
-      headers: { "User-Agent": `kimirelay/${VERSION}` },
+      headers: { "User-Agent": `nemocode/${VERSION}` },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     }),
     FETCH_TIMEOUT_MS,
@@ -181,7 +181,7 @@ export function sha256Hex(bytes: Uint8Array): string {
 export function resolveBundleUrl(manifest: Manifest, manifestUrl: string): string {
   const origin = new URL(manifestUrl);
   if (manifest.url === undefined) {
-    return new URL("/kimirelay.js", origin).toString();
+    return new URL("/nemocode.js", origin).toString();
   }
   const candidate = new URL(manifest.url, origin);
   if (candidate.origin !== origin.origin) {
@@ -201,7 +201,7 @@ export function resolveBundleUrl(manifest: Manifest, manifestUrl: string): strin
 async function downloadTo(url: string, dest: string, expectedSha256: string): Promise<void> {
   const res = await withTimeout(
     fetch(url, {
-      headers: { "User-Agent": `kimirelay/${VERSION}` },
+      headers: { "User-Agent": `nemocode/${VERSION}` },
       signal: AbortSignal.timeout(OVERALL_TIMEOUT_MS),
     }),
     OVERALL_TIMEOUT_MS,
@@ -247,7 +247,7 @@ export async function maybeSelfUpdate(): Promise<void> {
   // Only the installed bundle self-updates, and only against the deployed
   // release site the bundle was installed from - so this is a safe default-on:
   // dev/source runs no-op, and every failure below is swallowed. Set
-  // NEMORELAY_DISABLE_AUTOUPDATE=1 to opt out.
+  // NEMOCODE_DISABLE_AUTOUPDATE=1 to opt out.
   if (relayEnv("DISABLE_AUTOUPDATE") === "1") {
     return;
   }
@@ -282,13 +282,13 @@ export async function maybeSelfUpdate(): Promise<void> {
     const expected = normalizedSha256(manifest.sha256);
     if (expected === undefined) {
       process.stderr.write(
-        `kimirelay: update to v${manifest.version} skipped - manifest has no valid sha256 digest.\n`,
+        `nemocode: update to v${manifest.version} skipped - manifest has no valid sha256 digest.\n`,
       );
       return;
     }
     const url = resolveBundleUrl(manifest, manifestUrl);
     await downloadTo(url, installedBundlePath(), expected);
-    process.stderr.write(`kimirelay: updated to v${manifest.version} (next run uses it)\n`);
+    process.stderr.write(`nemocode: updated to v${manifest.version} (next run uses it)\n`);
   } catch {
     // Swallowed: update failure never breaks the user's command.
   }

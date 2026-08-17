@@ -1,6 +1,6 @@
 import { relayEnv } from "../env.js";
 import { CostTracker } from "../cost.js";
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";
 import type { ClaudeProxyOptions } from "../claude/proxy.js";
 import type { CodexProxyOptions } from "../codex/proxy.js";
@@ -18,12 +18,15 @@ const DEFAULT_NO_PID_SESSION_IDLE_TTL_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_MAX_NO_PID_SESSIONS = 50;
 const DEFAULT_LAST_SEEN_PERSIST_INTERVAL_MS = 5 * 60 * 1000;
 const NO_PID_SESSION_IDLE_TTL_MS = envInt(
-  "DAEMON_NO_PID_SESSION_IDLE_TTL_MS",
+  "NEMOCODE_DAEMON_NO_PID_SESSION_IDLE_TTL_MS",
   DEFAULT_NO_PID_SESSION_IDLE_TTL_MS,
 );
-const MAX_NO_PID_SESSIONS = envInt("DAEMON_MAX_NO_PID_SESSIONS", DEFAULT_MAX_NO_PID_SESSIONS);
+const MAX_NO_PID_SESSIONS = envInt(
+  "NEMOCODE_DAEMON_MAX_NO_PID_SESSIONS",
+  DEFAULT_MAX_NO_PID_SESSIONS,
+);
 const LAST_SEEN_PERSIST_INTERVAL_MS = envInt(
-  "DAEMON_LAST_SEEN_PERSIST_INTERVAL_MS",
+  "NEMOCODE_DAEMON_LAST_SEEN_PERSIST_INTERVAL_MS",
   DEFAULT_LAST_SEEN_PERSIST_INTERVAL_MS,
 );
 
@@ -138,7 +141,7 @@ export type RegisterSessionRequest = {
   claudeCodeMaxOutputTokens?: number;
   /** True when the user had CLAUDE_CODE_MAX_OUTPUT_TOKENS set before launch. */
   claudeCodeMaxOutputTokensUserSet?: boolean;
-  /** True when the launcher injected the ephemeral Tavily MCP server (klaude). */
+  /** True when the launcher injected the ephemeral Tavily MCP server (claudemo). */
   tavilyMcpInjected?: boolean;
   debug?: boolean;
 };
@@ -221,7 +224,7 @@ export class SessionRegistry {
         this.store.markSessionEnded(
           session.token,
           now,
-          "[kimirelay cost] session total: $0.0000 (0 in, 0 out)",
+          "[nemocode cost] session total: $0.0000 (0 in, 0 out)",
           { promptTokens: 0, cachedTokens: 0, completionTokens: 0, costUsd: 0 },
         );
         continue;
@@ -231,7 +234,7 @@ export class SessionRegistry {
         this.store.markSessionEnded(
           session.token,
           now,
-          session.externalSummary ?? "[kimirelay cost] session total: $0.0000 (0 in, 0 out)",
+          session.externalSummary ?? "[nemocode cost] session total: $0.0000 (0 in, 0 out)",
           {
             promptTokens: session.promptTokens ?? 0,
             cachedTokens: session.cachedTokens ?? 0,

@@ -17,7 +17,7 @@ function piSupportedModels(): string {
 
 const VALUE_FLAGS = new Set(["--api-key", "--provider", "--model", "--models"]);
 
-function piArgsWithoutKimirelayOverrides(args: string[]): string[] {
+function piArgsWithoutNemoCodeOverrides(args: string[]): string[] {
   const sanitized: string[] = [];
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
@@ -96,7 +96,7 @@ export default defineHarness({
       throw new Error("No Nebius API key found. Pass --api-key or set NEBIUS_API_KEY.");
     }
 
-    const agentDir = mkdtempSync(join(tmpdir(), "kimirelay-pi-"));
+    const agentDir = mkdtempSync(join(tmpdir(), "nemocode-pi-"));
     const sessionDir =
       process.env.PI_CODING_AGENT_SESSION_DIR ??
       join(ctx.home || homedir(), ".pi", "agent", "sessions");
@@ -117,18 +117,18 @@ export default defineHarness({
       "--no-skills",
       "--no-prompt-templates",
       "--no-themes",
-      ...piArgsWithoutKimirelayOverrides(ctx.passthrough ?? []),
+      ...piArgsWithoutNemoCodeOverrides(ctx.passthrough ?? []),
     ];
 
     if (relayEnv("DEBUG") === "1") {
-      process.stderr.write(`[kimirelay pi] provider: ${PI_PROVIDER_ID}\n`);
-      process.stderr.write(`[kimirelay pi] model: ${selectedModel.id}\n`);
-      process.stderr.write(`[kimirelay pi] models: ${supportedModels}\n`);
-      process.stderr.write(`[kimirelay pi] temp config dir: ${agentDir}\n`);
-      process.stderr.write(`[kimirelay pi] session dir: ${sessionDir}\n`);
+      process.stderr.write(`[nemo pi] provider: ${PI_PROVIDER_ID}\n`);
+      process.stderr.write(`[nemo pi] model: ${selectedModel.id}\n`);
+      process.stderr.write(`[nemo pi] models: ${supportedModels}\n`);
+      process.stderr.write(`[nemo pi] temp config dir: ${agentDir}\n`);
+      process.stderr.write(`[nemo pi] session dir: ${sessionDir}\n`);
     }
 
-    process.stderr.write(`Kimi Relay ▸ Launching Pi Code with Nebius Token Factory.\n`);
+    process.stderr.write(`NemoCode ▸ Launching Pi Code with Nebius Token Factory.\n`);
     const child = spawn("pi", args, {
       env: {
         ...process.env,
@@ -142,7 +142,7 @@ export default defineHarness({
     const result = await new Promise<{ status: number | null; signal: NodeJS.Signals | null }>(
       (resolve) => {
         child.on("error", (err) => {
-          process.stderr.write(`Kimi Relay ▸ Failed to launch pi: ${err.message}.\n`);
+          process.stderr.write(`NemoCode ▸ Failed to launch pi: ${err.message}.\n`);
           resolve({ status: 1, signal: null });
         });
         child.on("exit", (status, signal) => resolve({ status, signal }));

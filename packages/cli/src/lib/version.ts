@@ -16,9 +16,7 @@ import { readFileSync } from "node:fs";
  *
  * Both spellings are literals so a `--define` against either one substitutes.
  */
-const BAKED_VERSION = process.env.NEMORELAY_VERSION ?? process.env.KIMIRELAY_VERSION;
-
-export const VERSION: string = BAKED_VERSION ?? readPackageVersion() ?? "0.0.0-dev";
+export const VERSION: string = process.env.NEMOCODE_VERSION ?? readPackageVersion() ?? "0.0.0-dev";
 
 function readPackageVersion(): string | undefined {
   try {

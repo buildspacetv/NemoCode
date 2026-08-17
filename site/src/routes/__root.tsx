@@ -9,23 +9,23 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        title: "Kimi.Guide - Kimi K3 for Claude Code, Codex, OpenCode & Pi Code",
+        title: "NemoCode.org - NVIDIA Nemotron for Claude Code, Codex, OpenCode & Pi Code",
       },
       {
         name: "description",
         content:
-          "A local relay that connects Claude Code, Codex, OpenCode, and Pi Code to Kimi K3 and other open models on Nebius Token Factory - short commands, zero edits to your real tool config.",
+          "A local relay that connects Claude Code, Codex, OpenCode, and Pi Code to NVIDIA Nemotron and other open models on Nebius Token Factory - short commands, zero edits to your real tool config.",
       },
-      { property: "og:title", content: "Kimi.Guide" },
+      { property: "og:title", content: "NemoCode.org" },
       {
         property: "og:description",
         content:
-          "Connect your coding agents to Kimi K3 on Nebius Token Factory. One install, four harnesses, config-free.",
+          "Connect your coding agents to NVIDIA Nemotron on Nebius Token Factory. One install, four harnesses, config-free.",
       },
       { property: "og:image", content: "/nebius-token-factory.png" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Kimi.Guide" },
+      { name: "twitter:title", content: "NemoCode.org" },
       { name: "twitter:image", content: "/nebius-token-factory.png" },
     ],
     links: [

@@ -20,7 +20,7 @@ type OpencodeConfig = {
   /**
    * Provider ids OpenCode won't auto-load. We disable "opencode" - the Zen
    * gateway provider (its models are registered under the `opencode/*`
-   * namespace, not `zen/*`, per opencode issue #6979). kimirelay routes
+   * namespace, not `zen/*`, per opencode issue #6979). nemocode routes
    * everything to Nebius, so Zen's auto-loaded models are pure clutter in
    * the picker; this keeps /models to only the Nebius flagships we curate.
    * (disabled_providers takes priority over enabled_providers, per the docs.)
@@ -108,7 +108,7 @@ export function buildOpencodeConfigJson({
     provider: {
       [OPENCODE_PROVIDER_ID]: provider,
     },
-    // Tavily MCP auto-inject, mirroring klaude/kodex. OpenCode is a spawned
+    // Tavily MCP auto-inject, mirroring claudemo/codemo. OpenCode is a spawned
     // harness that talks straight to Nebius - there is no relay proxy to
     // emulate web_search - so this is its only live-web path. The key stays in
     // the environment: `{env:TAVILY_API_KEY}` resolves inside opencode
@@ -128,7 +128,7 @@ export function buildOpencodeConfigJson({
       : {}),
     // Slash form: provider/model. The selected model is the primary; sub-agents
     // without an explicit model inherit it automatically. The `vision` subagent
-    // explicitly pins a vision-capable Nebius model (Kimi-K2.7-Code) so a
+    // explicitly pins a vision-capable Nebius model (Cosmos3-Super-Reasoner) so a
     // text-only primary can still describe pasted images. To add more
     // sub-agents later, add entries under `agent`.
     model: `${OPENCODE_PROVIDER_ID}/${modelId}`,

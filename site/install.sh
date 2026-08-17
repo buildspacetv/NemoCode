@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# kimirelay installer.
+# nemocode installer.
 #
-#   curl -fsSL https://kimirelay.com/install.sh | sh
+#   curl -fsSL https://nemocode.org/install.sh | sh
 #
-# Installs the kimirelay CLI as a Bun-target JS bundle at
-# ~/.kimirelay/bin/kimirelay.js, with a `kimirelay` wrapper script on
+# Installs the nemocode CLI as a Bun-target JS bundle at
+# ~/.nemocode/bin/nemocode.js, with a `nemo` wrapper script on
 # PATH that runs it with `bun`. Installs Bun for the user if `bun` isn't on
-# PATH. Also installs `klaude`, `openkode`, `kodex`, and `kpi` convenience wrappers.
+# PATH. Also installs `claudemo`, `opencodemo`, `codemo`, and `pimo` convenience wrappers.
 #
 # After install, the CLI prompts once for a Nebius API key on first use
 # (Enter skips - the key is optional). The CLI self-updates in the background.
@@ -16,8 +16,8 @@ set -eu
 # dash on Debian/Ubuntu. Enable it only where the shell supports it.
 if (set -o pipefail) 2>/dev/null; then set -o pipefail; fi
 
-ORIGIN="${NEMORELAY_ORIGIN:-${KIMIRELAY_ORIGIN:-https://nemocode.org}}"
-INSTALL_DIR="${NEMORELAY_HOME:-${KIMIRELAY_HOME:-$HOME/.kimirelay}}"
+ORIGIN="${NEMOCODE_ORIGIN:-https://nemocode.org}"
+INSTALL_DIR="${NEMOCODE_HOME:-$HOME/.nemocode}"
 BIN_DIR="$INSTALL_DIR/bin"
 
 bold() { printf "\033[1m%s\033[0m\n" "$1"; }
@@ -25,7 +25,7 @@ info() { printf "  %s\n" "$1"; }
 ok()   { printf "  \033[32m✓\033[0m %s\n" "$1"; }
 err()  { printf "  \033[31m✗ %s\033[0m\n" "$1" >&2; }
 
-bold "Installing kimirelay…"
+bold "Installing nemocode…"
 
 # --- 1. Ensure Bun is present (install it for the user if not) ----------------
 if command -v bun >/dev/null 2>&1; then
@@ -51,20 +51,20 @@ else
 fi
 
 # --- 2. Download the latest bundle + manifest --------------------------------
-# The bundle is executed by every later klaude/kodex/… run, so it is verified
+# The bundle is executed by every later claudemo/codemo/… run, so it is verified
 # against the sha256 published in latest.json before it is moved into place.
 # Download to a temp path, hash, compare, and only then install - a bundle we
 # cannot verify is discarded rather than run.
 mkdir -p "$BIN_DIR"
-info "Downloading kimirelay from $ORIGIN …"
+info "Downloading nemocode from $ORIGIN …"
 
-TMP_BUNDLE="$BIN_DIR/kimirelay.js.download.$$"
+TMP_BUNDLE="$BIN_DIR/nemocode.js.download.$$"
 TMP_MANIFEST="$BIN_DIR/latest.json.download.$$"
 cleanup_tmp() { rm -f "$TMP_BUNDLE" "$TMP_MANIFEST"; }
 trap cleanup_tmp EXIT INT TERM
 
-if ! curl -fsSL "$ORIGIN/kimirelay.js" -o "$TMP_BUNDLE"; then
-  err "Failed to download $ORIGIN/kimirelay.js"
+if ! curl -fsSL "$ORIGIN/nemocode.js" -o "$TMP_BUNDLE"; then
+  err "Failed to download $ORIGIN/nemocode.js"
   exit 1
 fi
 
@@ -97,10 +97,10 @@ if [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
   exit 1
 fi
 
-mv "$TMP_BUNDLE" "$BIN_DIR/kimirelay.js"
+mv "$TMP_BUNDLE" "$BIN_DIR/nemocode.js"
 trap - EXIT INT TERM
 cleanup_tmp
-ok "Bundle saved → $BIN_DIR/kimirelay.js (sha256 verified)"
+ok "Bundle saved → $BIN_DIR/nemocode.js (sha256 verified)"
 
 # --- 3. Write the launcher wrappers that run the bundle with bun -------------
 # The wrappers locate bun themselves (PATH first, then ~/.bun/bin) so they
@@ -113,30 +113,31 @@ write_launcher() {
   launcher_subcmd="$2"
   cat > "$BIN_DIR/$launcher_name" <<EOF
 #!/usr/bin/env sh
-# kimirelay launcher - runs the installed Bun-target JS bundle.
+# nemocode launcher - runs the installed Bun-target JS bundle.
 BUN_BIN="\$(command -v bun 2>/dev/null || true)"
 [ -n "\$BUN_BIN" ] || BUN_BIN="\$HOME/.bun/bin/bun"
 if [ ! -x "\$BUN_BIN" ]; then
-  echo "kimirelay: the bun runtime was not found (looked on PATH and in ~/.bun/bin)." >&2
+  echo "nemocode: the bun runtime was not found (looked on PATH and in ~/.bun/bin)." >&2
   echo "Install it with: curl -fsSL https://bun.sh/install | bash" >&2
   exit 127
 fi
-exec "\$BUN_BIN" "$BIN_DIR/kimirelay.js"${launcher_subcmd:+ $launcher_subcmd} "\$@"
+exec "\$BUN_BIN" "$BIN_DIR/nemocode.js"${launcher_subcmd:+ $launcher_subcmd} "\$@"
 EOF
   chmod +x "$BIN_DIR/$launcher_name"
 }
 
-write_launcher kimirelay ""
-write_launcher klaude claude
-write_launcher openkode opencode
-write_launcher kodex codex
-write_launcher kpi pi
+write_launcher nemo ""
+write_launcher nemocode ""
+write_launcher claudemo claude
+write_launcher opencodemo opencode
+write_launcher codemo codex
+write_launcher pimo pi
 
-ok "Wrappers installed: kimirelay, klaude, openkode, kodex, kpi → $BIN_DIR"
+ok "Wrappers installed: nemocode, claudemo, opencodemo, codemo, pimo → $BIN_DIR"
 
-# Remove old kimirelay-owned wrappers that used the upstream agent names.
+# Remove old nemocode-owned wrappers that used the upstream agent names.
 # Current installs must never shadow `claude`, `codex`, or `opencode`; users
-# should get the real CLIs unless they explicitly run klaude/kodex/openkode/kpi.
+# should get the real CLIs unless they explicitly run claudemo/codemo/opencodemo/pimo.
 remove_legacy_shadow_wrapper() {
   name="$1"
   path="$BIN_DIR/$name"
@@ -146,17 +147,17 @@ remove_legacy_shadow_wrapper() {
   if [ -L "$path" ]; then
     target="$(readlink "$path" 2>/dev/null || true)"
     case "$target" in
-      "$BIN_DIR/klaude"|"$BIN_DIR/kodex"|"$BIN_DIR/openkode"|"$BIN_DIR/kpi"|"$BIN_DIR/kimirelay"|"$BIN_DIR/kimirelay.js")
+      "$BIN_DIR/claudemo"|"$BIN_DIR/codemo"|"$BIN_DIR/opencodemo"|"$BIN_DIR/pimo"|"$BIN_DIR/nemocode"|"$BIN_DIR/nemocode.js")
         rm -f "$path"
-        ok "Removed old kimirelay shadow command: $path"
+        ok "Removed old nemocode shadow command: $path"
         ;;
     esac
     return 0
   fi
 
-  if [ -f "$path" ] && grep -Fqs "$BIN_DIR/kimirelay.js" "$path"; then
+  if [ -f "$path" ] && grep -Fqs "$BIN_DIR/nemocode.js" "$path"; then
     rm -f "$path"
-    ok "Removed old kimirelay shadow command: $path"
+    ok "Removed old nemocode shadow command: $path"
   fi
 }
 
@@ -204,7 +205,7 @@ if LINK_DIR="$(find_writable_path_dir)"; then
           ;;
         *)
           links_skipped=$((links_skipped + 1))
-          info "Skipped $dest (already exists; remove it or put $BIN_DIR earlier on PATH to use kimirelay here)"
+          info "Skipped $dest (already exists; remove it or put $BIN_DIR earlier on PATH to use nemocode here)"
           return 0
           ;;
       esac
@@ -214,11 +215,12 @@ if LINK_DIR="$(find_writable_path_dir)"; then
     links_changed=$((links_changed + 1))
   }
 
-  install_link kimirelay "$BIN_DIR/kimirelay"
-  install_link klaude "$BIN_DIR/klaude"
-  install_link openkode "$BIN_DIR/openkode"
-  install_link kodex "$BIN_DIR/kodex"
-  install_link kpi "$BIN_DIR/kpi"
+  install_link nemo "$BIN_DIR/nemo"
+  install_link nemocode "$BIN_DIR/nemocode"
+  install_link claudemo "$BIN_DIR/claudemo"
+  install_link opencodemo "$BIN_DIR/opencodemo"
+  install_link codemo "$BIN_DIR/codemo"
+  install_link pimo "$BIN_DIR/pimo"
   if [ "$links_changed" -gt 0 ]; then
     ok "Linked $links_changed command(s) into current PATH → $LINK_DIR"
   fi
@@ -249,10 +251,10 @@ case ":$PATH:" in
       ok "PATH already configured in $SHELL_RC"
     else
       {
-        printf "\n# kimirelay\n"
+        printf "\n# nemocode\n"
         printf "%s\n" "$path_line"
       } >> "$SHELL_RC"
-      ok "Added kimirelay to PATH in $SHELL_RC"
+      ok "Added nemocode to PATH in $SHELL_RC"
     fi
 
     info "Restart your shell, or run this now:"
@@ -262,25 +264,25 @@ esac
 
 # Verify the install works right now if already on PATH, else with explicit PATH.
 INSTALLED_VERSION=""
-if PATH="$BIN_DIR:$PATH" kimirelay --version >/dev/null 2>&1; then
-  INSTALLED_VERSION="$(PATH="$BIN_DIR:$PATH" kimirelay --version)"
-  PATH="$BIN_DIR:$PATH" kimirelay __telemetry-install-completed >/dev/null 2>&1 || true
+if PATH="$BIN_DIR:$PATH" nemocode --version >/dev/null 2>&1; then
+  INSTALLED_VERSION="$(PATH="$BIN_DIR:$PATH" nemocode --version)"
+  PATH="$BIN_DIR:$PATH" nemocode __telemetry-install-completed >/dev/null 2>&1 || true
 fi
 
 # --- Post-install summary ----------------------------------------------------
 echo ""
-bold "✔ kimirelay installed"
-info "Version:  ${INSTALLED_VERSION:-unknown (verify with: kimirelay --version)}"
+bold "✔ nemocode installed"
+info "Version:  ${INSTALLED_VERSION:-unknown (verify with: nemocode --version)}"
 info "Location: $BIN_DIR"
-info "Next:     run \`klaude\` (Claude Code on Kimi K3) or \`kimirelay\` to pick a tool."
+info "Next:     run \`claudemo\` (Claude Code on Nemotron) or \`nemocode\` to pick a tool."
 info "          First run asks for your Nebius API key, plus an optional"
 info "          (recommended) Tavily key for live web search."
 
 # Setup notes come LAST so they can't scroll away. The PATH line was already
 # appended to the shell rc above; the current shell just hasn't loaded it.
-if ! command -v kimirelay >/dev/null 2>&1; then
+if ! command -v nemocode >/dev/null 2>&1; then
   echo ""
-  bold "⚠ Setup note: kimirelay is not on this shell's PATH yet. Run:"
+  bold "⚠ Setup note: nemocode is not on this shell's PATH yet. Run:"
   info "  export PATH=\"$BIN_DIR:\$PATH\""
   info "or open a new terminal (your shell profile already has the PATH line)."
 fi

@@ -21,7 +21,7 @@ const GLM_5_2 = {
 
 export type TestDaemon = {
   url: string;
-  /** The daemon's isolated NEMORELAY_HOME. */
+  /** The daemon's isolated NEMOCODE_HOME. */
   home: string;
   /**
    * The local-proxy token this daemon will accept on `/internal/*`. Seeded
@@ -36,14 +36,14 @@ export type TestDaemon = {
 };
 
 /** Must match INTERNAL_AUTH_HEADER in cli/src/lib/daemon/local-auth.ts. */
-const INTERNAL_AUTH_HEADER = "x-kimirelay-internal";
+const INTERNAL_AUTH_HEADER = "x-nemocode-internal";
 
 export async function startTestDaemon(context: TestContext): Promise<TestDaemon> {
   const port = await findOpenPort();
   const home = await mkdtemp(path.join(context.tmpDir, "daemon-home-"));
   // Seed the shared local-proxy token so the test holds the same credential
   // the daemon will check /internal/* against.
-  const internalToken = `kimirelay-local-test-${port}`;
+  const internalToken = `nemocode-local-test-${port}`;
   await writeFile(path.join(home, "local-proxy-token"), `${internalToken}\n`, {
     encoding: "utf8",
     mode: 0o600,
@@ -61,9 +61,9 @@ export async function startTestDaemon(context: TestContext): Promise<TestDaemon>
     cwd: context.repoRoot,
     env: {
       ...process.env,
-      NEMORELAY_DEBUG: "1",
-      NEMORELAY_HOME: home,
-      NEMORELAY_PORT: String(port),
+      NEMOCODE_DEBUG: "1",
+      NEMOCODE_HOME: home,
+      NEMOCODE_PORT: String(port),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

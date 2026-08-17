@@ -1,5 +1,5 @@
 import { type ServerResponse } from "node:http";
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import { writeJson } from "../http-util.js";
 import { writeProxyDebugLog } from "../proxy-debug.js";
 import { parseRetryAfter } from "../nebius-retry.js";
@@ -175,5 +175,5 @@ function debugLog(
   label: string,
   value: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay proxy", options, label, value);
+  writeProxyDebugLog("nemocode proxy", options, label, value);
 }

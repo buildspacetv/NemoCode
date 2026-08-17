@@ -8,7 +8,7 @@ import { cleanupTmpDir, createTestContext, resetTmpDir } from "./context.js";
 import { asRecord, jsonLines } from "./json-lines.js";
 import type { CommandResult, TestContext } from "./types.js";
 
-const maybeDescribe = process.env.NEMORELAY_LIVE_CODEX_RESUME === "1" ? describe : describe.skip;
+const maybeDescribe = process.env.NEMOCODE_LIVE_CODEX_RESUME === "1" ? describe : describe.skip;
 
 maybeDescribe("live Codex cross-provider resume", () => {
   let context: TestContext;
@@ -32,7 +32,7 @@ maybeDescribe("live Codex cross-provider resume", () => {
     }
   });
 
-  test("normal Codex → kodex → normal Codex preserves reasoning and local actions", async () => {
+  test("normal Codex → codemo → normal Codex preserves reasoning and local actions", async () => {
     const cwd = path.join(context.tmpDir, "normal-nebius-normal");
     await mkdir(cwd, { recursive: true });
     const normalMarker = "NORMAL_ACTION_5261";
@@ -85,7 +85,7 @@ maybeDescribe("live Codex cross-provider resume", () => {
     expect(normalResume.stdout + normalResume.stderr).not.toContain("array_above_max_length");
   });
 
-  test("kodex → normal Codex → kodex preserves shell and patch history", async () => {
+  test("codemo → normal Codex → codemo preserves shell and patch history", async () => {
     const cwd = path.join(context.tmpDir, "nebius-normal-nebius");
     await mkdir(cwd, { recursive: true });
     const nebiusMarker = "NEBIUS_ORIGIN_3185";
@@ -139,7 +139,7 @@ maybeDescribe("live Codex cross-provider resume", () => {
   });
 
   test.todo(
-    "normal Codex resume picker lists Kimi Relay provider sessions (blocked by openai/codex#19318)",
+    "normal Codex resume picker lists NemoCode provider sessions (blocked by openai/codex#19318)",
   );
 });
 

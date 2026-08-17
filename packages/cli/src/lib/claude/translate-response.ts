@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { ModelDefinition } from "@kimirelay/models";
+import type { ModelDefinition } from "@nemocode/models";
 import { stableHash } from "../stable-hash.js";
 import { getClaudeSupportedModels } from "./defaults.js";
 import { APPROX_CHARS_PER_TOKEN, jsonByteLength, safeClaudeInputLimit } from "./context-budget.js";
@@ -20,12 +20,12 @@ type ClaudeModelOptions = {
   modelDefinition: ModelDefinition;
 };
 
-type OpenAIChatResponseWithKimirelayMeta = OpenAIChatResponse & {
-  _kimirelayRequestedMaxTokens?: number;
+type OpenAIChatResponseWithNemoCodeMeta = OpenAIChatResponse & {
+  _nemocodeRequestedMaxTokens?: number;
 };
 
 export function thinkingSignature(reasoning: string): string {
-  return `kimirelay:${stableHash(reasoning)}`;
+  return `nemocode:${stableHash(reasoning)}`;
 }
 
 function asOpenAIMessageRecord(value: unknown): OpenAIMessage | undefined {
@@ -113,9 +113,9 @@ export function toAnthropicMessage(
 ): Record<string, unknown> {
   const choice = response.choices?.[0];
   const message = choice?.message ?? {};
-  const requestedMaxTokens = (response as OpenAIChatResponseWithKimirelayMeta)
-    ._kimirelayRequestedMaxTokens;
-  const nativeWebSearches = response._kimirelayNativeWebSearches ?? [];
+  const requestedMaxTokens = (response as OpenAIChatResponseWithNemoCodeMeta)
+    ._nemocodeRequestedMaxTokens;
+  const nativeWebSearches = response._nemocodeNativeWebSearches ?? [];
   const content: Array<Record<string, unknown>> = [];
   const reasoning = message.reasoning ?? message.reasoning_content;
   if (reasoning) {

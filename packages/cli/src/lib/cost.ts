@@ -3,7 +3,7 @@ import {
   findModelById,
   getDefaultModel,
   type ModelDefinition,
-} from "@kimirelay/models";
+} from "@nemocode/models";
 import { APPROX_CHARS_PER_TOKEN } from "./claude/context-budget.js";
 
 /**
@@ -13,7 +13,7 @@ import { APPROX_CHARS_PER_TOKEN } from "./claude/context-budget.js";
  * pricing table it can't apply to non-Anthropic Nebius models,
  * so its estimate is wrong for us. Since the proxy is the one talking to
  * Nebius and holds the real token counts, it tracks cost itself using the
- * selected model's rates from @kimirelay/models.
+ * selected model's rates from @nemocode/models.
  */
 
 function pricingFor(model: ModelDefinition): {
@@ -266,13 +266,13 @@ export class CostTracker {
       return this.externalSummary;
     }
     const main =
-      `[kimirelay cost] session total: $${this.costUsd.toFixed(4)} ` +
+      `[nemocode cost] session total: $${this.costUsd.toFixed(4)} ` +
       `(${this.formatTokens(this.promptTokens)} in` +
       (this.cachedTokens > 0 ? ` incl ${this.formatTokens(this.cachedTokens)} cached` : "") +
       `, ${this.formatTokens(this.completionTokens)} out)`;
     if (this.visionCalls > 0) {
       return (
-        `${main}\n[kimirelay cost] vision: ${this.visionCalls} image(s), ` +
+        `${main}\n[nemocode cost] vision: ${this.visionCalls} image(s), ` +
         `$${this.visionCostUsd.toFixed(4)} ` +
         `(${this.formatTokens(this.visionPromptTokens)} in, ${this.formatTokens(this.visionCompletionTokens)} out)`
       );

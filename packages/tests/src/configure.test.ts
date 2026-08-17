@@ -15,9 +15,9 @@ afterEach(async () => {
   );
 });
 
-describe("kimirelay configure", () => {
+describe("nemo configure", () => {
   test("persists an Exa key across a cold start even when configure reads it from the environment", async () => {
-    const home = await mkdtemp(path.join(os.tmpdir(), "kimirelay-configure-"));
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-configure-"));
     temporaryHomes.push(home);
     vi.stubEnv("NEBIUS_API_KEY", "nebius-test-key");
     vi.stubEnv("TAVILY_API_KEY", "exa-test-key");
@@ -32,7 +32,7 @@ describe("kimirelay configure", () => {
   });
 
   test("keeps a stored key that validates, without prompting", async () => {
-    const home = await mkdtemp(path.join(os.tmpdir(), "kimirelay-configure-"));
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-configure-"));
     temporaryHomes.push(home);
     vi.stubEnv("NEBIUS_API_KEY", "stored-key");
     vi.stubEnv("TAVILY_API_KEY", "t");
@@ -47,7 +47,7 @@ describe("kimirelay configure", () => {
   });
 
   test("keeps an unverifiable key instead of discarding it", async () => {
-    const home = await mkdtemp(path.join(os.tmpdir(), "kimirelay-configure-"));
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-configure-"));
     temporaryHomes.push(home);
     vi.stubEnv("NEBIUS_API_KEY", "maybe-fine-key");
     vi.stubEnv("TAVILY_API_KEY", "t");

@@ -1,21 +1,21 @@
 import {
-  GLM_5_2_ANTHROPIC_CAPABILITIES,
-  KIMI_K2_7_CODE,
+  DEFAULT_ANTHROPIC_CAPABILITIES,
+  NEMOTRON_3_NANO,
   getDefaultModel,
   getSelectableModels,
   resolveModelByKeys,
   type ModelDefinition,
-} from "@kimirelay/models";
+} from "@nemocode/models";
 
 export const CLAUDE_LOCAL_PROXY_HOST = "127.0.0.1";
-export const CLAUDE_MODEL_CAPABILITIES = GLM_5_2_ANTHROPIC_CAPABILITIES;
+export const CLAUDE_MODEL_CAPABILITIES = DEFAULT_ANTHROPIC_CAPABILITIES;
 
 export type ClaudeModelSelection = {
   alias: string;
   definition: ModelDefinition;
 };
 
-export const CLAUDE_HAIKU_MODEL = KIMI_K2_7_CODE;
+export const CLAUDE_HAIKU_MODEL = NEMOTRON_3_NANO;
 export const CLAUDE_HAIKU_MODEL_SELECTION: ClaudeModelSelection = {
   alias: CLAUDE_HAIKU_MODEL.anthropicAlias ?? CLAUDE_HAIKU_MODEL.id,
   definition: CLAUDE_HAIKU_MODEL,

@@ -114,7 +114,7 @@ export function createProxyPerfTracer(
       } catch {
         // Perf capture is diagnostic only and must never affect proxy traffic.
       }
-      process.stderr.write(`[kimirelay perf] ${JSON.stringify(payload)}\n`);
+      process.stderr.write(`[nemocode perf] ${JSON.stringify(payload)}\n`);
     },
   };
 }

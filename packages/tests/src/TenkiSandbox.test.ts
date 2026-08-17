@@ -48,7 +48,7 @@ describe("resolveSandboxProvider", () => {
     expect(resolveSandboxProvider("tenki", {} as NodeJS.ProcessEnv)).toBe("tenki");
     expect(
       resolveSandboxProvider(undefined, {
-        NEMORELAY_SANDBOX_PROVIDER: "tenki",
+        NEMOCODE_SANDBOX_PROVIDER: "tenki",
       } as NodeJS.ProcessEnv),
     ).toBe("tenki");
     expect(() => resolveSandboxProvider("docker", {} as NodeJS.ProcessEnv)).toThrow(
@@ -64,7 +64,7 @@ describe("resolveSandboxProvider", () => {
     expect(resolveSandboxProvider("contree", {} as NodeJS.ProcessEnv)).toBe("contree");
     expect(
       resolveSandboxProvider(undefined, {
-        NEMORELAY_SANDBOX_PROVIDER: "contree",
+        NEMOCODE_SANDBOX_PROVIDER: "contree",
       } as NodeJS.ProcessEnv),
     ).toBe("contree");
   });
@@ -128,7 +128,7 @@ describe("runTenkiHarness", () => {
     });
     const script = calls.run[0]?.[2] ?? "";
     expect(script).toContain("git clone");
-    expect(script).toContain("klaude");
+    expect(script).toContain("claudemo");
     expect(script).not.toContain("nebius-secret");
     expect(script).not.toContain("tvly-secret");
   });

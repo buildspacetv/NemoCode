@@ -1,5 +1,5 @@
 import { type IncomingMessage, type ServerResponse } from "node:http";
-import { type ModelDefinition } from "@kimirelay/models";
+import { type ModelDefinition } from "@nemocode/models";
 import { codexModelCatalog } from "./catalog.js";
 import type { CostTracker } from "../cost.js";
 import { createProxyPerfTracer, type ProxyPerfSink } from "../proxy-perf.js";
@@ -200,5 +200,5 @@ function debugLog(
   label: string,
   payload: unknown | (() => unknown),
 ): void {
-  writeProxyDebugLog("kimirelay codex proxy", options, label, payload);
+  writeProxyDebugLog("nemo codex proxy", options, label, payload);
 }

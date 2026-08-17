@@ -47,7 +47,7 @@ jobs:
         run: pnpm typecheck
 
       - name: Build CLI + models
-        run: pnpm exec turbo run build --filter @kimirelay/models --filter @kimirelay/cli
+        run: pnpm exec turbo run build --filter @nemocode/models --filter @nemocode/cli
 
       - name: Offline tests
         run: pnpm test:offline

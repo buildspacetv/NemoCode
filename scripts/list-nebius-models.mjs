@@ -2,12 +2,12 @@
 /**
  * List the live Nebius Token Factory model catalog with modality and pricing.
  *
- * kimirelay builds its model catalog dynamically from this same endpoint
+ * nemocode builds its model catalog dynamically from this same endpoint
  * (`GET /v1/models?verbose=true`), which returns id, name, context_length,
  * `architecture.modality` ("text->text" vs "text+image->text"), and per-token
  * pricing. This script prints it so you can see exactly what the tool will pick
  * up. Note: Nebius reports a placeholder context_length (8000) for a few
- * flagships; kimirelay floors those via a small curated override.
+ * flagships; nemocode floors those via a small curated override.
  *
  * Usage:
  *   NEBIUS_API_KEY=... node scripts/list-nebius-models.mjs

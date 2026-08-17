@@ -15,7 +15,7 @@ Use this loop:
 5. Run the focused test again, then the relevant typecheck/build.
 6. Re-run a live smoke using the user's original pattern when the bug depends on real Codex, Claude, OpenCode, Pi, or Nebius behavior.
 
-For Codex proxy bugs, prefer `packages/tests/src/CodexProxyApi.test.ts` for deterministic protocol regressions before doing a live `kodex -- exec ...` smoke. Examples of patterns that need regression coverage:
+For Codex proxy bugs, prefer `packages/tests/src/CodexProxyApi.test.ts` for deterministic protocol regressions before doing a live `codemo -- exec ...` smoke. Examples of patterns that need regression coverage:
 
 - parallel `multi_agent_v1` calls must stay in one assistant tool-call group before their tool outputs;
 - more than five parallel subagent calls must preserve all call IDs and outputs;
@@ -30,7 +30,7 @@ Install dependencies and build the CLI:
 
 ```bash
 pnpm install
-pnpm -F @kimirelay/cli build
+pnpm -F @nemocode/cli build
 ```
 
 For local development, keep TypeScript rebuilding in one terminal:
@@ -44,8 +44,8 @@ Run smoke tests from another terminal.
 Quick local checks:
 
 ```bash
-pnpm -F @kimirelay/cli typecheck
-pnpm -F @kimirelay/cli test
+pnpm -F @nemocode/cli typecheck
+pnpm -F @nemocode/cli test
 ```
 
 ## Manual Harness Launches
@@ -54,99 +54,99 @@ Use these commands for quick live launches while validating a harness manually.
 
 ### OpenCode
 
-OpenCode uses ephemeral Nebius settings: `kimirelay opencode` injects the Nebius provider config only for that launch, so there is no `on`/`off` flow and no OpenCode config rewrite. OpenCode's own local session history can still persist normally.
+OpenCode uses ephemeral Nebius settings: `nemo opencode` injects the Nebius provider config only for that launch, so there is no `on`/`off` flow and no OpenCode config rewrite. OpenCode's own local session history can still persist normally.
 
 ```bash
 export NEBIUS_API_KEY="..."
 
-pnpm -F @kimirelay/cli exec kimirelay opencode
+pnpm -F @nemocode/cli exec nemo opencode
 ```
 
 ### Claude Code
 
-Claude Code uses ephemeral Nebius settings. `kimirelay` does not write `~/.claude/settings.json` and there is no `claude on/off` flow to remember; Claude Code's own session/history behavior is left intact.
+Claude Code uses ephemeral Nebius settings. `nemo` does not write `~/.claude/settings.json` and there is no `claude on/off` flow to remember; Claude Code's own session/history behavior is left intact.
 
 Launch Claude Code through the local Nebius proxy:
 
 ```bash
 export NEBIUS_API_KEY="..."
 
-pnpm -F @kimirelay/cli exec kimirelay claude
+pnpm -F @nemocode/cli exec nemo claude
 ```
 
 Pass arguments through to `claude` after the harness name:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay claude --help
-pnpm -F @kimirelay/cli exec kimirelay claude --version
+pnpm -F @nemocode/cli exec nemo claude --help
+pnpm -F @nemocode/cli exec nemo claude --version
 ```
 
 The Claude local proxy defaults to Nebius GLM-5.2 (`zai-org/GLM-5.2`) and can route Claude Code through any curated Nebius model in the repo's shared model list.
 Pick a backend for one launch:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay --main nebius-glm-5-2 claude
-pnpm -F @kimirelay/cli exec kimirelay --main nebius-kimi-k2-7-code claude
-pnpm -F @kimirelay/cli exec kimirelay --main Qwen/Qwen3.5-397B-A17B claude
+pnpm -F @nemocode/cli exec nemo --main nebius-glm-5-2 claude
+pnpm -F @nemocode/cli exec nemo --main nebius-nemotron-3-nano claude
+pnpm -F @nemocode/cli exec nemo --main Qwen/Qwen3.5-397B-A17B claude
 ```
 
 ### Codex
 
-Codex uses ephemeral Nebius settings. `kimirelay` launches the terminal `codex` CLI with per-run config flags and a local Responses-compatible proxy that translates Codex traffic to Nebius chat completions, while leaving Codex's own session/history behavior intact.
+Codex uses ephemeral Nebius settings. `nemo` launches the terminal `codex` CLI with per-run config flags and a local Responses-compatible proxy that translates Codex traffic to Nebius chat completions, while leaving Codex's own session/history behavior intact.
 
 Launch Codex through Nebius:
 
 ```bash
 export NEBIUS_API_KEY="..."
 
-pnpm -F @kimirelay/cli exec kimirelay codex
+pnpm -F @nemocode/cli exec nemo codex
 ```
 
 Run Codex headlessly through Nebius:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay codex exec "Say hi"
-kodex exec "Say hi"
+pnpm -F @nemocode/cli exec nemo codex exec "Say hi"
+codemo exec "Say hi"
 ```
 
 ### Codex App
 
-Codex App support is an alpha feature. Unlike `kimirelay codex`, it persistently patches Codex's user config so the desktop app can use kimirelay's local Responses-compatible proxy. The config stays active until you run `--restore`, similar to `ollama launch codex-app`. If Codex App is already open, kimirelay asks before restarting it so the new profile can load.
+Codex App support is an alpha feature. Unlike `nemo codex`, it persistently patches Codex's user config so the desktop app can use nemocode's local Responses-compatible proxy. The config stays active until you run `--restore`, similar to `ollama launch codex-app`. If Codex App is already open, nemocode asks before restarting it so the new profile can load.
 
 ```bash
 export NEBIUS_API_KEY="..."
 
-pnpm -F @kimirelay/cli exec kimirelay codex-app
-pnpm -F @kimirelay/cli exec kimirelay codex-app --model moonshotai/Kimi-K2.7-Code
+pnpm -F @nemocode/cli exec nemo codex-app
+pnpm -F @nemocode/cli exec nemo codex-app --model nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
 ```
 
 Restore the previous Codex config:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay codex-app --restore
+pnpm -F @nemocode/cli exec nemo codex-app --restore
 ```
 
-Backups live under `~/.kimirelay/backup/codex-app/`. The managed model catalog lives under `~/.codex/` so Codex Desktop can load it, and the session lock lives under `~/.kimirelay/codex-app/`.
+Backups live under `~/.nemocode/backup/codex-app/`. The managed model catalog lives under `~/.codex/` so Codex Desktop can load it, and the session lock lives under `~/.nemocode/codex-app/`.
 
 ### Pi Code
 
-Pi Code uses ephemeral Nebius settings with persistent sessions. `kimirelay pi` uses Pi's official Nebius provider (`together`) and a temporary `PI_CODING_AGENT_DIR` for per-run model config, while pointing `PI_CODING_AGENT_SESSION_DIR` at the normal local Pi sessions folder. It does not write Pi config, and Pi sessions can still be resumed normally.
+Pi Code uses ephemeral Nebius settings with persistent sessions. `nemo pi` uses Pi's official Nebius provider (`together`) and a temporary `PI_CODING_AGENT_DIR` for per-run model config, while pointing `PI_CODING_AGENT_SESSION_DIR` at the normal local Pi sessions folder. It does not write Pi config, and Pi sessions can still be resumed normally.
 
 Launch Pi Code through Nebius:
 
 ```bash
 export NEBIUS_API_KEY="..."
 
-pnpm -F @kimirelay/cli exec kimirelay pi
-pnpm -F @kimirelay/cli exec kimirelay picode
-kpi
+pnpm -F @nemocode/cli exec nemo pi
+pnpm -F @nemocode/cli exec nemocode picode
+pimo
 ```
 
 Run Pi Code headlessly through Nebius:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay pi -p "Say hi"
-kpi -p "Say hi"
+pnpm -F @nemocode/cli exec nemo pi -p "Say hi"
+pimo -p "Say hi"
 ```
 
 ## Claude Code Headless Smoke Tests
@@ -156,13 +156,13 @@ Claude support must be tested headlessly before testing the interactive UI. Head
 Use debug logs while working on the proxy:
 
 ```bash
-export NEMORELAY_DEBUG=1
+export NEMOCODE_DEBUG=1
 ```
 
 Basic chat, no tools:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay claude -- \
+pnpm -F @nemocode/cli exec nemo claude -- \
   --print \
   --output-format json \
   --no-session-persistence \
@@ -181,7 +181,7 @@ Expected result:
 Tool-use smoke test:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay claude -- \
+pnpm -F @nemocode/cli exec nemo claude -- \
   --print \
   --output-format json \
   --no-session-persistence \
@@ -200,7 +200,7 @@ Expected result:
 Repo-context smoke test:
 
 ```bash
-pnpm -F @kimirelay/cli exec kimirelay claude -- \
+pnpm -F @nemocode/cli exec nemo claude -- \
   --print \
   --output-format json \
   --no-session-persistence \
@@ -255,9 +255,9 @@ GLM-5.2 returns preserved reasoning in `choices[0].message.reasoning`. Keep that
 
 ## Codex Desktop App-Server Model List Probe
 
-Codex Desktop renders its model picker from the app-server JSON-RPC method `model/list`, not directly from the provider's raw `/v1/models` response. When debugging `kimirelay codex-app`, verify the real app-server contract before changing Desktop config again.
+Codex Desktop renders its model picker from the app-server JSON-RPC method `model/list`, not directly from the provider's raw `/v1/models` response. When debugging `nemo codex-app`, verify the real app-server contract before changing Desktop config again.
 
-First make sure `~/.codex/config.toml` points at the Kimi Relay Codex App provider and that the local Kimi Relay daemon is reachable:
+First make sure `~/.codex/config.toml` points at the NemoCode Codex App provider and that the local NemoCode daemon is reachable:
 
 ```bash
 /Applications/Codex.app/Contents/Resources/codex doctor --json
@@ -318,8 +318,8 @@ function notify(method, params) {
 try {
   await request("initialize", {
     clientInfo: {
-      name: "kimirelay-debug",
-      title: "Kimi Relay Debug",
+      name: "nemocode-debug",
+      title: "NemoCode Debug",
       version: "0.5.26",
     },
     capabilities: {
@@ -347,9 +347,9 @@ try {
 '
 ```
 
-Expected result for `kimirelay codex-app` is six visible models, starting with `zai-org/GLM-5.2` and display name `GLM 5.2 · default`. If this probe is correct but Desktop still shows stale or missing models, the bug is in the running Desktop process or frontend state, not the Codex app-server model manager.
+Expected result for `nemo codex-app` is six visible models, starting with `zai-org/GLM-5.2` and display name `GLM 5.2 · default`. If this probe is correct but Desktop still shows stale or missing models, the bug is in the running Desktop process or frontend state, not the Codex app-server model manager.
 
-Also verify the active Kimi Relay daemon session route returns the same catalog without calling Nebius:
+Also verify the active NemoCode daemon session route returns the same catalog without calling Nebius:
 
 ```bash
 node --input-type=module -e '
@@ -357,7 +357,7 @@ import { readFileSync } from "node:fs";
 
 const raw = readFileSync(process.env.HOME + "/.codex/config.toml", "utf8");
 const baseUrl = raw.match(/base_url\s*=\s*"([^"]+)"/)?.[1];
-if (!baseUrl) throw new Error("missing Kimi Relay codex-app base_url");
+if (!baseUrl) throw new Error("missing NemoCode codex-app base_url");
 
 const response = await fetch(baseUrl + "/models");
 const body = await response.json();
@@ -370,7 +370,7 @@ console.log(JSON.stringify({
 '
 ```
 
-Codex Desktop has had a custom-provider picker bug where the frontend hides the model picker unless the provider reports auth as required: https://github.com/openai/codex/issues/10867. `kimirelay codex-app` intentionally writes `requires_openai_auth = true` for the custom provider as a Desktop workaround. If Desktop prompts for login during manual testing, choose API key and enter any placeholder character; model traffic still goes to the configured local Kimi Relay `base_url`.
+Codex Desktop has had a custom-provider picker bug where the frontend hides the model picker unless the provider reports auth as required: https://github.com/openai/codex/issues/10867. `nemo codex-app` intentionally writes `requires_openai_auth = true` for the custom provider as a Desktop workaround. If Desktop prompts for login during manual testing, choose API key and enter any placeholder character; model traffic still goes to the configured local NemoCode `base_url`.
 
 ## Notes
 
@@ -384,7 +384,7 @@ Build once, then run any harness test file:
 
 ```bash
 node_modules/.bin/tsc -p packages/cli/tsconfig.json
-chmod +x packages/cli/dist/bin/kimirelay.js
+chmod +x packages/cli/dist/bin/nemocode.js
 packages/tests/node_modules/.bin/vitest run --config packages/tests/vitest.config.ts packages/tests/src/Codex.test.ts
 packages/tests/node_modules/.bin/vitest run --config packages/tests/vitest.config.ts packages/tests/src/Claude.test.ts
 packages/tests/node_modules/.bin/vitest run --config packages/tests/vitest.config.ts packages/tests/src/OpenCode.test.ts
@@ -407,18 +407,18 @@ Current scenarios cover:
 
 ## Live Models Check
 
-`packages/tests/src/livemodelscheck.test.ts` is the exhaustive real-inference model check. It is skipped by the normal suite unless `NEMORELAY_LIVE_MODELS_CHECK=1` is set, because it launches real Claude Code and Codex CLI sessions and calls Nebius for every curated model.
+`packages/tests/src/livemodelscheck.test.ts` is the exhaustive real-inference model check. It is skipped by the normal suite unless `NEMOCODE_LIVE_MODELS_CHECK=1` is set, because it launches real Claude Code and Codex CLI sessions and calls Nebius for every curated model.
 
 Run it with:
 
 ```bash
-pnpm -F @kimirelay/tests test:live-models-check
+pnpm -F @nemocode/tests test:live-models-check
 ```
 
 The check runs one concurrent case per harness/model/probe tuple. Default concurrency is 6 and can be changed with:
 
 ```bash
-VITEST_MAX_CONCURRENCY=3 pnpm -F @kimirelay/tests test:live-models-check
+VITEST_MAX_CONCURRENCY=3 pnpm -F @nemocode/tests test:live-models-check
 ```
 
 For each curated `SELECTABLE_MODELS` entry it runs both harnesses through:
@@ -439,7 +439,7 @@ The workflow installs the real agent CLIs explicitly:
 npm install -g @anthropic-ai/claude-code @openai/codex opencode-ai @earendil-works/pi-coding-agent
 ```
 
-This is intentionally a CI setup step, not something `kimirelay` does silently on a user's machine.
+This is intentionally a CI setup step, not something `nemo` does silently on a user's machine.
 
 ## Tool Compatibility Audit
 

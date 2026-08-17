@@ -14,7 +14,7 @@ describe("resolveTavilyMcpKey", () => {
     expect(
       resolveTavilyMcpKey({
         TAVILY_API_KEY: "tvly-x",
-        NEMORELAY_DISABLE_TAVILY_MCP: "1",
+        NEMOCODE_DISABLE_TAVILY_MCP: "1",
       } as NodeJS.ProcessEnv),
     ).toBeUndefined();
   });

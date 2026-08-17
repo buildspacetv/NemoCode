@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
-export const githubUrl = "https://github.com/opencolin/kimi-relay";
-export const docsUrl = "https://github.com/opencolin/kimi-relay/blob/main/README.md";
+export const githubUrl = "https://github.com/buildspacetv/NemoCode";
+export const docsUrl = "https://github.com/buildspacetv/NemoCode/blob/main/README.md";
 export const nebiusApiKeysUrl = "https://tokenfactory.nebius.com/?modals=create-api-key";
 export const llmsUrl = "/llms.txt";
 export const tavilyKeysUrl = "https://app.tavily.com";
@@ -24,7 +24,7 @@ export function SiteNav() {
           <BrandMark />
           <span className="flex items-baseline gap-1.5">
             <span className="text-[15.5px] font-semibold tracking-tight text-ink">
-              KimiRelay.com
+              NemoCode.com
             </span>
           </span>
         </a>
@@ -71,7 +71,7 @@ export function SiteFooter() {
     <footer className="mt-4 flex flex-col gap-4 border-t border-line py-8 text-[13px] text-muted sm:flex-row sm:items-center">
       <div className="flex items-center gap-2.5">
         <BrandMark />
-        <span className="font-semibold text-ink">Kimi.Guide</span>
+        <span className="font-semibold text-ink">NemoCode.org</span>
       </div>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 sm:ml-auto">
         <Link className="transition hover:text-ink" to="/showcase">
