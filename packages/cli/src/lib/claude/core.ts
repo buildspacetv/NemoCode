@@ -8,6 +8,7 @@ import {
 } from "./defaults.js";
 import {} from "../daemon/launch.js";
 import { runProxiedSession, type ProxiedSessionResult } from "../proxied-session.js";
+import { renderLaunchBanner } from "../banner.js";
 
 const CONFLICTING_ENV_KEYS = [
   "ANTHROPIC_API_KEY",
@@ -128,7 +129,7 @@ function applyClaudeModelMenuEnv(env: NodeJS.ProcessEnv, selectedAlias: string):
 
   // Claude Code currently exposes a single generic custom-model slot in
   // addition to the three tier slots. Point that at the selected backend so a
-  // `--main nebius-nemotron-3-nano` launch also marks Nemotron as the custom row.
+  // `--main nebius-nemotron-3-5-lightning` launch also marks it as the custom row.
   env.ANTHROPIC_CUSTOM_MODEL_OPTION = selected.alias;
   env.ANTHROPIC_CUSTOM_MODEL_OPTION_NAME = selected.definition.name;
   env.ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION = "Local Anthropic-to-Nebius proxy";
@@ -171,10 +172,16 @@ export async function runClaudeNebius(options: ClaudeLaunchOptions): Promise<Cla
     keepaliveLabel: "Claude session",
     preserveSessionAfterExit: claudeRunsInBackground(args),
     banner: (modelName) =>
-      `NemoCode ▸ Routing Claude Code → Nebius Token Factory (${modelName}). Not Anthropic.\n` +
-      (options.tavilyMcpInjected
-        ? "NemoCode ▸ Tavily MCP injected for this session (ephemeral - won't appear in `claude mcp list`).\n"
-        : ""),
+      renderLaunchBanner({
+        lines: [
+          "NemoCode",
+          `Claude Code → Nebius Token Factory`,
+          `${modelName} · not Anthropic`,
+          ...(options.tavilyMcpInjected
+            ? ["Tavily MCP injected (ephemeral - not in `claude mcp list`)"]
+            : []),
+        ],
+      }),
     buildEnv: ({ proxyUrl, authToken, modelId, modelName }) =>
       buildClaudeEnv({ ...options, modelId, modelName, proxyUrl, authToken }),
     buildArgs: ({ args: launchArgs, authToken }) => buildClaudeLaunchArgs(launchArgs, authToken),

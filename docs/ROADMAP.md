@@ -25,15 +25,15 @@ sandbox status|run|advisory` plus headless `claudemo --sandbox` /
   Interactive TTY, artifact download, and prebaked images remain open; live
   verification is blocked on beta access.
 - **Distribution**: `curl -fsSL https://nemocode.org/install.sh | sh`
-  (POSIX-sh safe, self-updating, v0.10.1), serving from nemocode.org and
-  nemo.guide via Vercel git deploys. Launcher wrappers are self-locating
+  (POSIX-sh safe, self-updating, v0.10.1), serving from nemocode.org via
+  Vercel git deploys. Launcher wrappers are self-locating
   (bun found via PATH or `~/.bun/bin`) and self-heal: the installed bundle
   rewrites stale wrappers on its hourly update check.
 - **The site**: dark landing page ("Nemotron for ⟨agent⟩" with the robot
   mascot), benchmark section, community showcase at `/showcase`
   (PR-submittable), $25+$25 Token Factory/Tavily credits promo, and the
-  hosting trust row (SOC 2-compliant data centers, Paris, zero data
-  retention supported).
+  hosting trust row (SOC 2-compliant data centers, zero data retention
+  supported).
 
 ## Now
 

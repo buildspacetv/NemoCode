@@ -1,8 +1,8 @@
 # nemocode
 
-**Run NVIDIA Nemotron in Claude Code, Codex, and OpenCode on [Nebius Token Factory](https://tokenfactory.nebius.com/) (EU hosting).**
+**Run NVIDIA Nemotron in Claude Code, Codex, and OpenCode on [Nebius Token Factory](https://tokenfactory.nebius.com/).**
 
-One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Nemotron 3 Ultra, Cosmos 3, Qwen 3.5, DeepSeek V4, MiniMax M3) served from the EU instead of their default backends.
+One install, and **Claude Code**, **Codex**, **OpenCode**, and **Pi** all talk to open-weight models (Nemotron 3 Ultra, Cosmos 3, Qwen 3.5, DeepSeek V4, MiniMax M3) instead of their default backends.
 
 ```bash
 curl -fsSL https://nemocode.org/install.sh | sh
@@ -14,7 +14,7 @@ Then:
 claudemo     # Claude Code on Nemotron (long form: nemo claude)
 ```
 
-> **Note:** [nemocode.org](https://nemocode.org) is the project's home; [nemo.guide](https://nemo.guide) serves the same content.
+> **Note:** [nemocode.org](https://nemocode.org) is the project's home.
 
 ---
 
