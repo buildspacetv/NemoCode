@@ -150,18 +150,18 @@ const CURATED_OVERRIDES: Record<string, ModelOverride> = {
     minContext: 262_144, // API reports a placeholder 8000
     order: 20,
   },
-  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
-    name: "Nemotron 3 Nano 30B · fast",
-    anthropicAlias: "nebius-nemotron-3-nano",
-    outputLimit: 32_768,
-    order: 25, // API honestly reports 262144 here, so no minContext floor
-  },
   "nvidia/Nemotron-3_5-Lightning": {
-    name: "Nemotron 3.5 Lightning · fastest",
+    name: "Nemotron 3.5 Lightning · fast",
     anthropicAlias: "nebius-nemotron-3-5-lightning",
     outputLimit: 32_768,
     minContext: 262_144, // API reports a placeholder 8000
-    order: 30,
+    order: 25, // backs the Claude Haiku tier: ~5x Nano's throughput, same price
+  },
+  "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B": {
+    name: "Nemotron 3 Nano 30B",
+    anthropicAlias: "nebius-nemotron-3-nano",
+    outputLimit: 32_768,
+    order: 30, // API honestly reports 262144 here, so no minContext floor
   },
   "nvidia/Nemotron-3-Nano-Omni": {
     name: "Nemotron 3 Nano Omni",
@@ -430,6 +430,9 @@ export const NEMOTRON_3_ULTRA: ModelDefinition = fromSnapshot("nvidia/Nemotron-3
 export const NEMOTRON_3_SUPER: ModelDefinition = fromSnapshot("nvidia/nemotron-3-super-120b-a12b");
 export const NEMOTRON_3_NANO: ModelDefinition = fromSnapshot(
   "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+);
+export const NEMOTRON_3_5_LIGHTNING: ModelDefinition = fromSnapshot(
+  "nvidia/Nemotron-3_5-Lightning",
 );
 export const COSMOS_3_SUPER_REASONER: ModelDefinition = fromSnapshot(
   "nvidia/Cosmos3-Super-Reasoner",

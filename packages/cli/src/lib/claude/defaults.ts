@@ -1,6 +1,6 @@
 import {
   DEFAULT_ANTHROPIC_CAPABILITIES,
-  NEMOTRON_3_NANO,
+  NEMOTRON_3_5_LIGHTNING,
   getDefaultModel,
   getSelectableModels,
   resolveModelByKeys,
@@ -15,7 +15,9 @@ export type ClaudeModelSelection = {
   definition: ModelDefinition;
 };
 
-export const CLAUDE_HAIKU_MODEL = NEMOTRON_3_NANO;
+// The Haiku tier backs Claude Code's fast background turns, so it is picked
+// for throughput: Lightning runs ~5x Nano's tokens/sec at the same price.
+export const CLAUDE_HAIKU_MODEL = NEMOTRON_3_5_LIGHTNING;
 export const CLAUDE_HAIKU_MODEL_SELECTION: ClaudeModelSelection = {
   alias: CLAUDE_HAIKU_MODEL.anthropicAlias ?? CLAUDE_HAIKU_MODEL.id,
   definition: CLAUDE_HAIKU_MODEL,
