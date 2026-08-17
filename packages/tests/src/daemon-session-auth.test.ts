@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { cleanupTmpDir, createTestContext } from "./context.js";
 import { registerClaudeSession, startTestDaemon, type TestDaemon } from "./daemon-session.js";
 import type { TestContext } from "./types.js";
@@ -9,12 +9,18 @@ describe("daemon session-URL auth", () => {
   let token: string;
 
   beforeAll(async () => {
+    // Session registration only stores the key - nothing in this suite reaches
+    // Nebius (the daemon answers /v1/models from its own catalog). Supplying a
+    // placeholder is what lets these assertions run in CI, which holds no
+    // Nebius secret, rather than being skipped where they matter most.
+    vi.stubEnv("NEBIUS_API_KEY", "placeholder-not-used-no-request-leaves-this-test");
     context = await createTestContext();
     daemon = await startTestDaemon(context);
     token = await registerClaudeSession(context, daemon);
   }, 30_000);
 
   afterAll(async () => {
+    vi.unstubAllEnvs();
     await daemon?.stop();
     await cleanupTmpDir(context);
   });
