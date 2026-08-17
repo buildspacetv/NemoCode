@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 /**
  * Shared bits of the per-harness Tavily MCP auto-inject. Each harness injects
  * Tavily's remote MCP server its own way (nclaude: ephemeral --mcp-config file;

@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { randomUUID } from "node:crypto";
 import { findModelById, type ModelDefinition } from "@nemocode/models";
 import { resolveNebiusBaseUrl } from "./nebius-core.js";

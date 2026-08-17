@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { randomUUID } from "node:crypto";
 import { type ServerResponse } from "node:http";
 import { type ModelDefinition } from "@nemocode/models";

@@ -6,6 +6,7 @@
  * `--mcp-config` - argv never carries the key, and nothing durable is written.
  */
 
+import { relayEnv } from "../env.js";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";

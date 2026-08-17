@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import os from "node:os";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";

@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import http, { type IncomingMessage, type ServerResponse, type Server } from "node:http";
 import { once } from "node:events";
 import { statSync } from "node:fs";

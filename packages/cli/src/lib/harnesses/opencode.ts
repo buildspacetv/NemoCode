@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { spawn } from "node:child_process";
 import { OPENCODE_DEFAULT_MODEL, OPENCODE_PROVIDER_ID } from "../opencode/defaults.js";
 import { buildOpencodeConfigJson, buildOpencodeEnv } from "../opencode/core.js";

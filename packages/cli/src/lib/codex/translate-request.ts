@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { randomUUID } from "node:crypto";
 import {
   acceptsReasoningEffort,
@@ -105,7 +106,7 @@ export function resolveCodexRequestModel(
 ): ResolvedCodexRequestModel {
   const requestedModelId = body.model ?? options.modelId;
   if (isCodexMemoryRequest(body, requestedModelId)) {
-    const configured = process.env[CODEX_MEMORY_MODEL_ENV]?.trim();
+    const configured = relayEnv(CODEX_MEMORY_MODEL_ENV)?.trim();
     const configuredModel = configured ? findModelById(configured) : undefined;
     const definition = configuredModel ?? MINIMAX_M3;
     return {

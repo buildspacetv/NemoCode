@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { appendFile, chmod, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { nemocodeHome } from "./paths.js";

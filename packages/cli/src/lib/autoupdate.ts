@@ -25,6 +25,7 @@
  * longer being a one-variable path to running someone else's code.
  */
 
+import { relayEnv } from "./env.js";
 import { readFile, writeFile, rename, stat, unlink } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";

@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import os from "node:os";
 import path from "node:path";
 import { chmod, mkdir } from "node:fs/promises";

@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { createHash } from "node:crypto";
 import { VISION_PROMPT, getVisionModels } from "@nemocode/models";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";

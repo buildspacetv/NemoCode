@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { appendFile } from "node:fs/promises";
 
 let warnedAboutDebugLogWrite = false;

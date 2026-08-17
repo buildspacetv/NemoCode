@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { performance } from "node:perf_hooks";
 
 type ProxyPerfFields = Record<string, unknown>;

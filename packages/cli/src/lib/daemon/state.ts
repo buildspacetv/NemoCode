@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { CostTracker } from "../cost.js";
 import type { ModelDefinition } from "@nemocode/models";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";
@@ -500,8 +501,10 @@ function isNoPidSessionIdle(lastSeenAt: number, now: number): boolean {
   return now - lastSeenAt > NO_PID_SESSION_IDLE_TTL_MS;
 }
 
+/** `name` is the namespace suffix (e.g. "DAEMON_MAX_NO_PID_SESSIONS"), not a
+ *  bare process.env key - relayEnv applies the NEMORELAY_/KIMIRELAY_ prefix. */
 function envInt(name: string, fallback: number): number {
-  const raw = process.env[name];
+  const raw = relayEnv(name);
   if (!raw) {
     return fallback;
   }

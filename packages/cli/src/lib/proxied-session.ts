@@ -1,3 +1,4 @@
+import { relayEnv } from "./env.js";
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import type { ModelDefinition } from "@nemocode/models";

@@ -1,3 +1,4 @@
+import { relayEnv } from "../env.js";
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
