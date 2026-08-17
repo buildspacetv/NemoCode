@@ -14,7 +14,7 @@ Then:
 claudemo     # Claude Code on Nemotron (long form: nemo claude)
 ```
 
-> **Note:** [nemocode.org](https://nemocode.org) is the project's home; [nemo.guide](https://nemo.guide) serves the same content.
+> **Note:** [nemocode.org](https://nemocode.org) is the project's home.
 
 ---
 

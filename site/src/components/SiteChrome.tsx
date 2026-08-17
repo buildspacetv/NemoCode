@@ -24,7 +24,7 @@ export function SiteNav() {
           <BrandMark />
           <span className="flex items-baseline gap-1.5">
             <span className="text-[15.5px] font-semibold tracking-tight text-ink">
-              NemoCode.com
+              NemoCode.org
             </span>
           </span>
         </a>

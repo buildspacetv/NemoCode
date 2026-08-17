@@ -1,6 +1,6 @@
 # Showcase
 
-Projects displayed at [nemo.guide/showcase](https://nemo.guide/showcase). Built
+Projects displayed at [nemocode.org/showcase](https://nemocode.org/showcase). Built
 something with NemoCode? Add it here with a pull
 request.
 
