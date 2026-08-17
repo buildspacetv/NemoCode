@@ -125,13 +125,9 @@ type ModelOverride = {
 };
 
 const CURATED_OVERRIDES: Record<string, ModelOverride> = {
-  "zai-org/GLM-5.2": {
-    name: "GLM 5.2",
-    anthropicAlias: "nebius-glm-5-2",
-    outputLimit: 164_000,
-    minContext: 262_144, // API reports a placeholder 8000
-    order: 5, // was the default; Nebius removed it from the live catalog (2026-07-27)
-  },
+  // --- Featured: the seven NVIDIA models this relay is built around. These
+  // carry `order` so they lead the picker. Everything else Nebius serves stays
+  // reachable via `--model` but sorts to the tail by name.
   "nvidia/Nemotron-3-Ultra-550b-a55b": {
     name: "Nemotron 3 Ultra 550B · default",
     anthropicAlias: "nebius-nemotron-3-ultra",
@@ -160,27 +156,56 @@ const CURATED_OVERRIDES: Record<string, ModelOverride> = {
     outputLimit: 32_768,
     order: 25, // API honestly reports 262144 here, so no minContext floor
   },
+  "nvidia/Nemotron-3_5-Lightning": {
+    name: "Nemotron 3.5 Lightning · fastest",
+    anthropicAlias: "nebius-nemotron-3-5-lightning",
+    outputLimit: 32_768,
+    minContext: 262_144, // API reports a placeholder 8000
+    order: 30,
+  },
+  "nvidia/Nemotron-3-Nano-Omni": {
+    name: "Nemotron 3 Nano Omni",
+    anthropicAlias: "nebius-nemotron-3-nano-omni",
+    outputLimit: 32_768,
+    minContext: 131_072, // API reports a placeholder 8000
+    order: 40,
+  },
+  "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1": {
+    name: "Llama 3.1 Nemotron Ultra 253B",
+    anthropicAlias: "nebius-llama-nemotron-ultra",
+    outputLimit: 32_768,
+    minContext: 131_072, // API reports a placeholder 8000
+    order: 50,
+  },
+
+  // --- Not featured, still reachable. No `order`, so these fall to
+  // ORDER_FALLBACK and sort by name after the NVIDIA set. Their metadata is
+  // kept because it is still correct when someone selects them explicitly, and
+  // Qwen2.5-VL keeps visionRank so image failover survives when the primary
+  // vision model is unavailable.
+  "zai-org/GLM-5.2": {
+    name: "GLM 5.2",
+    anthropicAlias: "nebius-glm-5-2",
+    outputLimit: 164_000,
+    minContext: 262_144, // API reports a placeholder 8000
+  },
   "MiniMaxAI/MiniMax-M3": {
     name: "MiniMax M3",
     outputLimit: 128_000,
     minContext: 196_608, // API reports a placeholder 8000
-    order: 30,
   },
   "Qwen/Qwen3.5-397B-A17B": {
-    name: "Qwen 3.5 397B · flagship",
+    name: "Qwen 3.5 397B",
     outputLimit: 65_536,
-    order: 40,
   },
   "deepseek-ai/DeepSeek-V4-Pro": {
     name: "DeepSeek V4 Pro",
     outputLimit: 384_000,
-    order: 50,
   },
   "Qwen/Qwen2.5-VL-72B-Instruct": {
     name: "Qwen2.5-VL 72B · vision",
     reasoning: false, // perception model, not a reasoner
     outputLimit: 32_768,
-    order: 60,
     visionRank: 1, // vision fallback
   },
 };

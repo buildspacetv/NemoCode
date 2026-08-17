@@ -50,7 +50,7 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     id: "nvidia/Nemotron-3-Ultra-550b-a55b",
     name: "Nemotron-3-Ultra-550b-a55b",
     description:
-      "NVIDIA's flagship Nemotron 3 mixture-of-experts model (550B total, 55B active per token), built for long-horizon reasoning, agentic tool use, and coding.",
+      "Nemotron 3 Ultra is a 550B hybrid MoE model from NVIDIA, optimized for the most demanding multi-agent AI and complex reasoning tasks.",
     context_length: 8000,
     architecture: {
       modality: "text->text",
@@ -65,7 +65,7 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     id: "nvidia/nemotron-3-super-120b-a12b",
     name: "nemotron-3-super-120b-a12b",
     description:
-      "Mid-tier Nemotron 3 mixture-of-experts model (120B total, 12B active per token) balancing throughput and reasoning depth for everyday agentic coding.",
+      "Nemotron 3 Super is a 120B hybrid MoE model optimized for efficient multi-agent AI and complex reasoning tasks.",
     context_length: 8000,
     architecture: {
       modality: "text->text",
@@ -80,7 +80,7 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     id: "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
     name: "NVIDIA-Nemotron-3-Nano-30B-A3B",
     description:
-      "Small, fast Nemotron 3 mixture-of-experts model (30B total, 3B active per token) with a genuine 256K context, built for high-throughput background turns.",
+      "Compact MoE model optimized for efficient reasoning, chat, and coding with strong multilingual support and long-context RAG/agent workflows.",
     context_length: 262144,
     architecture: {
       modality: "text->text",
@@ -95,7 +95,7 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     id: "nvidia/Cosmos3-Super-Reasoner",
     name: "Cosmos3-Super-Reasoner",
     description:
-      "NVIDIA Cosmos 3 vision-language reasoner: understands screenshots, diagrams, and spatial layouts, and reasons over what it sees. The only NVIDIA model on Nebius that accepts image input.",
+      "Cosmos3 Super Reasoner is a 33B reasoning-focused model from NVIDIA, optimized for complex reasoning and multi-agent AI tasks.",
     context_length: 8000,
     architecture: {
       modality: "text+image->text",
@@ -109,7 +109,8 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
   {
     id: "nvidia/Nemotron-3_5-Lightning",
     name: "Nemotron-3_5-Lightning",
-    description: "Latency-optimised Nemotron 3.5 model for fast, cheap turns.",
+    description:
+      "NVIDIA's 30B-parameter hybrid MoE model with 3B active parameters per token, designed for efficient agentic reasoning, tool use, coding, and long-context workflows.",
     context_length: 8000,
     architecture: {
       modality: "text->text",
@@ -124,7 +125,7 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     id: "nvidia/Nemotron-3-Nano-Omni",
     name: "Nemotron-3-Nano-Omni",
     description:
-      "Nemotron 3 Nano Omni variant. Nebius currently serves it with a text-only modality.",
+      "The most open, efficient, and accurate omni-modal reasoning model for agentic AI.",
     context_length: 8000,
     architecture: {
       modality: "text->text",
@@ -139,7 +140,7 @@ export const CATALOG_SNAPSHOT: readonly NebiusApiModel[] = [
     id: "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
     name: "Llama-3_1-Nemotron-Ultra-253B-v1",
     description:
-      "Previous-generation Nemotron built on Llama 3.1 (253B dense), tuned with neural architecture search for reasoning and tool use.",
+      "NVIDIA-tuned Llama variant built for high-efficiency reasoning, safety, and enterprise-grade performance.",
     context_length: 8000,
     architecture: {
       modality: "text->text",

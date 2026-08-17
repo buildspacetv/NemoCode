@@ -163,9 +163,9 @@ const nemotronHighlights = [
     detail: "Cosmos 3 handles screenshots, diagrams, and spatial layouts for text-only models.",
   },
   {
-    icon: "🇪🇺",
-    label: "Served in the EU",
-    detail: "Every token runs on Nebius Token Factory, with zero data retention supported.",
+    icon: "📄",
+    label: "Open weights",
+    detail: "Nemotron and Cosmos ship open weights, so you are never locked to a single provider.",
   },
 ];
 

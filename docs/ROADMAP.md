@@ -32,8 +32,8 @@ sandbox status|run|advisory` plus headless `claudemo --sandbox` /
 - **The site**: dark landing page ("Nemotron for ⟨agent⟩" with the robot
   mascot), benchmark section, community showcase at `/showcase`
   (PR-submittable), $25+$25 Token Factory/Tavily credits promo, and the
-  hosting trust row (SOC 2-compliant data centers, Paris, zero data
-  retention supported).
+  hosting trust row (SOC 2-compliant data centers, zero data retention
+  supported).
 
 ## Now
 
