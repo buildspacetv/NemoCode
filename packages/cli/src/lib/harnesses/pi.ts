@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { getCodexSupportedModels, resolveCodexModel } from "../codex/defaults.js";
 import { HARNESS } from "../harness.js";
 import { defineHarness, type HarnessContext, type HarnessResult } from "../harness-types.js";
-import { resolveNebiusApiKey, resolveNebiusBaseUrl } from "../nebius-core.js";
+import { resolveRelayCredentials, upstreamLabel } from "../credentials.js";
 import { renderLaunchBanner } from "../banner.js";
 
 const PI_PROVIDER_ID = "nebius";
@@ -42,7 +42,7 @@ function piArgsWithoutNemoCodeOverrides(args: string[]): string[] {
   return sanitized;
 }
 
-function writePiModelsJson(agentDir: string, apiKey: string): void {
+function writePiModelsJson(agentDir: string, apiKey: string, baseUrl: string): void {
   const models = getCodexSupportedModels().map(({ definition }) => ({
     id: definition.id,
     name: definition.name,
@@ -64,10 +64,10 @@ function writePiModelsJson(agentDir: string, apiKey: string): void {
       {
         providers: {
           [PI_PROVIDER_ID]: {
-            // Nebius is not a Pi built-in provider, so declare it as a custom
-            // OpenAI-compatible provider: baseUrl + api="openai-completions"
-            // route Pi's requests through the Nebius Token Factory endpoint.
-            baseUrl: resolveNebiusBaseUrl(),
+            // Neither upstream is a Pi built-in provider, so declare a custom
+            // OpenAI-compatible one: baseUrl + api="openai-completions" routes
+            // Pi's requests at whichever endpoint the mode resolved to.
+            baseUrl,
             api: "openai-completions",
             apiKey,
             // Nebius runs on vLLM, which does not understand the OpenAI
@@ -89,19 +89,22 @@ export default defineHarness({
   label: "Pi Code",
 
   async run(ctx: HarnessContext): Promise<HarnessResult> {
-    const apiKey = await resolveNebiusApiKey({
+    const credentials = await resolveRelayCredentials({
       apiKey: ctx.apiKey,
       home: ctx.home,
     });
+    const apiKey = credentials.apiKey;
     if (!apiKey) {
-      throw new Error("No Nebius API key found. Pass --api-key or set NEBIUS_API_KEY.");
+      throw new Error(
+        "No inference credentials found. Run `nemo configure` to pick demo mode or add a key, or pass --api-key / set NEBIUS_API_KEY.",
+      );
     }
 
     const agentDir = mkdtempSync(join(tmpdir(), "nemocode-pi-"));
     const sessionDir =
       process.env.PI_CODING_AGENT_SESSION_DIR ??
       join(ctx.home || homedir(), ".pi", "agent", "sessions");
-    writePiModelsJson(agentDir, apiKey);
+    writePiModelsJson(agentDir, apiKey, credentials.baseUrl);
     const selectedModel = resolveCodexModel(ctx.main);
     const supportedModels = piSupportedModels();
     const args = [
@@ -130,7 +133,9 @@ export default defineHarness({
     }
 
     process.stderr.write(
-      renderLaunchBanner({ lines: ["NemoCode", "Pi Code → Nebius Token Factory"] }),
+      renderLaunchBanner({
+        lines: ["NemoCode", `Pi Code → ${upstreamLabel(credentials.baseUrl)}`],
+      }),
     );
     const child = spawn("pi", args, {
       env: {

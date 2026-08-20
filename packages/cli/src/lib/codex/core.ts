@@ -8,6 +8,7 @@ import { TAVILY_MCP_BASE_URL, resolveTavilyMcpKey } from "../tavily-mcp-key.js";
 import {} from "../daemon/launch.js";
 import { runProxiedSession, type ProxiedSessionResult } from "../proxied-session.js";
 import { renderLaunchBanner } from "../banner.js";
+import { upstreamLabel } from "../credentials.js";
 
 export type CodexLaunchOptions = {
   apiKey: string;
@@ -81,7 +82,7 @@ export async function runCodexNebius(options: CodexLaunchOptions): Promise<Codex
       renderLaunchBanner({
         lines: [
           "NemoCode",
-          `Codex → Nebius Token Factory`,
+          `Codex → ${upstreamLabel(options.baseUrl)}`,
           `${modelName} · not OpenAI`,
           ...(tavilyMcpInjected
             ? ["Tavily MCP injected (ephemeral - not in `codex mcp list`)"]

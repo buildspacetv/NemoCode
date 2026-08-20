@@ -9,8 +9,10 @@ import {
   resolveStoredApiKey,
   resolveStoredTavilyApiKey,
   setGlobalTavilyApiKey,
+  setGlobalMode,
 } from "../global-config.js";
 import { resolveNebiusBaseUrl } from "../nebius-core.js";
+import { ANONYMOUS_DEMO_TOKEN, resolveDemoBaseUrl } from "../credentials.js";
 import { VERSION } from "../version.js";
 
 export type NebiusKeyCheck = "valid" | "invalid" | "unreachable";
@@ -37,6 +39,28 @@ export async function checkNebiusKey(
     return "unreachable";
   } catch {
     return "unreachable";
+  }
+}
+
+/**
+ * Probe the demo endpoint the same way BYOK probes a key: a definitive
+ * rejection is worth surfacing at configure time rather than at first use,
+ * where it would look like a broken install. Anything inconclusive is left
+ * alone - configure never blocks on a check it cannot judge.
+ */
+export async function checkDemoEndpoint(
+  baseUrl: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<"reachable" | "unavailable"> {
+  try {
+    const res = await fetchImpl(`${baseUrl}/models`, {
+      headers: { authorization: `Bearer ${ANONYMOUS_DEMO_TOKEN}` },
+    });
+    // 401/403 still proves something is serving the route; only a missing or
+    // broken endpoint counts as unavailable.
+    return res.status === 404 || res.status >= 500 ? "unavailable" : "reachable";
+  } catch {
+    return "unavailable";
   }
 }
 
@@ -80,6 +104,7 @@ Docs: https://nemocode.org/llms.txt
 export async function runConfigure(
   home = os.homedir(),
   checkKey: (apiKey: string) => Promise<NebiusKeyCheck> = checkNebiusKey,
+  checkDemo: (baseUrl: string) => Promise<"reachable" | "unavailable"> = checkDemoEndpoint,
 ): Promise<boolean> {
   clack.intro("nemo configure");
 
@@ -93,47 +118,100 @@ export async function runConfigure(
   });
   clack.log.info(`Detected tools:\n${lines.join("\n")}`);
 
-  const existing = resolveStoredApiKey((await readGlobalConfig(home)).apiKey);
-  let apiKey = existing || process.env.NEBIUS_API_KEY || "";
-  // Live-check an existing key so a rotated/revoked one re-opens the prompt -
-  // without this, configure silently keeps a dead stored key forever (the
-  // stored key beats the environment, so even a fresh export can't fix it).
-  if (apiKey) {
-    const check = await checkKey(apiKey);
-    if (check === "invalid") {
+  // Mode first: demo has no key to validate, so asking for one before knowing
+  // the mode would make the no-key path go through a prompt that exists only
+  // for the other one.
+  const stored = await readGlobalConfig(home);
+  // Only ask when there is a terminal to answer with. A piped or scripted
+  // `nemo configure` (and the test-suite) cannot respond to a select, so it
+  // keeps whatever mode is already stored - which for every pre-demo install
+  // is byok, leaving their flow exactly as it was.
+  const chosenMode = !process.stdin.isTTY
+    ? stored.mode
+    : await clack.select({
+        message: "How should NemoCode reach a model?",
+        initialValue: stored.mode,
+        options: [
+          {
+            value: "demo" as const,
+            label: "Demo - no key needed",
+            hint: "runs through a rate-limited endpoint we host; good for trying it out",
+          },
+          {
+            value: "byok" as const,
+            label: "Use my own Nebius key",
+            hint: "full speed, your own quota and billing",
+          },
+        ],
+      });
+  if (clack.isCancel(chosenMode)) {
+    clack.cancel("Cancelled.");
+    return false;
+  }
+
+  await setGlobalMode(home, chosenMode);
+
+  if (chosenMode === "demo") {
+    clack.log.success(
+      "Demo mode. Sessions run against a shared, rate-limited endpoint - no key stored.",
+    );
+    const demoBaseUrl = resolveDemoBaseUrl();
+    if ((await checkDemo(demoBaseUrl)) === "unavailable") {
       clack.log.warn(
-        "Your existing Nebius key was rejected by the API (unauthorized) - it may have been rotated or revoked. Enter a new one.",
+        `The demo endpoint (${demoBaseUrl}) is not answering yet. Sessions will fail until it is up - ` +
+          "use your own key with `nemo configure` if you need to work now.",
       );
-      apiKey = "";
-    } else if (check === "valid") {
-      clack.log.success("Nebius key: valid.");
-    } else {
-      clack.log.warn("Could not reach Nebius to verify the existing key - keeping it.");
     }
+    clack.log.info("Switch to your own key any time with `nemo configure`.");
   }
-  while (!apiKey) {
-    const entered = await clack.password({
-      message: "Nebius API key (from https://tokenfactory.nebius.com/?modals=create-api-key):",
-      validate: (value) => (value.trim() ? undefined : "An API key is required"),
-    });
-    if (clack.isCancel(entered)) {
-      clack.cancel("Cancelled.");
-      return false;
+
+  // Only BYOK needs a provider key. Tavily below is deliberately outside this
+  // branch: it powers web_search emulation, which is independent of which
+  // upstream serves inference, so demo users can configure it too.
+  let apiKey = "";
+  if (chosenMode === "byok") {
+    const existing = resolveStoredApiKey(stored.apiKey);
+    apiKey = existing || process.env.NEBIUS_API_KEY || "";
+    // Live-check an existing key so a rotated/revoked one re-opens the prompt -
+    // without this, configure silently keeps a dead stored key forever (the
+    // stored key beats the environment, so even a fresh export can't fix it).
+    if (apiKey) {
+      const check = await checkKey(apiKey);
+      if (check === "invalid") {
+        clack.log.warn(
+          "Your existing Nebius key was rejected by the API (unauthorized) - it may have been rotated or revoked. Enter a new one.",
+        );
+        apiKey = "";
+      } else if (check === "valid") {
+        clack.log.success("Nebius key: valid.");
+      } else {
+        clack.log.warn("Could not reach Nebius to verify the existing key - keeping it.");
+      }
     }
-    const candidate = entered.trim();
-    const check = await checkKey(candidate);
-    if (check === "invalid") {
-      clack.log.warn("That key was rejected by Nebius (unauthorized) - check it and try again.");
-      continue;
+    while (!apiKey) {
+      const entered = await clack.password({
+        message: "Nebius API key (from https://tokenfactory.nebius.com/?modals=create-api-key):",
+        validate: (value) => (value.trim() ? undefined : "An API key is required"),
+      });
+      if (clack.isCancel(entered)) {
+        clack.cancel("Cancelled.");
+        return false;
+      }
+      const candidate = entered.trim();
+      const check = await checkKey(candidate);
+      if (check === "invalid") {
+        clack.log.warn("That key was rejected by Nebius (unauthorized) - check it and try again.");
+        continue;
+      }
+      if (check === "valid") {
+        clack.log.success("Nebius key: valid.");
+      } else {
+        clack.log.warn("Could not reach Nebius to verify the key - storing it anyway.");
+      }
+      apiKey = candidate;
     }
-    if (check === "valid") {
-      clack.log.success("Nebius key: valid.");
-    } else {
-      clack.log.warn("Could not reach Nebius to verify the key - storing it anyway.");
-    }
-    apiKey = candidate;
+    await setGlobalApiKey(home, apiKey);
   }
-  await setGlobalApiKey(home, apiKey);
 
   // Tavily powers the proxy's native web_search emulation for Claude Code and
   // Codex. It's optional - without it, searches return a clear "TAVILY_API_KEY
