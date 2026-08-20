@@ -1,5 +1,6 @@
 import os from "node:os";
 import path from "node:path";
+import type { RelayMode } from "./credentials.js";
 import { nemocodeHome } from "./paths.js";
 import {
   readJsonIfExists,
@@ -13,6 +14,19 @@ export type GlobalConfig = {
   tavilyApiKey: string;
   /** Nebius project id for Token Factory Sandboxes calls (not a secret). */
   sandboxProject: string;
+  /**
+   * Which upstream this install talks to. Absent on configs written before
+   * demo mode existed, which is why the reader defaults it to "byok" rather
+   * than requiring it: an existing install has a Nebius key and must keep
+   * using it untouched.
+   */
+  mode: RelayMode;
+  /**
+   * Optional identity for demo sessions, issued by the website. Empty means
+   * anonymous - the demo server rate-limits by address instead. Not a provider
+   * key and worth nothing outside the demo endpoint.
+   */
+  demoToken: string;
 };
 
 // Re-exported rather than redefined: this module used to carry its own copy
@@ -30,6 +44,10 @@ export async function readGlobalConfig(home = os.homedir()): Promise<GlobalConfi
     apiKey: config.apiKey ?? "",
     tavilyApiKey: config.tavilyApiKey ?? "",
     sandboxProject: config.sandboxProject ?? "",
+    // Default to byok: a config written before demo mode belongs to someone
+    // who already supplied a key, and must not be silently switched.
+    mode: config.mode === "demo" ? "demo" : "byok",
+    demoToken: config.demoToken ?? "",
   };
 }
 
@@ -83,4 +101,16 @@ export function resolveStoredTavilyApiKey(stored: string | undefined): string {
     return process.env.TAVILY_API_KEY?.trim() ?? "";
   }
   return stored;
+}
+
+export async function setGlobalMode(home: string, mode: RelayMode): Promise<void> {
+  const config = await readGlobalConfig(home);
+  config.mode = mode;
+  await writeGlobalConfig(home, config);
+}
+
+export async function setGlobalDemoToken(home: string, demoToken: string): Promise<void> {
+  const config = await readGlobalConfig(home);
+  config.demoToken = demoToken;
+  await writeGlobalConfig(home, config);
 }

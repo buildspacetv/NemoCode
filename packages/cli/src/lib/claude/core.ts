@@ -9,6 +9,7 @@ import {
 import {} from "../daemon/launch.js";
 import { runProxiedSession, type ProxiedSessionResult } from "../proxied-session.js";
 import { renderLaunchBanner } from "../banner.js";
+import { upstreamLabel } from "../credentials.js";
 
 const CONFLICTING_ENV_KEYS = [
   "ANTHROPIC_API_KEY",
@@ -175,7 +176,7 @@ export async function runClaudeNebius(options: ClaudeLaunchOptions): Promise<Cla
       renderLaunchBanner({
         lines: [
           "NemoCode",
-          `Claude Code → Nebius Token Factory`,
+          `Claude Code → ${upstreamLabel(options.baseUrl)}`,
           `${modelName} · not Anthropic`,
           ...(options.tavilyMcpInjected
             ? ["Tavily MCP injected (ephemeral - not in `claude mcp list`)"]

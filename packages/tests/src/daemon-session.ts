@@ -129,7 +129,9 @@ async function registerSession(
 ): Promise<string> {
   const apiKey = await resolveNebiusApiKey(context.repoRoot);
   const token = `${agent}-context-test-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const response = await fetch(`${daemon.url}/internal/sessions`, {
+  // internalFetch, not fetch: /internal/* is the daemon's control plane and
+  // checks the local-proxy credential. A bare fetch here 401s.
+  const response = await daemon.internalFetch(`${daemon.url}/internal/sessions`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
@@ -149,9 +151,11 @@ async function registerSession(
 }
 
 export async function deleteSession(daemon: TestDaemon, token: string): Promise<void> {
-  await fetch(`${daemon.url}/internal/sessions/${encodeURIComponent(token)}`, {
-    method: "DELETE",
-  }).catch(() => {});
+  await daemon
+    .internalFetch(`${daemon.url}/internal/sessions/${encodeURIComponent(token)}`, {
+      method: "DELETE",
+    })
+    .catch(() => {});
 }
 
 async function resolveNebiusApiKey(repoRoot: string): Promise<string> {

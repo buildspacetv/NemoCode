@@ -4,7 +4,11 @@ import path from "node:path";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { checkNebiusKey, runConfigure } from "../../cli/src/lib/commands/global.js";
-import { readGlobalConfig, resolveStoredTavilyApiKey } from "../../cli/src/lib/global-config.js";
+import {
+  readGlobalConfig,
+  resolveStoredTavilyApiKey,
+  setGlobalMode,
+} from "../../cli/src/lib/global-config.js";
 
 const temporaryHomes: string[] = [];
 
@@ -85,5 +89,43 @@ describe("checkNebiusKey", () => {
     });
     expect(seen.url).toBe("https://api.tokenfactory.nebius.com/v1/models");
     expect(seen.auth).toBe("Bearer secret-k");
+  });
+});
+
+describe("nemo configure - modes", () => {
+  test("a non-interactive run keeps the stored mode instead of hanging on a prompt", async () => {
+    // Piped/scripted configure has no terminal to answer a select with. It must
+    // fall through to the stored mode rather than blocking - which for every
+    // install written before demo mode existed is byok.
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-configure-"));
+    temporaryHomes.push(home);
+    vi.stubEnv("NEBIUS_API_KEY", "nebius-test-key");
+    vi.stubEnv("TAVILY_API_KEY", "t");
+
+    const ok = await runConfigure(home, async () => "valid");
+
+    expect(ok).toBe(true);
+    expect((await readGlobalConfig(home)).mode).toBe("byok");
+  });
+
+  test("a stored demo mode survives a non-interactive re-run and stores no key", async () => {
+    const home = await mkdtemp(path.join(os.tmpdir(), "nemocode-configure-"));
+    temporaryHomes.push(home);
+    await setGlobalMode(home, "demo");
+    vi.stubEnv("NEBIUS_API_KEY", "");
+    vi.stubEnv("TAVILY_API_KEY", "t");
+
+    // The demo endpoint is not up yet; configure must warn, not fail.
+    const ok = await runConfigure(
+      home,
+      async () => "valid",
+      async () => "unavailable",
+    );
+
+    const config = await readGlobalConfig(home);
+    expect(ok).toBe(true);
+    expect(config.mode).toBe("demo");
+    // Demo must never persist a provider key - that is the whole point.
+    expect(config.apiKey).toBe("");
   });
 });

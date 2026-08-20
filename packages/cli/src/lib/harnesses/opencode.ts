@@ -2,7 +2,7 @@ import { relayEnv } from "../env.js";
 import { spawn } from "node:child_process";
 import { OPENCODE_DEFAULT_MODEL, OPENCODE_PROVIDER_ID } from "../opencode/defaults.js";
 import { buildOpencodeConfigJson, buildOpencodeEnv } from "../opencode/core.js";
-import { resolveNebiusApiKey } from "../nebius-core.js";
+import { resolveRelayCredentials, upstreamLabel } from "../credentials.js";
 import { resolveTavilyMcpKey } from "../tavily-mcp-key.js";
 import { defineHarness } from "../harness-types.js";
 import { HARNESS } from "../harness.js";
@@ -38,12 +38,15 @@ export default defineHarness({
   label: "OpenCode",
 
   async run(ctx: HarnessContext): Promise<HarnessResult> {
-    const apiKey = await resolveNebiusApiKey({
+    const credentials = await resolveRelayCredentials({
       apiKey: ctx.apiKey,
       home: ctx.home,
     });
+    const apiKey = credentials.apiKey;
     if (!apiKey) {
-      throw new Error("No Nebius API key found. Pass --api-key or set NEBIUS_API_KEY.");
+      throw new Error(
+        "No inference credentials found. Run `nemo configure` to pick demo mode or add a key, or pass --api-key / set NEBIUS_API_KEY.",
+      );
     }
 
     const modelId = ctx.main ?? OPENCODE_DEFAULT_MODEL;
@@ -54,7 +57,9 @@ export default defineHarness({
     const configJson = buildOpencodeConfigJson({ modelId, tavilyMcp });
     const env = buildOpencodeEnv({ apiKey, configJson });
     process.stderr.write(
-      renderLaunchBanner({ lines: ["NemoCode", "OpenCode → Nebius Token Factory", modelId] }),
+      renderLaunchBanner({
+        lines: ["NemoCode", `OpenCode → ${upstreamLabel(credentials.baseUrl)}`, modelId],
+      }),
     );
     if (tavilyMcp) {
       process.stderr.write(

@@ -1,7 +1,7 @@
 import { resolveClaudeModel } from "../claude/defaults.js";
 import { HARNESS } from "../harness.js";
 import { defineHarness } from "../harness-types.js";
-import { resolveNebiusApiKey, resolveNebiusBaseUrl } from "../nebius-core.js";
+import { resolveRelayCredentials } from "../credentials.js";
 import { claudeRunsInBackground, runClaudeNebius } from "../claude/core.js";
 import {
   cleanupTavilyMcpConfig,
@@ -24,12 +24,15 @@ export default defineHarness({
   label: "Claude Code",
 
   async run(ctx) {
-    const apiKey = await resolveNebiusApiKey({
+    const credentials = await resolveRelayCredentials({
       apiKey: ctx.apiKey,
       home: ctx.home,
     });
+    const apiKey = credentials.apiKey;
     if (!apiKey) {
-      throw new Error("No Nebius API key found. Pass --api-key or set NEBIUS_API_KEY.");
+      throw new Error(
+        "No inference credentials found. Run `nemo configure` to pick demo mode or add a key, or pass --api-key / set NEBIUS_API_KEY.",
+      );
     }
 
     // Model precedence: explicit --model/--main wins and is remembered;
@@ -53,7 +56,7 @@ export default defineHarness({
 
     const launchOptions = {
       apiKey,
-      baseUrl: resolveNebiusBaseUrl(),
+      baseUrl: credentials.baseUrl,
       modelId: selectedModel.alias,
       ...(args.length > 0 ? { args } : {}),
       ...(tavilyMcp ? { tavilyMcpInjected: true } : {}),

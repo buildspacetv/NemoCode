@@ -195,6 +195,9 @@ async function main() {
     return;
   }
 
+  // stdout here is machine-readable: install.sh and the telemetry path parse it
+  // as a bare install id. Session context (mode, endpoint) belongs in the
+  // launch banner, which is written to stderr for humans.
   if (command === "whoami") {
     process.stdout.write(`${await getInstallId()}\n`);
     return;

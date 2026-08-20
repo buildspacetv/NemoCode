@@ -226,13 +226,17 @@ export const DEFAULT_MODEL_ID = "nvidia/Nemotron-3-Ultra-550b-a55b";
  */
 export const REASONING_EFFORT_MODEL_IDS: ReadonlySet<string> = new Set([
   "zai-org/GLM-5.2",
-  // UNVERIFIED: the ids below exist on Nebius (catalog read 2026-08-16), but
-  // whether they accept `reasoning_effort` has not been confirmed with a live
-  // call - a model that rejects the parameter fails the whole request. Nemotron
-  // Nano is deliberately absent: it backs the Haiku tier, where the pre-existing
-  // behaviour was to send no effort at all.
+  // Verified against live Nebius on 2026-08-17. Ultra accepts the full range
+  // this proxy uses, none/low/medium/high/xhigh/max, which is what lets the
+  // Anthropic capabilities string advertise xhigh and max.
+  //
+  // nemotron-3-super-120b is deliberately NOT here despite accepting the
+  // parameter: its enum is only low/medium/high, and this proxy's default
+  // effort is "none", so every request carrying one 400s with
+  // "Input should be 'low', 'medium' or 'high'". It is also the
+  // header-timeout failover target, so sending it an effort broke the rescue
+  // path as well as direct selection. Sending nothing works.
   "nvidia/Nemotron-3-Ultra-550b-a55b",
-  "nvidia/nemotron-3-super-120b-a12b",
 ]);
 
 /** Whether a model accepts the `reasoning_effort` parameter. */
